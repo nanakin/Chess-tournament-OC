@@ -31,12 +31,13 @@ class Match:
         DRAW = 0.5
 
     participants_pair: Tuple[Participant, Participant]
-    participants_scores: Tuple[Points] | None = None
+    participants_scores: Tuple[Points, Points] | None = None
 
-    def register_score(self: Self, participants_status: Tuple[Points]):
+    def register_score(self: Self, participants_status: Tuple[Points, Points]):
         self.participants_scores = participants_status
-        for p, participant in enumerate(self.participants_pair):
-            self.participants_pair[p].add_score(self.participants_scores[p].value)
+        print(self.participants_pair)
+        for participant, score in zip(self.participants_pair, self.participants_scores):
+            participant.add_score(score.value)
 
 
 @dataclass
@@ -69,10 +70,9 @@ class Tournament:
     def _generate_matches(self) -> Tuple[Match]:
         # sort participants by score and create pairs by order
         # to implement
-        return tuple()  # temp
+        return Match((self.participants[0], self.participants[1])),  # temp
 
     def get_next_round(self):
-        self.current_round += 1
         round = Round(name=f"Round {self.current_round}",
                       matches=self._generate_matches())
         self.rounds.append(round)
