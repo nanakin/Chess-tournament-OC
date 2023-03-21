@@ -19,7 +19,7 @@ if __name__ == "__main__":
     parser.add_argument('-p', '--data-path', default=(Path('.') / 'data'))
     args = parser.parse_args()
     if args.questionary:
-        from chess_tournament.views.questionary import View
+        from chess_tournament.views.questionary.view import View
     else:
-        from chess_tournament.views.classic import View
+        from chess_tournament.views.classic.view import View
     main(view_class=View, data_path=args.data_path)
