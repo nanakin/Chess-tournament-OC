@@ -92,3 +92,32 @@ class Controller:
                 action, action_data = self.view.show_participant_registration(tournaments_info)
                 if action == Request.ADD_PARTICIPANT:
                     self.model.add_participants_to_tournament(action_data)
+
+            if action == Request.GET_MATCHES_LIST:
+                tournaments_info = [(t, tournament.name) for t, tournament in enumerate(self.model.tournaments)]
+                action, action_data = self.view.choose_tournament(tournaments_info)
+                tournament_t = action_data
+                round_info = [(r, round.name) for r, round in enumerate(self.model.get_rounds(tournament_t))]
+                action, action_data = self.view.choose_round(round_info)
+                round_r = action_data
+                matches_info = [(match[0].player.identifier, match[1].player.identifier)
+                                for match in self.model.get_round_matches(tournament_t, round_r)]
+                self.view.show_matches(matches_info)
+
+            if action == Request.REGISTER_MATCH_SCORE:
+                tournaments_info = [(t, tournament.name) for t, tournament in enumerate(self.model.tournaments)]
+                action, action_data = self.view.choose_tournament(tournaments_info)
+                if action == Request.EXIT_LOCAL_MENU:
+                    pass
+                elif action == Request.CHOSEN_TOURNAMENT:
+                    tournament_t = action_data
+                    matches = self.model.get_round_matches(tournament_t)
+                    matches_info = [(m, match) for m, match in enumerate(matches) if match.participants_scores is None]
+                    action, action_data = self.view.choose_match(matches_info)
+                    if action == Request.CHOSEN_MATCH:
+                        match_m = action_data
+                        action, action_data = self.view.enter_score(None)
+                        if action == Request.ADD_MATCH_RESULT:
+                            first_player_result = action_data
+                            self.model.register_score(tournament_t, match_m, first_player_result)
+

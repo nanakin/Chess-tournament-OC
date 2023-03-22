@@ -15,6 +15,14 @@ class Match:
     participants_pair: Tuple[Participant, Participant]
     participants_scores: Tuple[Points, Points] | None = None
 
+    @classmethod
+    def get_pairs_score_from_first(cls, first_result):
+        if first_result == cls.Points.WIN:
+            return cls.Points.WIN, cls.Points.LOSE
+        if first_result == cls.Points.LOSE:
+            return cls.Points.LOSE, cls.Points.WIN
+        return cls.Points.DRAW, cls.Points.DRAW
+
     def register_score(self, participants_status: Tuple[Points, Points]):
         self.participants_scores = participants_status
         print(self.participants_pair)

@@ -3,10 +3,13 @@ from pathlib import Path
 from .chessdata.player import Player
 from .chessdata.tournament import Tournament
 from .chessdata.participant import Participant
+from .chessdata.match import Match
+from pprint import pprint
 
 
 @dataclass
 class Model:
+    """The only external interface to manipulate chess data."""
 
     data_path: Path | None
     players: dict[Player] = field(default_factory=dict)
@@ -26,11 +29,24 @@ class Model:
         for player_id in participants_data:
             self.tournaments[tournament_t].participants.append(Participant(self.players[player_id]))
 
+    def register_score(self, tournament_t, match_m, first_player_result_str):
+        first_result = Match.Points[first_player_result_str]
+        pair_result = Match.get_pairs_score_from_first(first_result)
+        self.tournaments[tournament_t].current_round.matches[match_m].register_score(pair_result)
+        print(self.tournaments[tournament_t].current_round.matches[match_m])
+
     def start_round(self, tournament_t):
         self.tournaments[tournament_t].start_round()
 
-    def get_round_matches(self, tournament_t):
-        self.tournaments[tournament_t].get_round_matches()
+    def get_rounds(self, tournament_t):
+        return self.tournaments[tournament_t].rounds
+
+    def get_round_matches(self, tournament_t, round_r=None):
+        if round_r is None:
+            round_r = max(0, len(self.tournaments[tournament_t].rounds) - 1)
+        if round_r == len(self.tournaments[tournament_t].rounds):
+            self.tournaments[tournament_t].set_next_round()
+        return self.tournaments[tournament_t].get_round_matches(round_r)
 
 
 
