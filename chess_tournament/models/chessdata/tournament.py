@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import Tuple, List
 from datetime import date
 from .match import Match
 from .participant import Participant
@@ -12,13 +11,13 @@ class Tournament:
     location: str
     begin_date: date
     end_date: date
-    participants: Tuple[Participant] | None = None
+    participants: list[Participant] = field(default_factory=list)
     total_rounds: int = 4
-    rounds: List[Round] = field(default_factory=list)
+    rounds: list[Round] = field(default_factory=list)
     # necessary ? it is not always the last of the list ?
     current_round: int | None = None
 
-    def _generate_matches(self) -> Tuple[Match]:
+    def _generate_matches(self) -> tuple[Match]:
         # sort participants by score and create pairs by order
         # to implement
         return Match((self.participants[0], self.participants[1])),  # temp

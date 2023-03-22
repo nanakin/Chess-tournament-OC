@@ -10,6 +10,7 @@ class View(IView):
     def show_main_menu(self) -> RequestAnswer:
         print("1 : to add player")
         print("2 : to add tournament")
+        print("3 : to add participants to tournament")
         print("q : to quit")
         action = input()
         if action == "q":
@@ -18,6 +19,8 @@ class View(IView):
             return Request.LAUNCH_PLAYER_MENU
         if action == "2":
             return Request.LAUNCH_TOURNAMENT_MENU
+        if action == "3":
+            return Request.LAUNCH_PARTICIPANT_MENU
 
     def show_player_registration(self) -> RequestAnswer:
         # to-do : add a system to check user input values
@@ -39,4 +42,16 @@ class View(IView):
             "total_rounds": input("Total number of rounds (leave empty for default value: 4): ")}
 
         return Request.ADD_TOURNAMENT, tournament_data
+        # to-do or EXIT if cancel
+
+    def show_participant_registration(self, tournaments_info) -> RequestAnswer:
+        # tournaments_info = list[tuple[index, name]]
+        # to-do : add a system to check user input values
+        print("Select a tournament:")
+        for n, tournament_info in enumerate(tournaments_info):
+            print(f"{n}: {tournament_info[1]}")
+        tournament_t = tournaments_info[int(input()) - 1][0]
+        player_id = input("Enter player ID: ")
+        add_participant_data = {"player_id": player_id, "tournament_t": tournament_t}
+        return Request.ADD_PARTICIPANT, add_participant_data
         # to-do or EXIT if cancel

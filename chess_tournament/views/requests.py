@@ -7,7 +7,9 @@ Request = Enum("Request", [
     "LAUNCH_PLAYER_MENU",
     "ADD_PLAYER",
     "LAUNCH_TOURNAMENT_MENU",
-    "ADD_TOURNAMENT"
+    "ADD_TOURNAMENT",
+    "LAUNCH_PARTICIPANT_MENU",
+    "ADD_PARTICIPANT"
 ])
 
 RequestAnswer: TypeAlias = Request | tuple[Request, list[object]]

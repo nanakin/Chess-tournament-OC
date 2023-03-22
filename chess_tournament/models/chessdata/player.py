@@ -5,7 +5,7 @@ from datetime import date
 @dataclass
 class Player:
     """Player's data."""
-    id: str
+    identifier: str
     last_name: str
     first_name: str
     birth_date: date

@@ -15,3 +15,7 @@ class IView(ABC):
     @abstractmethod
     def show_tournament_registration(self) -> RequestAnswer:
         pass
+
+    @abstractmethod
+    def show_participant_registration(self, tournaments_info) -> RequestAnswer:
+        pass
