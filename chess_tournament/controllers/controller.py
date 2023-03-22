@@ -12,6 +12,58 @@ class Controller:
         # model
         self.model = Model(data_path)
 
+        self.add_default_entries()  # temporary
+
+    # temporary
+    def add_default_entries(self):
+        players_data = [
+            {"identifier": "AB12345",
+             "first_name": "Marie",
+             "last_name": "Dupont",
+             "birth_date": datetime.date.fromisoformat("1988-10-21")},
+            {"identifier": "AB12346",
+             "first_name": "Thomas",
+             "last_name": "Marito",
+             "birth_date": datetime.date.fromisoformat("1980-10-21")},
+            {"identifier": "AA12345",
+             "first_name": "Joan",
+             "last_name": "Xiao",
+             "birth_date": datetime.date.fromisoformat("1988-11-21")},
+            {"identifier": "EB12345",
+             "first_name": "Zak",
+             "last_name": "Fara",
+             "birth_date": datetime.date.fromisoformat("1928-10-11")},
+            {"identifier": "AB42345",
+             "first_name": "Pierre",
+             "last_name": "Lacalu",
+             "birth_date": datetime.date.fromisoformat("2000-01-21")},
+            {"identifier": "AB12395",
+             "first_name": "Julie",
+             "last_name": "De la fontaine",
+             "birth_date": datetime.date.fromisoformat("2010-10-01")},
+        ]
+        self.model.add_players(*players_data)
+        print(self.model.players)
+        tournaments_data = [
+            {
+                "name": "World Cup",
+                "location": "Paris",
+                "begin_date": datetime.date.fromisoformat("2010-10-01"),
+                "end_date": datetime.date.fromisoformat("2010-10-31"),
+                "total_rounds": 4,
+            },
+            {
+                "name": "Coupe amateurs",
+                "location": "Bordeaux",
+                "begin_date": datetime.date.fromisoformat("2023-05-01"),
+                "end_date": datetime.date.fromisoformat("2023-05-28"),
+                "total_rounds": 4,
+            }
+        ]
+        self.model.add_tournaments(*tournaments_data)
+        self.model.add_participants_to_tournament(1, "AB42345", "EB12345", "AA12345", "AB12395")
+        print(self.model.tournaments)
+
     def run(self):
         running = True
         while running:
