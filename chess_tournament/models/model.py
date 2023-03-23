@@ -30,10 +30,15 @@ class Model:
             self.tournaments[tournament_t].participants.append(Participant(self.players[player_id]))
 
     def register_score(self, tournament_t, match_m, first_player_result_str):
+        round = self.tournaments[tournament_t].current_round
         first_result = Match.Points[first_player_result_str]
         pair_result = Match.get_pairs_score_from_first(first_result)
-        self.tournaments[tournament_t].current_round.matches[match_m].register_score(pair_result)
-        print(self.tournaments[tournament_t].current_round.matches[match_m])
+        round.matches[match_m].register_score(pair_result)
+        are_all_matches_ended = all([True for match in round.matches
+                                     if match.participants_scores is not None])
+        if are_all_matches_ended:
+            round.end_round()
+
 
     def start_round(self, tournament_t):
         self.tournaments[tournament_t].start_round()

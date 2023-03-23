@@ -100,7 +100,7 @@ class Controller:
                 round_info = [(r, round.name) for r, round in enumerate(self.model.get_rounds(tournament_t))]
                 action, action_data = self.view.choose_round(round_info)
                 round_r = action_data
-                matches_info = [(match[0].player.identifier, match[1].player.identifier)
+                matches_info = [(match.participants_pair[0].player.identifier, match.participants_pair[1].player.identifier)
                                 for match in self.model.get_round_matches(tournament_t, round_r)]
                 self.view.show_matches(matches_info)
 
