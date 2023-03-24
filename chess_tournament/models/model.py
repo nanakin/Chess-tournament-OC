@@ -7,6 +7,12 @@ from .chessdata.match import Match
 from pprint import pprint
 
 
+class AlreadyUsedID(Exception):
+    def __init__(self, *args):
+        super().__init__(args)
+    def __str__(self):
+        return "bla"
+
 @dataclass
 class Model:
     """The only external interface to manipulate chess data."""
@@ -19,7 +25,18 @@ class Model:
 
     def add_players(self, *players_data):
         for player_data in players_data:
-            self.players[player_data["identifier"]] = Player(**player_data)
+            if player_data["identifier"] not in self.players:
+                # formatting (to move to Player init method ?)
+                player_data["last_name"] = player_data["last_name"].upper()
+                player_data["first_name"] = player_data["first_name"].capitalize()
+                player_data["identifier"] = player_data["identifier"].upper()
+                # create new player
+                self.players[player_data["identifier"]] = Player(**player_data)
+            else:
+                raise AlreadyUsedID(player_data["identifier"])
+
+    def get_player_str(self, identifier):
+        return str(self.players[identifier])
 
     def add_tournaments(self, *tournaments_data):
         for tournament_data in tournaments_data:

@@ -12,9 +12,9 @@ def main(view_class, data_path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Chess Tournament Manager')
     view_group = parser.add_mutually_exclusive_group()
-    view_group.add_argument('-c', '--classic', action="store_true", default=True,
+    view_group.add_argument('-c', '--classic', action="store_true", default=False,
                             help='provide a classic input/output user interface')
-    view_group.add_argument('-q', '--questionary', action="store_true", default=False,
+    view_group.add_argument('-q', '--questionary', action="store_true", default=True,
                             help='provide a questionary user interface')
     parser.add_argument('-p', '--data-path', default=(Path('.') / 'data'))
     args = parser.parse_args()

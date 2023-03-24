@@ -1,7 +1,7 @@
 import datetime
 
 from chess_tournament.views.requests import Request
-from chess_tournament.models.model import Model
+from chess_tournament.models.model import Model, AlreadyUsedID
 
 
 class Controller:
@@ -77,7 +77,11 @@ class Controller:
                 if action == Request.EXIT_LOCAL_MENU:
                     break
                 if action == Request.ADD_PLAYER:
-                    self.model.add_players(action_data)
+                    try:
+                        self.model.add_players(action_data)
+                        self.view.show_status(True, self.model.get_player_str(action_data["identifier"]))
+                    except AlreadyUsedID as err:
+                        self.view.show_status(False)
 
             if action == Request.LAUNCH_TOURNAMENT_MENU:
                 action, action_data = self.view.show_tournament_registration()

@@ -9,3 +9,6 @@ class Player:
     last_name: str
     first_name: str
     birth_date: date
+
+    def __str__(self):
+        return f"{self.identifier}: {self.first_name} {self.last_name} ({self.birth_date})"
