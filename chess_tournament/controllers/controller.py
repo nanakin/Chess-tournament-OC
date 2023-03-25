@@ -1,8 +1,16 @@
 import datetime
-
+from enum import Enum
 from chess_tournament.views.requests import Request
 from chess_tournament.models.model import Model, AlreadyUsedID
 
+State = Enum("State", [
+    "MAIN_MENU",
+    "MANAGE_PLAYER_MENU",
+    "ADD_PLAYER_MENU",
+    "EDIT_PLAYER_MENU",
+    "LIST_PLAYERS_MENU",
+    "MANAGE_TOURNAMENT_MENU",
+    "QUIT"])
 
 class Controller:
 
@@ -11,6 +19,8 @@ class Controller:
         self.view = view
         # model
         self.model = Model(data_path)
+
+        self.status = State.MAIN_MENU
 
         self.add_default_entries()  # temporary
 
@@ -64,31 +74,91 @@ class Controller:
         self.model.add_participants_to_tournament(1, "AB42345", "EB12345", "AA12345", "AB12395")
         print(self.model.tournaments)
 
+
+
     def run(self):
-        running = True
-        while running:
+        def show_main_menu():
             action = self.view.show_main_menu()
-
             if action == Request.EXIT_APP:
-                running = False
+                self.status = State.QUIT
+            elif action == Request.SAVE:
+                pass
+            elif action == Request.MANAGE_PLAYER:
+                self.status = State.MANAGE_PLAYER_MENU
+            elif action == Request.MANAGE_TOURNAMENT:
+                self.status = State.MANAGE_TOURNAMENT_MENU
+            else:
+                self.status = State.QUIT
 
-            if action == Request.LAUNCH_PLAYER_MENU:
-                action, action_data = self.view.show_player_registration()
-                if action == Request.EXIT_LOCAL_MENU:
-                    break
-                if action == Request.ADD_PLAYER:
-                    try:
-                        self.model.add_players(action_data)
-                        self.view.show_status(True, self.model.get_player_str(action_data["identifier"]))
-                    except AlreadyUsedID as err:
-                        self.view.show_status(False)
+        def show_manage_player_menu():
+            action = self.view.show_manage_player_menu()
+            if action == Request.MAIN_MENU:
+                self.status = State.MAIN_MENU
+            elif action == Request.ADD_PLAYER:
+                self.status = State.ADD_PLAYER_MENU
+            elif action == Request.EDIT_PLAYER:
+                self.status = State.EDIT_PLAYER_MENU
+            elif action == Request.LIST_PLAYERS:
+                self.status = State.LIST_PLAYERS_MENU
+            else:
+                self.status = State.MAIN_MENU
 
-            if action == Request.LAUNCH_TOURNAMENT_MENU:
-                action, action_data = self.view.show_tournament_registration()
-                if action == Request.EXIT_LOCAL_MENU:
-                    break
-                if action == Request.EXIT_LOCAL_MENU:
-                    self.model.add_tournaments(action_data)
+        def show_edit_player_menu():
+            players_id = self.model.get_players_id()
+            action, action_data = self.view.show_player_selection(players_id)
+            if action == Request.SELECTED_PLAYER:
+                selected_id = action_data
+                # maybe move message to the view
+                message_to_confirm = f"You are about to edit:\n{self.model.get_player_str(selected_id)}\nDo you confirm?"
+                action, action_data = self.view.show_confirmation(message_to_confirm)
+                if action == Request.CONFIRM:
+                    confirm_status = action_data
+                    if confirm_status:
+                        attributes_info = self.model.get_player_attributes(selected_id)
+                        action, action_data = self.view.show_edit_player_menu(attributes_info)
+                        if action == Request.REGISTER_PLAYER_DATA:
+                            player_data = action_data
+                            self.model.edit_player_attributes(player_data)
+                            self.view.show_status(True, self.model.get_player_str(player_data["identifier"]))
+                            self.status = State.MANAGE_PLAYER_MENU
+                        else:
+                            self.status = State.MANAGE_PLAYER_MENU
+                    else:
+                        self.status = State.MANAGE_PLAYER_MENU
+                else:
+                    self.status = State.MANAGE_PLAYER_MENU
+            else:
+                self.status = State.MANAGE_PLAYER_MENU
+
+        def show_add_player_menu():
+            action, action_data = self.view.show_player_registration()
+            if action == Request.ADD_PLAYER:
+                try:
+                    self.model.add_players(action_data)
+                    self.view.show_status(True, self.model.get_player_str(action_data["identifier"]))
+                except AlreadyUsedID as err:
+                    self.view.show_status(False)
+            self.status = State.MANAGE_PLAYER_MENU
+
+        def show_list_players_menu():
+            action = self.view.show_list_players_menu()
+            if action not in (Request.PRINT_PLAYERS, Request.EXPORT_PLAYERS):
+                self.status = State.MANAGE_PLAYER
+            players_info = self.model.get_ordered_players_str()
+            if action == Request.PRINT_PLAYERS:
+                self.view.print_players(players_info)
+            else:
+                pass
+            self.status = State.MANAGE_PLAYER_MENU
+
+
+
+        def show_manage_tournament_menu():
+            action, action_data = self.view.show_tournament_registration()
+            if action == Request.EXIT_LOCAL_MENU:
+                pass
+            if action == Request.EXIT_LOCAL_MENU:
+                self.model.add_tournaments(action_data)
 
             if action == Request.LAUNCH_PARTICIPANT_MENU:
                 tournaments_info = [(t, tournament.name) for t, tournament in enumerate(self.model.tournaments)
@@ -125,3 +195,22 @@ class Controller:
                             first_player_result = action_data
                             self.model.register_score(tournament_t, match_m, first_player_result)
 
+
+        while self.status != State.QUIT:
+            if self.status == State.MAIN_MENU:
+                show_main_menu()
+
+            if self.status == State.MANAGE_PLAYER_MENU:
+                show_manage_player_menu()
+
+            if self.status == State.EDIT_PLAYER_MENU:
+                show_edit_player_menu()
+
+            if self.status == State.ADD_PLAYER_MENU:
+                show_add_player_menu()
+
+            if self.status == State.LIST_PLAYERS_MENU:
+                show_list_players_menu()
+
+            if self.status == State.MANAGE_TOURNAMENT_MENU:
+                show_manage_tournament_menu()

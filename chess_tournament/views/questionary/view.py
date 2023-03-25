@@ -2,7 +2,6 @@ import questionary
 import re
 from ..requests import Request, RequestAnswer
 from ..interface import IView
-from . import questions
 from datetime import date
 import questionary as q
 
@@ -33,19 +32,63 @@ class View(IView):
         question = q.select(
             "What do you want to do ?",
             choices=[
-                q.Choice(title="Manage players", value=Request.LAUNCH_PLAYER_MENU),
-                q.Choice(title="Manage tournaments", value=Request.LAUNCH_TOURNAMENT_MENU),
+                q.Choice(title="Manage players", value=Request.MANAGE_PLAYER),
+                q.Choice(title="Manage tournaments", value=Request.MANAGE_TOURNAMENT),
                 q.Separator(),
                 "Save",
                 q.Choice(title="Exit", value=Request.EXIT_APP)])
         return question.ask()
 
 
-    def show_player_menu(self) -> RequestAnswer:
-        pass
+    def show_manage_player_menu(self) -> RequestAnswer:
+        q.print("==== Player Menu ===")
+        question = q.select(
+            "What do you want to do ?",
+            choices=[
+                q.Choice(title="Add player", value=Request.ADD_PLAYER),
+                q.Choice(title="Edit player", value=Request.EDIT_PLAYER),
+                q.Choice(title="List players", value=Request.LIST_PLAYERS),
+                q.Separator(),
+                "Save",
+                q.Choice(title="Back", value=Request.MAIN_MENU)])
+        return question.ask()
 
+    def show_list_players_menu(self):
+        question = q.select(
+            "What do you want to do ?",
+            choices=[
+                q.Choice(title="Print list", value=Request.PRINT_PLAYERS),
+                q.Choice(title="Export list", value=Request.EXPORT_PLAYERS),
+                q.Separator(),
+                q.Choice(title="Back", value=Request.MANAGE_PLAYER)])
+        return question.ask()
+
+    def print_players(self, players_info):
+        for player_info in players_info:
+            print(player_info)
+            #q.print(player_info)
+
+    def show_player_selection(self, players_id):
+        select_player_question = [
+            {
+                "type": "autocomplete", "name": "player_id", "qmark": ">",
+                "message": "Enter the player ID :",
+                "choices": players_id,
+                "validate": lambda x: x in players_id
+            }
+        ]
+        question = q.autocomplete(
+            "Enter the player ID :",
+            choices=players_id, validate=lambda x: x in players_id
+        )
+        # id_selected = q.prompt(select_player_question)
+        return Request.SELECTED_PLAYER, question.ask()
+
+    def show_confirmation(self, to_confirm):
+        return Request.CONFIRM, q.confirm(to_confirm).ask()
 
     def show_player_registration(self) -> RequestAnswer:
+        # to-do: verify if escape or ctrl-c
         q.print(">>>> Add Player >>>>")
         add_player_questions = [
             {
@@ -62,20 +105,37 @@ class View(IView):
                 "type": "text", "name": "birth_date", "qmark": ">",
                 "message": "Enter player's date of birth (YYYY-MM-DD):",
                 "validate": past_date_validator,
-                "filter": lambda x: date.fromisoformat(x)
             },
             {"type": "text", "name": "identifier", "qmark": ">",
              "message": "Enter player's national identifier :",
              "validate": national_identifier_validator}
         ]
-        player_data = q.prompt(add_player_questions)
-        return Request.ADD_PLAYER, player_data
+        raw_player_data = q.prompt(add_player_questions)
+        return Request.REGISTER_PLAYER_DATA, raw_player_data
+
+    def show_edit_player_menu(self, player_info):
+        what_to_edit = q.select("What to edit ?", choices=[
+            q.Choice(title="First name", value="first_name"),
+            q.Choice(title="Last name", value="last_name"),
+            q.Choice(title="Birth date", value="birth_date"),
+            q.Choice(title="Cancel")
+        ])
+        answer = what_to_edit.ask()
+        if answer == "first_name":
+            player_info["first_name"] = q.text("Enter player's new first name: ", validate=non_empty_alphabet_validator).ask()
+        elif answer == "last_name":
+            player_info["last_name"] = q.text("Enter player's new last name: ", validate=non_empty_alphabet_validator).ask()
+        elif answer == "birth_date":
+            player_info["birth_date"] = q.text("Enter player's new birth date: ", validate=past_date_validator).ask()
+        else:
+            return Request.MANAGE_PLAYER, None
+        return Request.REGISTER_PLAYER_DATA, player_info
 
     def show_status(self, ok_status, to_print=""):
         if ok_status:
-            q.print(f"OK {to_print}")
+            q.print(f"🟢 OK : {to_print}")
         else:
-            q.print(f"FAIL {to_print}")
+            q.print(f"🟥 FAIL {to_print}")
 
     def show_tournament_registration(self) -> RequestAnswer:
         # to-do : add a system to check user input values

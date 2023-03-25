@@ -11,4 +11,7 @@ class Player:
     birth_date: date
 
     def __str__(self):
-        return f"{self.identifier}: {self.first_name} {self.last_name} ({self.birth_date})"
+        return f"player {self.identifier}: {self.last_name} {self.first_name} ({self.birth_date})"
+
+    def __lt__(self, other):
+        return self.last_name.upper() < other.last_name.upper()

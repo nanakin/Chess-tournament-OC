@@ -4,6 +4,7 @@ from .match import Match
 from .participant import Participant
 from .round import Round
 
+
 @dataclass
 class Tournament:
     """Tournament data."""

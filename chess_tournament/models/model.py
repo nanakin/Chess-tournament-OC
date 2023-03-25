@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from pathlib import Path
+from datetime import date
 from .chessdata.player import Player
 from .chessdata.tournament import Tournament
 from .chessdata.participant import Participant
@@ -30,13 +31,34 @@ class Model:
                 player_data["last_name"] = player_data["last_name"].upper()
                 player_data["first_name"] = player_data["first_name"].capitalize()
                 player_data["identifier"] = player_data["identifier"].upper()
+                if player_data["birth_date"] is type(str):
+                    player_data["birth_date"] = date.fromisoformat(player_data["birth_date"])
                 # create new player
                 self.players[player_data["identifier"]] = Player(**player_data)
             else:
                 raise AlreadyUsedID(player_data["identifier"])
 
+    def edit_player_attributes(self, player_data):
+        player = self.players[player_data["identifier"]]
+        player.first_name = player_data["first_name"].upper()
+        player.last_name = player_data["last_name"].capitalize()
+        player.birth_date = date.fromisoformat(player_data["birth_date"])
+
+    def get_players_id(self):
+        return self.players.keys()
+
     def get_player_str(self, identifier):
         return str(self.players[identifier])
+
+    def get_player_attributes(self, identifier):
+        # maybe implement to_dict method
+        player = self.players[identifier]
+        return {"identifier": player.identifier, "first_name": player.first_name,
+                "last_name": player.last_name, "birth_date": str(player.birth_date)}
+
+    def get_ordered_players_str(self):
+        sorted_players = sorted(self.players.values())
+        return [self.get_player_str(player.identifier) for player in sorted_players]
 
     def add_tournaments(self, *tournaments_data):
         for tournament_data in tournaments_data:
@@ -56,7 +78,6 @@ class Model:
         if are_all_matches_ended:
             round.end_round()
 
-
     def start_round(self, tournament_t):
         self.tournaments[tournament_t].start_round()
 
@@ -69,8 +90,3 @@ class Model:
         if round_r == len(self.tournaments[tournament_t].rounds):
             self.tournaments[tournament_t].set_next_round()
         return self.tournaments[tournament_t].get_round_matches(round_r)
-
-
-
-
-
