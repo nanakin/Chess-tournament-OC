@@ -149,17 +149,39 @@ class Controller:
             if action == Request.PRINT_PLAYERS:
                 self.view.print_players(players_info)
             else:
-                pass
+                pass  # to-do
             self.status = State.MANAGE_PLAYER_MENU
 
+        def show_manage_tournaments_menu():
+            action = self.view.show_manage_tournaments_menu()
+            if action == Request.ADD_TOURNAMENT:
+                action, action_data = self.view.show_tournament_registration()
+            elif action == Request.EDIT_TOURNAMENT:
+                # improvement : use round info to know if a tournament really ended
+                statistics = {
+                    "all": len(self.model.tournaments),
+                    "ongoing": sum(1 for tournament in self.model.tournaments if tournament.end_date <= datetime.date.today() >= tournament.begin_date),
+                    "future": sum(1 for tournament in self.model.tournaments if tournament.begin_date > datetime.date.today()),
+                    "past": sum(1 for tournament in self.model.tournaments if tournament.end_date < datetime.date.today())
+                }
+                action = self.view.how_to_choose_tournament(statistics)
+                print(action)
+                if action == Request.FIND_TOURNAMENT_BY_NAME:
+                    tournaments_info = self.model.get_tournaments_str()
+                    action, action_data = self.view.choose_tournament_by_name(tournaments_info)
+                    if action == Request.SELECTED_TOURNAMENT:
+                        selected_tournament = action_data
+                        print(selected_tournament)
+                        tournament_info = self.model.get_tournament_info(selected_tournament)
+                        self.view.show_manage_tournament_menu(tournament_info)
+                pass  # to-do
+            elif action == Request.LIST_TOURNAMENTS:
+                pass  # to-do
+            else:
+                self.status = State.MAIN_MENU
 
-
-        def show_manage_tournament_menu():
-            action, action_data = self.view.show_tournament_registration()
-            if action == Request.EXIT_LOCAL_MENU:
-                pass
-            if action == Request.EXIT_LOCAL_MENU:
-                self.model.add_tournaments(action_data)
+            return
+            self.model.add_tournaments(action_data)
 
             if action == Request.LAUNCH_PARTICIPANT_MENU:
                 tournaments_info = [(t, tournament.name) for t, tournament in enumerate(self.model.tournaments)
@@ -196,7 +218,6 @@ class Controller:
                             first_player_result = action_data
                             self.model.register_score(tournament_t, match_m, first_player_result)
 
-
         while self.status != State.QUIT:
             if self.status == State.MAIN_MENU:
                 show_main_menu()
@@ -214,4 +235,4 @@ class Controller:
                 show_list_players_menu()
 
             if self.status == State.MANAGE_TOURNAMENT_MENU:
-                show_manage_tournament_menu()
+                show_manage_tournaments_menu()

@@ -130,6 +130,19 @@ class View(IView):
         else:
             q.print(f"🟥 FAIL {to_print}")
 
+    def show_manage_tournaments_menu(self):
+        q.print("==== Tournament Menu ===")
+        question = q.select(
+            "What do you want to do ?",
+            choices=[
+                q.Choice(title="Register a new tournament", value=Request.ADD_TOURNAMENT),
+                q.Choice(title="Manage existing tournament", value=Request.EDIT_TOURNAMENT),
+                q.Choice(title="List tournaments", value=Request.LIST_TOURNAMENTS),
+                q.Separator(),
+                "Save",
+                q.Choice(title="Back", value=Request.MAIN_MENU)])
+        return question.ask()
+
     def show_tournament_registration(self) -> RequestAnswer:
         # to-do : add a system to check user input values
         tournament_data = {
@@ -159,12 +172,63 @@ class View(IView):
         for match in matches:
             print(match)
 
-    def choose_tournament(self, tournaments_info) -> RequestAnswer:
-        print("Select a tournament:")
-        for n, tournament_info in enumerate(tournaments_info):
-            print(f"{n}: {tournament_info[1]}")
-        tournament_t = tournaments_info[int(input())][0]
-        return Request.CHOSEN_TOURNAMENT, tournament_t
+    def how_to_choose_tournament(self, statistics) -> RequestAnswer:
+        question = q.select(
+            "Which tournament do you want to manage ?",
+            choices=[
+                q.Choice(title="Find by name", value=Request.FIND_TOURNAMENT_BY_NAME),
+                q.Choice(title=f"Find from list of ongoing tournaments ({statistics['ongoing']})", value=Request.FIND_TOURNAMENT_BY_LIST_ONGOING),
+                q.Choice(title=f"Find from list of future tournaments ({statistics['future']})", value=Request.FIND_TOURNAMENT_BY_LIST_FUTURE),
+                q.Choice(title=f"Find from list of past tournaments ({statistics['past']})", value=Request.FIND_TOURNAMENT_BY_LIST_PAST),
+                q.Choice(title=f"Find from list of all tournaments ({statistics['all']})", value=Request.FIND_TOURNAMENT_BY_LIST_ALL),
+                q.Separator(),
+                "Save",
+                q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
+        return question.ask()
+
+    def choose_tournament_by_name(self, tournaments_info):
+        tournaments_meta = {f"{t}- {tournament_info[0]}": tournament_info[1] for t, tournament_info in enumerate(tournaments_info)}
+        question = q.autocomplete(
+            "Enter the tournament name :",
+            choices=list(tournaments_meta.keys()), meta_information=tournaments_meta, validate=lambda x: x in list(tournaments_meta.keys()))
+        answer = question.ask()
+        if answer is None:
+            return Request.EDIT_TOURNAMENT
+        else:
+            selected_tournament = int(answer.partition("-")[0])
+            return Request.SELECTED_TOURNAMENT, selected_tournament
+
+    def show_manage_tournament_menu(self, tournament_info):
+        print(f"selected tournament : {tournament_info}")
+        print(f'{tournament_info["name"]=}, {tournament_info["location"]=}, {tournament_info["begin_date"]=},'
+              f'{tournament_info["end_date"]=}, {tournament_info["total_rounds"]=}, {tournament_info["total_started_rounds"]=},'
+              f'{tournament_info["total_finished_matches"]=}, {tournament_info["total_matches"]=}',
+              f'{tournament_info["total_finished_rounds"]=}, {tournament_info["total_participants"]=}')
+
+        choice_manage_participant = q.Choice(title="Manage participants", value=Request.MANAGE_PARTICIPANTS)
+        choice_list_matches = q.Choice(title="List matches of the current round", value=Request.LIST_MATCHES)
+
+        if tournament_info["total_started_rounds"] > 0:
+            choice_manage_participant.disabled = "Tournament already started"
+        if tournament_info["total_finished_matches"] == tournament_info["total_matches"]:
+            choice_register_or_start_round = q.Choice(title="Start new round", value=Request.LIST_TOURNAMENTS)
+            if tournament_info["total_finished_rounds"] == tournament_info["total_rounds"]:
+                choice_register_or_start_round.disabled = "All rounds ended"
+        else:
+            choice_register_or_start_round = q.Choice(title="Register a match score", value=Request.LIST_TOURNAMENTS)
+
+        question = q.select(
+            "What do you want to do ?",
+            choices=[
+                choice_manage_participant,
+                q.Choice(title="List matches of the current round", value=Request.LIST_MATCHES),
+                choice_register_or_start_round,
+                q.Separator(),
+                q.Choice(title="Summary report of all rounds and scores", value=Request.LIST_ROUNDS_SCORES),
+                q.Separator(),
+                "Save",
+                q.Choice(title="Back", value=Request.MAIN_MENU)])
+        return question.ask()
 
     def choose_match(self, matches_info) -> RequestAnswer:
         print("Select the match: ")

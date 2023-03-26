@@ -19,8 +19,23 @@ class Tournament:
     # current_round: int | None = None
 
     @property
+    def total_finished_rounds(self):
+        if not self.rounds:
+            return 0
+        else:
+            return len(self.rounds) - 1 if self.rounds[-1].end_time is None else len(self.rounds)
+
+    def __str__(self):
+        return (f'Tournament "{self.name}" located in {self.location} from {str(self.begin_date)} to {str(self.end_date)}'
+                f'. {len(self.participants)} participants. {self.total_rounds} rounds ({self.total_finished_rounds}/{self.total_rounds} finished).')
+
+    @property
     def current_round(self):
-        return self.rounds[-1]
+        return self.rounds[-1] if self.rounds else None
+
+    @property
+    def total_started_rounds(self):
+        return len(self.rounds)
 
     def _generate_pairs(self):
         sorted_participants = sorted(self.participants)

@@ -15,6 +15,10 @@ class Match:
     participants_pair: Tuple[Participant, Participant]
     participants_scores: Tuple[Points, Points] | None = None
 
+    @property
+    def is_ended(self):
+        return self.participants_scores is not None
+
     @classmethod
     def get_pairs_score_from_first(cls, first_result):
         if first_result == cls.Points.WIN:

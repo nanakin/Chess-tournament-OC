@@ -63,6 +63,19 @@ class Model:
     def get_total_players(self):
         return len(self.players)
 
+    def get_tournaments_str(self, filter=None):
+        return [(tournament.name, str(tournament)) for tournament in self.tournaments]
+
+    def get_tournament_info(self, tournament_t):
+        tournament = self.tournaments[tournament_t]
+        return {"name": tournament.name, "location": tournament.location, "begin_date": str(tournament.begin_date),
+                "end_date": str(tournament.end_date), "total_rounds": tournament.total_rounds,
+                "total_started_rounds": tournament.total_started_rounds,
+                "total_finished_matches": sum(1 for match in tournament.current_round.matches if match.is_ended) if tournament.total_started_rounds > 0 else 0,
+                "total_matches": len(tournament.current_round.matches) if tournament.total_started_rounds > 0 else 0,
+                "total_finished_rounds": tournament.total_finished_rounds,
+                "total_participants": len(tournament.participants)}
+
     def add_tournaments(self, *tournaments_data):
         for tournament_data in tournaments_data:
             self.tournaments.append(Tournament(**tournament_data))

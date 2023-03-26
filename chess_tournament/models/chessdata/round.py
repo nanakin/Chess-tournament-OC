@@ -12,6 +12,10 @@ class Round:
     start_time: datetime | None = None
     end_time: datetime | None = None
 
+    @property
+    def is_ended(self):
+        return self.end_time is not None
+
     def start_round(self, start_time: datetime = datetime.now()):
         self.start_time = start_time
 
