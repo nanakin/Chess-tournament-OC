@@ -132,7 +132,7 @@ class Controller:
 
         def show_add_player_menu():
             action, action_data = self.view.show_player_registration()
-            if action == Request.ADD_PLAYER:
+            if action == Request.REGISTER_PLAYER_DATA:
                 try:
                     self.model.add_players(action_data)
                     self.view.show_status(True, self.model.get_player_str(action_data["identifier"]))

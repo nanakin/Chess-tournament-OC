@@ -40,8 +40,8 @@ class Model:
 
     def edit_player_attributes(self, player_data):
         player = self.players[player_data["identifier"]]
-        player.first_name = player_data["first_name"].upper()
-        player.last_name = player_data["last_name"].capitalize()
+        player.first_name = player_data["first_name"].capitalize()
+        player.last_name = player_data["last_name"].upper()
         player.birth_date = date.fromisoformat(player_data["birth_date"])
 
     def get_players_id(self):

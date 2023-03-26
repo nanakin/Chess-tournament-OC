@@ -19,7 +19,7 @@ def past_date_validator(user_date_str):
 
 
 def national_identifier_validator(user_id_str):
-    return re.match(r"^[A-Za-z]{2}[0-9]{4}$", user_id_str) is not None
+    return re.match(r"^[A-Za-z]{2}[0-9]{5}$", user_id_str) is not None
 
 
 class View(IView):
@@ -69,19 +69,9 @@ class View(IView):
             q.print(player_info)
 
     def show_player_selection(self, players_id):
-        select_player_question = [
-            {
-                "type": "autocomplete", "name": "player_id", "qmark": ">",
-                "message": "Enter the player ID :",
-                "choices": players_id,
-                "validate": lambda x: x in players_id
-            }
-        ]
         question = q.autocomplete(
             "Enter the player ID :",
-            choices=players_id, validate=lambda x: x in players_id
-        )
-        # id_selected = q.prompt(select_player_question)
+            choices=players_id, validate=lambda x: x in players_id)
         return Request.SELECTED_PLAYER, question.ask()
 
     def show_confirmation(self, to_confirm):
@@ -111,7 +101,10 @@ class View(IView):
              "validate": national_identifier_validator}
         ]
         raw_player_data = q.prompt(add_player_questions)
-        return Request.REGISTER_PLAYER_DATA, raw_player_data
+        if not raw_player_data:  # ctrl-c
+            return Request.MANAGE_PLAYER, None
+        else:
+            return Request.REGISTER_PLAYER_DATA, raw_player_data
 
     def show_edit_player_menu(self, player_info):
         what_to_edit = q.select("What to edit ?", choices=[
