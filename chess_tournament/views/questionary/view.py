@@ -53,7 +53,8 @@ class View(IView):
                 q.Choice(title="Back", value=Request.MAIN_MENU)])
         return question.ask()
 
-    def show_list_players_menu(self):
+    def show_list_players_menu(self, total_players):
+        q.print(f"Total {total_players} players")
         question = q.select(
             "What do you want to do ?",
             choices=[
@@ -65,8 +66,7 @@ class View(IView):
 
     def print_players(self, players_info):
         for player_info in players_info:
-            print(player_info)
-            #q.print(player_info)
+            q.print(player_info)
 
     def show_player_selection(self, players_id):
         select_player_question = [

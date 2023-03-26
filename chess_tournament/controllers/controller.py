@@ -141,7 +141,8 @@ class Controller:
             self.status = State.MANAGE_PLAYER_MENU
 
         def show_list_players_menu():
-            action = self.view.show_list_players_menu()
+            total_players = self.model.get_total_players()
+            action = self.view.show_list_players_menu(total_players)
             if action not in (Request.PRINT_PLAYERS, Request.EXPORT_PLAYERS):
                 self.status = State.MANAGE_PLAYER
             players_info = self.model.get_ordered_players_str()

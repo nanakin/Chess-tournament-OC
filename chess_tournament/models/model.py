@@ -60,6 +60,9 @@ class Model:
         sorted_players = sorted(self.players.values())
         return [self.get_player_str(player.identifier) for player in sorted_players]
 
+    def get_total_players(self):
+        return len(self.players)
+
     def add_tournaments(self, *tournaments_data):
         for tournament_data in tournaments_data:
             self.tournaments.append(Tournament(**tournament_data))
