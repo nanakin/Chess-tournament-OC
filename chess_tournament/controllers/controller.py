@@ -156,6 +156,15 @@ class Controller:
             action = self.view.show_manage_tournaments_menu()
             if action == Request.ADD_TOURNAMENT:
                 action, action_data = self.view.show_tournament_registration()
+                if action == Request.REGISTER_TOURNAMENT_DATA:
+                    tournament_data = action_data
+                    try:
+                        self.model.add_tournaments(tournament_data)
+                        print(self.model.tournaments[-1].begin_date, self.model.tournaments[-1].end_date)
+                        self.view.show_status(True, "correctly added")  # to-do: change message
+                    except AlreadyUsedID as err:
+                        self.view.show_status(False)
+                self.status = State.MANAGE_TOURNAMENT_MENU
             elif action == Request.EDIT_TOURNAMENT:
                 # improvement : use round info to know if a tournament really ended
                 statistics = {
@@ -165,13 +174,11 @@ class Controller:
                     "past": sum(1 for tournament in self.model.tournaments if tournament.end_date < datetime.date.today())
                 }
                 action = self.view.how_to_choose_tournament(statistics)
-                print(action)
                 if action == Request.FIND_TOURNAMENT_BY_NAME:
                     tournaments_info = self.model.get_tournaments_str()
                     action, action_data = self.view.choose_tournament_by_name(tournaments_info)
                     if action == Request.SELECTED_TOURNAMENT:
                         selected_tournament = action_data
-                        print(selected_tournament)
                         tournament_info = self.model.get_tournament_info(selected_tournament)
                         self.view.show_manage_tournament_menu(tournament_info)
                 pass  # to-do

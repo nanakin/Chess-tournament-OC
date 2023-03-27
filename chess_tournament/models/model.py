@@ -31,7 +31,7 @@ class Model:
                 player_data["last_name"] = player_data["last_name"].upper()
                 player_data["first_name"] = player_data["first_name"].capitalize()
                 player_data["identifier"] = player_data["identifier"].upper()
-                if player_data["birth_date"] is type(str):
+                if isinstance(player_data["birth_date"], str):
                     player_data["birth_date"] = date.fromisoformat(player_data["birth_date"])
                 # create new player
                 self.players[player_data["identifier"]] = Player(**player_data)
@@ -68,7 +68,8 @@ class Model:
 
     def get_tournament_info(self, tournament_t):
         tournament = self.tournaments[tournament_t]
-        return {"name": tournament.name, "location": tournament.location, "begin_date": str(tournament.begin_date),
+        return {"str": str(tournament),
+                "name": tournament.name, "location": tournament.location, "begin_date": str(tournament.begin_date),
                 "end_date": str(tournament.end_date), "total_rounds": tournament.total_rounds,
                 "total_started_rounds": tournament.total_started_rounds,
                 "total_finished_matches": sum(1 for match in tournament.current_round.matches if match.is_ended) if tournament.total_started_rounds > 0 else 0,
@@ -78,6 +79,13 @@ class Model:
 
     def add_tournaments(self, *tournaments_data):
         for tournament_data in tournaments_data:
+            tournament_data["name"] = tournament_data["name"].strip()
+            tournament_data["location"] = tournament_data["location"].capitalize()
+            if isinstance(tournament_data["begin_date"], str):
+                tournament_data["begin_date"] = date.fromisoformat(tournament_data["begin_date"])
+            if isinstance(tournament_data["end_date"], str):
+                tournament_data["end_date"] = date.fromisoformat(tournament_data["end_date"])
+            # to-do: verify begin_date < end_date
             self.tournaments.append(Tournament(**tournament_data))
 
     def add_participants_to_tournament(self, tournament_t, *participants_data):

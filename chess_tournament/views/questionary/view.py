@@ -10,6 +10,13 @@ def non_empty_alphabet_validator(user_str):
     return re.match(r"^\w+((-|\s)(\w)+)*$", user_str) is not None
 
 
+def date_validator(user_date_str):
+    try:
+        date.fromisoformat(user_date_str)
+        return True
+    except ValueError:
+        return False
+
 def past_date_validator(user_date_str):
     try:
         user_date = date.fromisoformat(user_date_str)
@@ -78,8 +85,6 @@ class View(IView):
         return Request.CONFIRM, q.confirm(to_confirm).ask()
 
     def show_player_registration(self) -> RequestAnswer:
-        # to-do: verify if escape or ctrl-c
-        q.print(">>>> Add Player >>>>")
         add_player_questions = [
             {
                 "type": "text", "name": "first_name", "qmark": ">",
@@ -144,16 +149,37 @@ class View(IView):
         return question.ask()
 
     def show_tournament_registration(self) -> RequestAnswer:
-        # to-do : add a system to check user input values
-        tournament_data = {
-            "name": input("Enter Tournament name: "),
-            "location": input("Enter location: "),
-            "begin_date": input("Enter begin date (using format YYYY/MM/DD): "),
-            "end_date": input("Enter end date (using format YYYY/MM/DD): "),
-            "total_rounds": input("Total number of rounds (leave empty for default value: 4): ")}
-
-        return Request.ADD_TOURNAMENT, tournament_data
-        # to-do or EXIT if cancel
+        add_tournament_questions = [
+            {
+                "type": "text", "name": "name", "qmark": ">",
+                "message": "Enter Tournament name :",
+                "validate": lambda x: len(x.strip()) > 0
+            },
+            {
+                "type": "text", "name": "location", "qmark": ">",
+                "message": "Enter location :",
+                "validate": non_empty_alphabet_validator
+            },
+            {
+                "type": "text", "name": "begin_date", "qmark": ">",
+                "message": "Enter begin date (YYYY-MM-DD):",
+                "validate": date_validator,
+            },
+            {
+                "type": "text", "name": "end_date", "qmark": ">",
+                "message": "Enter end date (YYYY-MM-DD):",
+                "validate": date_validator,
+            },
+            {"type": "text", "name": "total_rounds", "qmark": ">",
+             "message": "Total number of rounds :",
+             "validate": lambda x: x.isnumeric(),
+             "default": "4"}
+        ]
+        raw_tournament_data = q.prompt(add_tournament_questions)
+        if not raw_tournament_data:  # ctrl-c
+            return Request.MANAGE_TOURNAMENT, None
+        else:
+            return Request.REGISTER_TOURNAMENT_DATA, raw_tournament_data
 
     def show_participant_registration(self, tournaments_info) -> RequestAnswer:
         # tournaments_info = list[tuple[index, name]]
@@ -193,17 +219,17 @@ class View(IView):
             choices=list(tournaments_meta.keys()), meta_information=tournaments_meta, validate=lambda x: x in list(tournaments_meta.keys()))
         answer = question.ask()
         if answer is None:
-            return Request.EDIT_TOURNAMENT
+            return Request.EDIT_TOURNAMENT, None
         else:
             selected_tournament = int(answer.partition("-")[0])
             return Request.SELECTED_TOURNAMENT, selected_tournament
 
     def show_manage_tournament_menu(self, tournament_info):
-        print(f"selected tournament : {tournament_info}")
-        print(f'{tournament_info["name"]=}, {tournament_info["location"]=}, {tournament_info["begin_date"]=},'
-              f'{tournament_info["end_date"]=}, {tournament_info["total_rounds"]=}, {tournament_info["total_started_rounds"]=},'
-              f'{tournament_info["total_finished_matches"]=}, {tournament_info["total_matches"]=}',
-              f'{tournament_info["total_finished_rounds"]=}, {tournament_info["total_participants"]=}')
+        print(f"selected tournament : {tournament_info['str']}")
+        #print(f'{tournament_info["name"]=}, {tournament_info["location"]=}, {tournament_info["begin_date"]=},'
+        #      f'{tournament_info["end_date"]=}, {tournament_info["total_rounds"]=}, {tournament_info["total_started_rounds"]=},'
+        #      f'{tournament_info["total_finished_matches"]=}, {tournament_info["total_matches"]=}',
+        #      f'{tournament_info["total_finished_rounds"]=}, {tournament_info["total_participants"]=}')
 
         choice_manage_participant = q.Choice(title="Manage participants", value=Request.MANAGE_PARTICIPANTS)
         choice_list_matches = q.Choice(title="List matches of the current round", value=Request.LIST_MATCHES)
