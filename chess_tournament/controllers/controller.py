@@ -9,7 +9,10 @@ State = Enum("State", [
     "ADD_PLAYER_MENU",
     "EDIT_PLAYER_MENU",
     "LIST_PLAYERS_MENU",
+    "MANAGE_TOURNAMENTS_MENU",
+    "ADD_TOURNAMENT_MENU",
     "MANAGE_TOURNAMENT_MENU",
+    "SELECT_TOURNAMENT_MENU",
     "QUIT"])
 
 class Controller:
@@ -21,6 +24,7 @@ class Controller:
         self.model = Model(data_path)
 
         self.status = State.MAIN_MENU
+        self.context = None
 
         self.add_default_entries()  # temporary
 
@@ -53,7 +57,6 @@ class Controller:
              "birth_date": datetime.date.fromisoformat("2010-10-01")},
         ]
         self.model.add_players(*players_data)
-        print(self.model.players)
         tournaments_data = [
             {
                 "name": "World Cup",
@@ -72,7 +75,6 @@ class Controller:
         ]
         self.model.add_tournaments(*tournaments_data)
         self.model.add_participants_to_tournament(1, "AB42345", "EB12345", "AA12345", "AB12395")
-        print(self.model.tournaments)
 
 
 
@@ -86,7 +88,7 @@ class Controller:
             elif action == Request.MANAGE_PLAYER:
                 self.status = State.MANAGE_PLAYER_MENU
             elif action == Request.MANAGE_TOURNAMENT:
-                self.status = State.MANAGE_TOURNAMENT_MENU
+                self.status = State.MANAGE_TOURNAMENTS_MENU
             else:
                 self.status = State.QUIT
 
@@ -152,71 +154,80 @@ class Controller:
                 pass  # to-do
             self.status = State.MANAGE_PLAYER_MENU
 
-        def show_manage_tournaments_menu():
-            action = self.view.show_manage_tournaments_menu()
-            if action == Request.ADD_TOURNAMENT:
-                action, action_data = self.view.show_tournament_registration()
-                if action == Request.REGISTER_TOURNAMENT_DATA:
-                    tournament_data = action_data
-                    try:
-                        self.model.add_tournaments(tournament_data)
-                        print(self.model.tournaments[-1].begin_date, self.model.tournaments[-1].end_date)
-                        self.view.show_status(True, "correctly added")  # to-do: change message
-                    except AlreadyUsedID as err:
-                        self.view.show_status(False)
-                self.status = State.MANAGE_TOURNAMENT_MENU
-            elif action == Request.EDIT_TOURNAMENT:
-                # improvement : use round info to know if a tournament really ended
-                statistics = {
-                    "all": len(self.model.tournaments),
-                    "ongoing": sum(1 for tournament in self.model.tournaments if tournament.end_date <= datetime.date.today() >= tournament.begin_date),
-                    "future": sum(1 for tournament in self.model.tournaments if tournament.begin_date > datetime.date.today()),
-                    "past": sum(1 for tournament in self.model.tournaments if tournament.end_date < datetime.date.today())
-                }
-                action = self.view.how_to_choose_tournament(statistics)
-                if action == Request.FIND_TOURNAMENT_BY_NAME:
-                    tournaments_info = self.model.get_tournaments_str()
-                    action, action_data = self.view.choose_tournament_by_name(tournaments_info)
-                    if action == Request.SELECTED_TOURNAMENT:
-                        selected_tournament = action_data
-                        tournament_info = self.model.get_tournament_info(selected_tournament)
-                        self.view.show_manage_tournament_menu(tournament_info)
-                pass  # to-do
-            elif action == Request.LIST_TOURNAMENTS:
-                pass  # to-do
+        def show_tournament_registration():
+            action, action_data = self.view.show_tournament_registration()
+            if action == Request.REGISTER_TOURNAMENT_DATA:
+                tournament_data = action_data
+                try:
+                    self.model.add_tournaments(tournament_data)
+                    self.view.show_status(True, "correctly added")  # to-do: change message
+                except AlreadyUsedID as err:
+                    self.view.show_status(False)
+            self.status = State.MANAGE_TOURNAMENTS_MENU
+
+        def show_select_tournament_menu():
+            # improvement : use round info to know if a tournament really ended
+            statistics = {
+                "all": len(self.model.tournaments),
+                "ongoing": sum(1 for tournament in self.model.tournaments if
+                               tournament.end_date <= datetime.date.today() >= tournament.begin_date),
+                "future": sum(
+                    1 for tournament in self.model.tournaments if tournament.begin_date > datetime.date.today()),
+                "past": sum(1 for tournament in self.model.tournaments if tournament.end_date < datetime.date.today())
+            }
+            action = self.view.how_to_choose_tournament(statistics)
+            if action == Request.FIND_TOURNAMENT_BY_NAME:
+                tournaments_info = self.model.get_tournaments_str()
+                action, action_data = self.view.choose_tournament_by_name(tournaments_info)
+                if action == Request.SELECTED_TOURNAMENT:
+                    selected_tournament = action_data
+                    self.context = selected_tournament
+                    self.status = State.MANAGE_TOURNAMENT_MENU
             else:
-                self.status = State.MAIN_MENU
+                self.status = State.MANAGE_TOURNAMENTS_MENU
 
-            return
-            self.model.add_tournaments(action_data)
-
+        def show_manage_tournament_menu():
+            selected_tournament = self.context
+            tournament_info = self.model.get_tournament_info(selected_tournament)
+            action = self.view.show_manage_tournament_menu(tournament_info)
+            # ------------- to move ------------------------
+            if action == Request.START_ROUND:
+                self.model.start_round(selected_tournament)
+                self.status = State.MANAGE_TOURNAMENT_MENU
+                self.view.show_status(True, f"round started {self.model.tournaments[selected_tournament].rounds}")
             if action == Request.LAUNCH_PARTICIPANT_MENU:
-                tournaments_info = [(t, tournament.name) for t, tournament in enumerate(self.model.tournaments)
+                tournaments_info = [(t, tournament.name) for t, tournament in
+                                    enumerate(self.model.tournaments)
                                     if tournament.end_date >= datetime.date.today()]
                 action, action_data = self.view.show_participant_registration(tournaments_info)
                 if action == Request.ADD_PARTICIPANT:
                     self.model.add_participants_to_tournament(action_data)
 
             if action == Request.GET_MATCHES_LIST:
-                tournaments_info = [(t, tournament.name) for t, tournament in enumerate(self.model.tournaments)]
+                tournaments_info = [(t, tournament.name) for t, tournament in
+                                    enumerate(self.model.tournaments)]
                 action, action_data = self.view.choose_tournament(tournaments_info)
                 tournament_t = action_data
-                round_info = [(r, round.name) for r, round in enumerate(self.model.get_rounds(tournament_t))]
+                round_info = [(r, round.name) for r, round in
+                              enumerate(self.model.get_rounds(tournament_t))]
                 action, action_data = self.view.choose_round(round_info)
                 round_r = action_data
-                matches_info = [(match.participants_pair[0].player.identifier, match.participants_pair[1].player.identifier)
+                matches_info = [(match.participants_pair[0].player.identifier,
+                                 match.participants_pair[1].player.identifier)
                                 for match in self.model.get_round_matches(tournament_t, round_r)]
                 self.view.show_matches(matches_info)
 
             if action == Request.REGISTER_MATCH_SCORE:
-                tournaments_info = [(t, tournament.name) for t, tournament in enumerate(self.model.tournaments)]
+                tournaments_info = [(t, tournament.name) for t, tournament in
+                                    enumerate(self.model.tournaments)]
                 action, action_data = self.view.choose_tournament(tournaments_info)
                 if action == Request.EXIT_LOCAL_MENU:
                     pass
                 elif action == Request.CHOSEN_TOURNAMENT:
                     tournament_t = action_data
                     matches = self.model.get_round_matches(tournament_t)
-                    matches_info = [(m, match) for m, match in enumerate(matches) if match.participants_scores is None]
+                    matches_info = [(m, match) for m, match in enumerate(matches) if
+                                    match.participants_scores is None]
                     action, action_data = self.view.choose_match(matches_info)
                     if action == Request.CHOSEN_MATCH:
                         match_m = action_data
@@ -224,6 +235,29 @@ class Controller:
                         if action == Request.ADD_MATCH_RESULT:
                             first_player_result = action_data
                             self.model.register_score(tournament_t, match_m, first_player_result)
+            if action == Request.MANAGE_TOURNAMENT:
+                self.status = State.MANAGE_TOURNAMENTS_MENU
+
+        def show_manage_tournaments_menu():
+            action = self.view.show_manage_tournaments_menu()
+            if action == Request.ADD_TOURNAMENT:
+                self.status = State.ADD_TOURNAMENT_MENU
+            elif action == Request.EDIT_TOURNAMENT:
+                if self.context is not None:
+                    selected_tournament = self.context
+                    tournament_info = self.model.get_tournament_info(selected_tournament)["str"]
+                    action = self.view.keep_or_change_tournament(tournament_info)
+                    if action == Request.KEEP_SELECTED_TOURNAMENT:
+                        self.status = State.MANAGE_TOURNAMENT_MENU
+                    elif action == Request.CHANGE_SELECTED_TOURNAMENT:
+                        self.context = None
+                        self.status = State.SELECT_TOURNAMENT_MENU
+                else:
+                    self.status = State.SELECT_TOURNAMENT_MENU
+            elif action == Request.LIST_TOURNAMENTS:
+                pass  # to-do
+            else:
+                self.status = State.MAIN_MENU
 
         while self.status != State.QUIT:
             if self.status == State.MAIN_MENU:
@@ -241,5 +275,14 @@ class Controller:
             if self.status == State.LIST_PLAYERS_MENU:
                 show_list_players_menu()
 
-            if self.status == State.MANAGE_TOURNAMENT_MENU:
+            if self.status == State.MANAGE_TOURNAMENTS_MENU:
                 show_manage_tournaments_menu()
+
+            if self.status == State.MANAGE_TOURNAMENT_MENU:
+                show_manage_tournament_menu()
+
+            if self.status == State.ADD_TOURNAMENT_MENU:
+                show_tournament_registration()
+
+            if self.status == State.SELECT_TOURNAMENT_MENU:
+                show_select_tournament_menu()

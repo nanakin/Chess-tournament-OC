@@ -55,6 +55,8 @@ class Tournament:
     # no neeed end_round, it will be automatically launch after last match
     # end_round will also call set_next_round
     def start_round(self):
+        if not self.current_round:
+            self.set_next_round()
         self.current_round.start_round()
 
     def get_round_matches(self, round_r):

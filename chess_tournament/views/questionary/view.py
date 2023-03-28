@@ -4,6 +4,7 @@ from ..requests import Request, RequestAnswer
 from ..interface import IView
 from datetime import date
 import questionary as q
+import os
 
 
 def non_empty_alphabet_validator(user_str):
@@ -33,6 +34,10 @@ class View(IView):
 
     def __init__(self):
         q.print("------------------- Chess Tournament Manager ---------------------")
+
+    @staticmethod
+    def clear():
+        os.system('cls' if os.name == 'nt' else 'clear')
 
     def show_main_menu(self) -> RequestAnswer:
         q.print("==== Main Menu ===")
@@ -225,35 +230,53 @@ class View(IView):
             return Request.SELECTED_TOURNAMENT, selected_tournament
 
     def show_manage_tournament_menu(self, tournament_info):
-        print(f"selected tournament : {tournament_info['str']}")
+        #print(f"selected tournament : {tournament_info['str']}")
+        #print(f"{tournament_info['total_started_rounds']=}")
+        #print(f"{tournament_info['total_matches']=}")
         #print(f'{tournament_info["name"]=}, {tournament_info["location"]=}, {tournament_info["begin_date"]=},'
         #      f'{tournament_info["end_date"]=}, {tournament_info["total_rounds"]=}, {tournament_info["total_started_rounds"]=},'
         #      f'{tournament_info["total_finished_matches"]=}, {tournament_info["total_matches"]=}',
         #      f'{tournament_info["total_finished_rounds"]=}, {tournament_info["total_participants"]=}')
 
         choice_manage_participant = q.Choice(title="Manage participants", value=Request.MANAGE_PARTICIPANTS)
-        choice_list_matches = q.Choice(title="List matches of the current round", value=Request.LIST_MATCHES)
 
+        if tournament_info["total_matches"] == 0:
+            choice_list_or_generate_matches = q.Choice(title="Generate matches", value=Request.GENERATE_MATCHES)
+        else:
+            choice_list_or_generate_matches = q.Choice(title="List matches of the current round", value=Request.LIST_MATCHES)
         if tournament_info["total_started_rounds"] > 0:
             choice_manage_participant.disabled = "Tournament already started"
         if tournament_info["total_finished_matches"] == tournament_info["total_matches"]:
-            choice_register_or_start_round = q.Choice(title="Start new round", value=Request.LIST_TOURNAMENTS)
+            choice_register_or_start_round = q.Choice(title="Start new round", value=Request.START_ROUND)
             if tournament_info["total_finished_rounds"] == tournament_info["total_rounds"]:
                 choice_register_or_start_round.disabled = "All rounds ended"
         else:
-            choice_register_or_start_round = q.Choice(title="Register a match score", value=Request.LIST_TOURNAMENTS)
+            choice_register_or_start_round = q.Choice(title="Register a match score", value=Request.REGISTER_MATCH_SCORE)
+        if tournament_info["total_participants"] < 2:
+            choice_register_or_start_round.disabled = "Not enough participants"
+            choice_list_or_generate_matches.disabled = "Not enough participants"
 
         question = q.select(
             "What do you want to do ?",
             choices=[
                 choice_manage_participant,
-                q.Choice(title="List matches of the current round", value=Request.LIST_MATCHES),
+                choice_list_or_generate_matches,
                 choice_register_or_start_round,
                 q.Separator(),
                 q.Choice(title="Summary report of all rounds and scores", value=Request.LIST_ROUNDS_SCORES),
                 q.Separator(),
                 "Save",
-                q.Choice(title="Back", value=Request.MAIN_MENU)])
+                q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
+        return question.ask()
+
+    def keep_or_change_tournament(self, last_edited_tournament):
+        question = q.select(
+            "What do you want to do ?",
+            choices=[
+                q.Choice(title=f"Keep editing {last_edited_tournament}", value=Request.KEEP_SELECTED_TOURNAMENT),
+                q.Choice(title="Select a new one", value=Request.CHANGE_SELECTED_TOURNAMENT),
+                q.Separator(),
+                q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
         return question.ask()
 
     def choose_match(self, matches_info) -> RequestAnswer:
