@@ -186,18 +186,6 @@ class View(IView):
         else:
             return Request.REGISTER_TOURNAMENT_DATA, raw_tournament_data
 
-    def show_participant_registration(self, tournaments_info) -> RequestAnswer:
-        # tournaments_info = list[tuple[index, name]]
-        # to-do : add a system to check user input values
-        print("Select a tournament:")
-        for n, tournament_info in enumerate(tournaments_info):
-            print(f"{n}: {tournament_info[1]}")
-        tournament_t = tournaments_info[int(input()) - 1][0]
-        player_id = input("Enter player ID: ")
-        add_participant_data = {"player_id": player_id, "tournament_t": tournament_t}
-        return Request.ADD_PARTICIPANT, add_participant_data
-        # to-do or EXIT if cancel
-
     def show_matches(self, matches):
         print("List of matches :")
         for match in matches:
@@ -238,7 +226,7 @@ class View(IView):
         #      f'{tournament_info["total_finished_matches"]=}, {tournament_info["total_matches"]=}',
         #      f'{tournament_info["total_finished_rounds"]=}, {tournament_info["total_participants"]=}')
 
-        choice_manage_participant = q.Choice(title="Manage participants", value=Request.MANAGE_PARTICIPANTS)
+        choice_manage_participant = q.Choice(title="Manage participants", value=Request.LAUNCH_PARTICIPANT_MENU)
 
         if tournament_info["total_matches"] == 0:
             choice_list_or_generate_matches = q.Choice(title="Generate matches", value=Request.GENERATE_MATCHES)

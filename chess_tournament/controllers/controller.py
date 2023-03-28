@@ -11,6 +11,7 @@ State = Enum("State", [
     "LIST_PLAYERS_MENU",
     "MANAGE_TOURNAMENTS_MENU",
     "ADD_TOURNAMENT_MENU",
+    "LAUNCH_PARTICIPANT_MENU",
     "MANAGE_TOURNAMENT_MENU",
     "SELECT_TOURNAMENT_MENU",
     "QUIT"])
@@ -186,6 +187,19 @@ class Controller:
             else:
                 self.status = State.MANAGE_TOURNAMENTS_MENU
 
+        def launch_participant_menu():
+            selected_tournament = self.context
+            players_id = [player_id for player_id in self.model.get_players_id()
+                          if player_id not in self.model.get_participants_id(selected_tournament)]
+            # to-do : verify if the list is empty
+            action, action_data = self.view.show_player_selection(players_id)
+            if action == Request.SELECTED_PLAYER:
+                selected_id = action_data
+                # action, action_data = self.view.show_participant_registration(players)
+                self.model.add_participants_to_tournament(selected_tournament, selected_id)
+                self.view.show_status(True, f"participant added")
+            self.status = State.MANAGE_TOURNAMENT_MENU
+
         def show_manage_tournament_menu():
             selected_tournament = self.context
             tournament_info = self.model.get_tournament_info(selected_tournament)
@@ -193,28 +207,15 @@ class Controller:
             # ------------- to move ------------------------
             if action == Request.START_ROUND:
                 self.model.start_round(selected_tournament)
-                self.status = State.MANAGE_TOURNAMENT_MENU
                 self.view.show_status(True, f"round started {self.model.tournaments[selected_tournament].rounds}")
+                self.status = State.MANAGE_TOURNAMENT_MENU
             if action == Request.LAUNCH_PARTICIPANT_MENU:
-                tournaments_info = [(t, tournament.name) for t, tournament in
-                                    enumerate(self.model.tournaments)
-                                    if tournament.end_date >= datetime.date.today()]
-                action, action_data = self.view.show_participant_registration(tournaments_info)
-                if action == Request.ADD_PARTICIPANT:
-                    self.model.add_participants_to_tournament(action_data)
-
+                self.status = State.LAUNCH_PARTICIPANT_MENU
             if action == Request.GET_MATCHES_LIST:
-                tournaments_info = [(t, tournament.name) for t, tournament in
-                                    enumerate(self.model.tournaments)]
-                action, action_data = self.view.choose_tournament(tournaments_info)
-                tournament_t = action_data
-                round_info = [(r, round.name) for r, round in
-                              enumerate(self.model.get_rounds(tournament_t))]
-                action, action_data = self.view.choose_round(round_info)
-                round_r = action_data
+                round_r = self.model.get_rounds(selected_tournament)[-1]
                 matches_info = [(match.participants_pair[0].player.identifier,
                                  match.participants_pair[1].player.identifier)
-                                for match in self.model.get_round_matches(tournament_t, round_r)]
+                                for match in self.model.get_round_matches(selected_tournament, round_r)]
                 self.view.show_matches(matches_info)
 
             if action == Request.REGISTER_MATCH_SCORE:
@@ -286,3 +287,6 @@ class Controller:
 
             if self.status == State.SELECT_TOURNAMENT_MENU:
                 show_select_tournament_menu()
+
+            if self.status == State.LAUNCH_PARTICIPANT_MENU:
+                launch_participant_menu()

@@ -66,6 +66,9 @@ class Model:
     def get_tournaments_str(self, filter=None):
         return [(tournament.name, str(tournament)) for tournament in self.tournaments]
 
+    def get_participants_id(self, tournament_t):
+        return (participant.player.identifier for participant in self.tournaments[tournament_t].participants)
+
     def get_tournament_info(self, tournament_t):
         tournament = self.tournaments[tournament_t]
         return {"str": str(tournament),
