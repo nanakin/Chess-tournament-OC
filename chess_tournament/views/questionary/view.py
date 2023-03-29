@@ -217,6 +217,24 @@ class View(IView):
             selected_tournament = int(answer.partition("-")[0])
             return Request.SELECTED_TOURNAMENT, selected_tournament
 
+
+    def show_manage_unready_tournament_menu(self, tournament_info):
+        choice_generate_matches = q.Choice(title=f"Generate pairs of the first round", value=Request.GENERATE_MATCHES)
+        if tournament_info["total_participants"] < 2:
+            choice_generate_matches.disabled = "Not enough participants"
+        question = q.select(
+            "What do you want to do ?",
+            choices=[
+                q.Choice(title=f"Manage participants ({tournament_info['total_participants']})", value=Request.LAUNCH_PARTICIPANT_MENU),
+                choice_generate_matches,
+                q.Separator(),
+                "Save",
+                q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
+        answer = question.ask()
+        if not answer:
+            return Request.MANAGE_TOURNAMENT
+        return answer
+
     def show_manage_tournament_menu(self, tournament_info):
         #print(f"selected tournament : {tournament_info['str']}")
         #print(f"{tournament_info['total_started_rounds']=}")
@@ -226,14 +244,12 @@ class View(IView):
         #      f'{tournament_info["total_finished_matches"]=}, {tournament_info["total_matches"]=}',
         #      f'{tournament_info["total_finished_rounds"]=}, {tournament_info["total_participants"]=}')
 
-        choice_manage_participant = q.Choice(title="Manage participants", value=Request.LAUNCH_PARTICIPANT_MENU)
 
         if tournament_info["total_matches"] == 0:
             choice_list_or_generate_matches = q.Choice(title="Generate matches", value=Request.GENERATE_MATCHES)
         else:
             choice_list_or_generate_matches = q.Choice(title="List matches of the current round", value=Request.LIST_MATCHES)
-        if tournament_info["total_started_rounds"] > 0:
-            choice_manage_participant.disabled = "Tournament already started"
+
         if tournament_info["total_finished_matches"] == tournament_info["total_matches"]:
             choice_register_or_start_round = q.Choice(title="Start new round", value=Request.START_ROUND)
             if tournament_info["total_finished_rounds"] == tournament_info["total_rounds"]:
@@ -247,7 +263,6 @@ class View(IView):
         question = q.select(
             "What do you want to do ?",
             choices=[
-                choice_manage_participant,
                 choice_list_or_generate_matches,
                 choice_register_or_start_round,
                 q.Separator(),
@@ -267,22 +282,26 @@ class View(IView):
                 q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
         return question.ask()
 
-    def choose_match(self, matches_info) -> RequestAnswer:
-        print("Select the match: ")
-        for m, match_info in enumerate(matches_info):
-            print(match_info)
-        match_m = int(input())
-        return Request.CHOSEN_MATCH, match_m
-
-    def choose_round(self, rounds):
-        print("Select a round: ")
-        for r, round in enumerate(rounds):
-            print(r, round)
-        round_r = int(input())
-        return Request.CHOSEN_ROUND, round_r
+    def select_match(self, matches_info) -> RequestAnswer:
+        print(matches_info)
+        question = q.select(
+            "Which match ?",
+            choices=matches_info)
+             #   q.Separator(),
+             #   q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
+        answer = question.ask()
+        if answer:
+            return Request.SELECTED_MATCH, matches_info.index(answer)
+        else:
+            return Request.MANAGE_TOURNAMENT, None
 
     def enter_score(self, match_info) -> RequestAnswer:
-        print(match_info)
-        print("Enter the first player result : WIN, LOSE, or DRAW")
-        first_score = input()
-        return Request.ADD_MATCH_RESULT, first_score
+        # to-do : print the first player info or detail the 2 names in the choices
+        question = q.select(
+            "Select the result of the match, for the first player",
+            choices=["WIN", "LOSE", "DRAW"])
+        answer = question.ask()
+        if answer:
+            return Request.ADD_MATCH_RESULT, answer
+        else:
+            return Request.MANAGE_TOURNAMENT, None
