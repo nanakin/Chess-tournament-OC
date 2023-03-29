@@ -12,7 +12,9 @@ State = Enum("State", [
     "MANAGE_TOURNAMENTS_MENU",
     "ADD_TOURNAMENT_MENU",
     "REGISTER_MATCH_SCORE_MENU",
-    "LAUNCH_PARTICIPANT_MENU",
+    "ADD_PARTICIPANT_MENU",
+    "DELETE_PARTICIPANT_MENU",
+    "MANAGE_PARTICIPANTS_MENU",
     "MANAGE_TOURNAMENT_MENU",
     "MANAGE_UNREADY_TOURNAMENT_MENU",
     "SELECT_TOURNAMENT_MENU",
@@ -189,18 +191,32 @@ class Controller:
             else:
                 self.status = State.MANAGE_TOURNAMENTS_MENU
 
-        def launch_participant_menu():
+        def show_manage_participants_menu():
+            total_participants = len(list(self.model.get_participants_id(self.context)))  # to-do : change method
+            action = self.view.show_manage_participants_menu(total_participants)
+            if action == Request.ADD_PARTICIPANT:
+                self.status = State.ADD_PARTICIPANT_MENU
+            elif action == Request.DELETE_PARTICIPANT:
+                self.status = State.DELETE_PARTICIPANT_MENU
+            else:
+                self.status = State.MANAGE_TOURNAMENT_MENU
+
+        def show_add_participant_menu():
             selected_tournament = self.context
             players_id = [player_id for player_id in self.model.get_players_id()
                           if player_id not in self.model.get_participants_id(selected_tournament)]
             # to-do : verify if the list is empty
+            if not players_id:
+                self.view.show_status(False, "No available players to add")
+                self.status = State.MANAGE_PARTICIPANTS_MENU
+                return
             action, action_data = self.view.show_player_selection(players_id)
             if action == Request.SELECTED_PLAYER:
                 selected_id = action_data
                 # action, action_data = self.view.show_participant_registration(players)
                 self.model.add_participants_to_tournament(selected_tournament, selected_id)
                 self.view.show_status(True, f"participant added")
-            self.status = State.MANAGE_TOURNAMENT_MENU
+            self.status = State.MANAGE_PARTICIPANTS_MENU
 
         def show_register_match_score_menu():
             selected_tournament = self.context
@@ -224,17 +240,15 @@ class Controller:
             selected_tournament = self.context
             tournament_info = self.model.get_tournament_info(selected_tournament)
             action = self.view.show_manage_unready_tournament_menu(tournament_info)
-            if action == Request.LAUNCH_PARTICIPANT_MENU:
-                print("Request participant menu")
-                self.status = State.LAUNCH_PARTICIPANT_MENU
+            if action == Request.MANAGE_PARTICIPANTS:
+                self.status = State.MANAGE_PARTICIPANTS_MENU
             elif action == Request.GET_MATCHES_LIST:
-                round_r = self.model.get_rounds(selected_tournament)[-1]
                 matches_info = [(match.participants_pair[0].player.identifier,
                                  match.participants_pair[1].player.identifier)
-                                for match in self.model.get_round_matches(selected_tournament, round_r)]
+                                for match in self.model.get_round_matches(selected_tournament)]
                 self.view.show_matches(matches_info)
                 self.status = State.MANAGE_TOURNAMENT_MENU
-            else :
+            else:
                 self.status = State.MAIN_MENU
 
         def show_manage_tournament_menu():
@@ -315,8 +329,14 @@ class Controller:
             if self.status == State.SELECT_TOURNAMENT_MENU:
                 show_select_tournament_menu()
 
-            if self.status == State.LAUNCH_PARTICIPANT_MENU:
-                launch_participant_menu()
+            if self.status == State.MANAGE_PARTICIPANTS_MENU:
+                show_manage_participants_menu()
+
+            if self.status == State.ADD_PARTICIPANT_MENU:
+                show_add_participant_menu()
+
+            if self.status == State.DELETE_PARTICIPANT_MENU:
+                show_delete_participant_menu()
 
             if self.status == State.REGISTER_MATCH_SCORE_MENU:
                 show_register_match_score_menu()

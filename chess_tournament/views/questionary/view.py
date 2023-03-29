@@ -217,15 +217,32 @@ class View(IView):
             selected_tournament = int(answer.partition("-")[0])
             return Request.SELECTED_TOURNAMENT, selected_tournament
 
+    def show_manage_participants_menu(self, total_participants):
+        print(f"There {'is' if total_participants < 2 else 'are'} {total_participants} participant{'s' if total_participants > 1 else ''}")
+        question = q.select(
+            "What do you want to do ?",
+            choices=[
+                q.Choice(title="Add participant", value=Request.ADD_PARTICIPANT),
+                q.Choice(title="Delete participant", value=Request.DELETE_PARTICIPANT),
+                q.Separator(),
+                q.Choice(title="List participants", value=Request.LIST_PARTICIPANTS),
+                q.Separator(),
+                "Save",
+                q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
+        answer = question.ask()
+        if not answer:
+            return Request.MANAGE_TOURNAMENT
+        return answer
+
 
     def show_manage_unready_tournament_menu(self, tournament_info):
-        choice_generate_matches = q.Choice(title=f"Generate pairs of the first round", value=Request.GENERATE_MATCHES)
+        choice_generate_matches = q.Choice(title=f"Generate pairs of the first round", value=Request.GET_MATCHES_LIST)
         if tournament_info["total_participants"] < 2:
             choice_generate_matches.disabled = "Not enough participants"
         question = q.select(
             "What do you want to do ?",
             choices=[
-                q.Choice(title=f"Manage participants ({tournament_info['total_participants']})", value=Request.LAUNCH_PARTICIPANT_MENU),
+                q.Choice(title=f"Manage participants ({tournament_info['total_participants']})", value=Request.MANAGE_PARTICIPANTS),
                 choice_generate_matches,
                 q.Separator(),
                 "Save",

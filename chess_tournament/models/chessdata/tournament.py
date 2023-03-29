@@ -47,7 +47,6 @@ class Tournament:
         return pairs
 
     def set_next_round(self):
-        print("set next round")
         round = Round(name=f"Round {(len(self.rounds) + 1)}",
                       matches=self._generate_pairs())
         self.rounds.append(round)

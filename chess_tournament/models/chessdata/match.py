@@ -29,6 +29,5 @@ class Match:
 
     def register_score(self, participants_status: Tuple[Points, Points]):
         self.participants_scores = participants_status
-        print(self.participants_pair)
         for participant, score in zip(self.participants_pair, self.participants_scores):
             participant.add_score(score.value)
