@@ -1,8 +1,10 @@
 import questionary as q
 from ..requests import Request, RequestAnswer
+from .common import clear_screen_and_show_log
 
 class ParticipantsMenus:
 
+    @clear_screen_and_show_log
     def show_manage_participants_menu(self, total_participants):
         print(
             f"There {'is' if total_participants < 2 else 'are'} {total_participants} participant{'s' if total_participants > 1 else ''}")

@@ -1,14 +1,16 @@
 import questionary as q
 from ..requests import Request, RequestAnswer
+from .common import clear_screen_and_show_log
 
 class MatchesMenus:
 
+    @clear_screen_and_show_log
     def show_matches(self, matches):
         print("List of matches :")
         for match in matches:
             print(match)
 
-
+    @clear_screen_and_show_log
     def select_match(self, matches_info) -> RequestAnswer:
         print(matches_info)
         question = q.select(
@@ -22,7 +24,7 @@ class MatchesMenus:
         else:
             return Request.MANAGE_TOURNAMENT, None
 
-
+    @clear_screen_and_show_log
     def enter_score(self, match_info) -> RequestAnswer:
         # to-do : print the first player info or detail the 2 names in the choices
         question = q.select(

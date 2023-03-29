@@ -5,6 +5,14 @@ from .requests import RequestAnswer
 class IView(ABC):
 
     @abstractmethod
+    def log(self, ok_status, to_print=None):
+        pass
+
+    @abstractmethod
+    def show_log(self):
+        pass
+
+    @abstractmethod
     def show_main_menu(self) -> RequestAnswer:
         pass
 

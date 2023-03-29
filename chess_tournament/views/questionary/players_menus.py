@@ -1,8 +1,11 @@
 import questionary as q
 from ..requests import Request, RequestAnswer
+from ..validators import non_empty_alphabet_validator, past_date_validator, national_identifier_validator
+from .common import clear_screen_and_show_log
 
 class PlayerMenus:
 
+    @clear_screen_and_show_log
     def show_manage_player_menu(self) -> RequestAnswer:
         q.print("==== Player Menu ===")
         question = q.select(
@@ -16,7 +19,7 @@ class PlayerMenus:
                 q.Choice(title="Back", value=Request.MAIN_MENU)])
         return question.ask()
 
-
+    @clear_screen_and_show_log
     def show_list_players_menu(self, total_players):
         q.print(f"Total {total_players} players")
         question = q.select(
@@ -28,18 +31,32 @@ class PlayerMenus:
                 q.Choice(title="Back", value=Request.MANAGE_PLAYER)])
         return question.ask()
 
-
+    @clear_screen_and_show_log
     def print_players(self, players_info):
         for player_info in players_info:
             q.print(player_info)
+        back_choice = q.Choice(title="Back", value=Request.MANAGE_PLAYER)
+        question = q.select(
+            "",
+            choices=[
+                back_choice,
+                q.Choice(title="Export this list", value=Request.EXPORT_PLAYERS)],
+            default=back_choice)
+        answer = question.ask()
+        if not answer:
+            return Request.MANAGE_PLAYER
+        return answer
 
 
+
+    @clear_screen_and_show_log
     def show_player_selection(self, players_id):
         question = q.autocomplete(
             "Enter the player ID :",
             choices=players_id, validate=lambda x: x in players_id)
         return Request.SELECTED_PLAYER, question.ask()
 
+    @clear_screen_and_show_log
     def show_player_registration(self) -> RequestAnswer:
         add_player_questions = [
             {
@@ -67,6 +84,7 @@ class PlayerMenus:
         else:
             return Request.REGISTER_PLAYER_DATA, raw_player_data
 
+    @clear_screen_and_show_log
     def show_edit_player_menu(self, player_info):
         what_to_edit = q.select("What to edit ?", choices=[
             q.Choice(title="First name", value="first_name"),

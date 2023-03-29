@@ -126,7 +126,7 @@ class Controller:
                         if action == Request.REGISTER_PLAYER_DATA:
                             player_data = action_data
                             self.model.edit_player_attributes(player_data)
-                            self.view.show_status(True, self.model.get_player_str(player_data["identifier"]))
+                            self.view.log(True, self.model.get_player_str(player_data["identifier"]))
                             self.status = State.MANAGE_PLAYER_MENU
                         else:
                             self.status = State.MANAGE_PLAYER_MENU
@@ -142,9 +142,9 @@ class Controller:
             if action == Request.REGISTER_PLAYER_DATA:
                 try:
                     self.model.add_players(action_data)
-                    self.view.show_status(True, self.model.get_player_str(action_data["identifier"]))
+                    self.view.log(True, self.model.get_player_str(action_data["identifier"]))
                 except AlreadyUsedID as err:
-                    self.view.show_status(False)
+                    self.view.log(False)
             self.status = State.MANAGE_PLAYER_MENU
 
         def show_list_players_menu():
@@ -165,9 +165,9 @@ class Controller:
                 tournament_data = action_data
                 try:
                     self.model.add_tournaments(tournament_data)
-                    self.view.show_status(True, "correctly added")  # to-do: change message
+                    self.view.log(True, "correctly added")  # to-do: change message
                 except AlreadyUsedID as err:
-                    self.view.show_status(False)
+                    self.view.log(False)
             self.status = State.MANAGE_TOURNAMENTS_MENU
 
         def show_select_tournament_menu():
@@ -207,7 +207,7 @@ class Controller:
                           if player_id not in self.model.get_participants_id(selected_tournament)]
             # to-do : verify if the list is empty
             if not players_id:
-                self.view.show_status(False, "No available players to add")
+                self.view.log(False, "No available players to add")
                 self.status = State.MANAGE_PARTICIPANTS_MENU
                 return
             action, action_data = self.view.show_player_selection(players_id)
@@ -215,7 +215,7 @@ class Controller:
                 selected_id = action_data
                 # action, action_data = self.view.show_participant_registration(players)
                 self.model.add_participants_to_tournament(selected_tournament, selected_id)
-                self.view.show_status(True, f"participant added")
+                self.view.log(True, f"participant added")
             self.status = State.MANAGE_PARTICIPANTS_MENU
 
         def show_register_match_score_menu():
@@ -231,7 +231,7 @@ class Controller:
                 if action == Request.ADD_MATCH_RESULT:
                     first_player_result = action_data
                     self.model.register_score(selected_tournament, match_m, first_player_result)
-                    self.view.show_status(True, "score saved")
+                    self.view.log(True, "score saved")
                     self.status = State.MANAGE_TOURNAMENT_MENU
             else:
                 self.status = State.MANAGE_TOURNAMENT_MENU
@@ -264,7 +264,7 @@ class Controller:
             # ------------- to move ------------------------
             if action == Request.START_ROUND:
                 self.model.start_round(selected_tournament)
-                self.view.show_status(True, f"round started {self.model.tournaments[selected_tournament].rounds}")
+                self.view.log(True, f"round started {self.model.tournaments[selected_tournament].rounds}")
                 self.status = State.MANAGE_TOURNAMENT_MENU
             if action == Request.GET_MATCHES_LIST:
                 round_r = self.model.get_rounds(selected_tournament)[-1]

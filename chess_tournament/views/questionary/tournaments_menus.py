@@ -1,8 +1,11 @@
 import questionary as q
 from ..requests import Request, RequestAnswer
+from ..validators import *
+from .common import clear_screen_and_show_log
 
 class TournamentsMenus:
 
+    @clear_screen_and_show_log
     def show_manage_tournaments_menu(self):
         q.print("==== Tournament Menu ===")
         question = q.select(
@@ -16,6 +19,7 @@ class TournamentsMenus:
                 q.Choice(title="Back", value=Request.MAIN_MENU)])
         return question.ask()
 
+    @clear_screen_and_show_log
     def show_manage_unready_tournament_menu(self, tournament_info):
         choice_generate_matches = q.Choice(title=f"Generate pairs of the first round", value=Request.GET_MATCHES_LIST)
         if tournament_info["total_participants"] < 2:
@@ -33,6 +37,7 @@ class TournamentsMenus:
             return Request.MANAGE_TOURNAMENT
         return answer
 
+    @clear_screen_and_show_log
     def show_manage_tournament_menu(self, tournament_info):
         #print(f"selected tournament : {tournament_info['str']}")
         #print(f"{tournament_info['total_started_rounds']=}")
@@ -70,6 +75,7 @@ class TournamentsMenus:
                 q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
         return question.ask()
 
+    @clear_screen_and_show_log
     def keep_or_change_tournament(self, last_edited_tournament):
         question = q.select(
             "What do you want to do ?",
@@ -80,7 +86,7 @@ class TournamentsMenus:
                 q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
         return question.ask()
 
-
+    @clear_screen_and_show_log
     def show_tournament_registration(self) -> RequestAnswer:
         add_tournament_questions = [
             {
@@ -114,6 +120,7 @@ class TournamentsMenus:
         else:
             return Request.REGISTER_TOURNAMENT_DATA, raw_tournament_data
 
+    @clear_screen_and_show_log
     def how_to_choose_tournament(self, statistics) -> RequestAnswer:
         question = q.select(
             "Which tournament do you want to manage ?",
@@ -128,6 +135,7 @@ class TournamentsMenus:
                 q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
         return question.ask()
 
+    @clear_screen_and_show_log
     def choose_tournament_by_name(self, tournaments_info):
         tournaments_meta = {f"{t}- {tournament_info[0]}": tournament_info[1] for t, tournament_info in enumerate(tournaments_info)}
         question = q.autocomplete(

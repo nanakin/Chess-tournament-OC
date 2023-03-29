@@ -1,10 +1,10 @@
 from ..requests import Request, RequestAnswer
 from ..interface import IView
-from ..validators import *
 from .players_menus import PlayerMenus
 from .matches_menus import MatchesMenus
 from .tournaments_menus import TournamentsMenus
 from .participants_menus import ParticipantsMenus
+from .common import clear_screen_and_show_log
 import questionary as q
 import os
 
@@ -12,21 +12,25 @@ import os
 class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView):
 
     def __init__(self):
+        self.logged = []
         q.print("------------------- Chess Tournament Manager ---------------------")
 
-    @staticmethod
-    def clear():
-        os.system('cls' if os.name == 'nt' else 'clear')
+    def log(self, ok_status, to_print=None):
+        self.logged.append((ok_status, to_print))
+
+    def show_log(self):
+        for log in self.logged:
+            ok_status, to_print = log
+            if ok_status:
+                q.print(f"🟢 OK : {to_print}")
+            else:
+                q.print(f"🟥 FAIL {to_print}")
+        self.logged = []
 
     def show_confirmation(self, to_confirm):
         return Request.CONFIRM, q.confirm(to_confirm).ask()
 
-    def show_status(self, ok_status, to_print=""):
-        if ok_status:
-            q.print(f"🟢 OK : {to_print}")
-        else:
-            q.print(f"🟥 FAIL {to_print}")
-
+    @clear_screen_and_show_log
     def show_main_menu(self) -> RequestAnswer:
         q.print("==== Main Menu ===")
         question = q.select(
