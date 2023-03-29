@@ -1,13 +1,13 @@
 import questionary as q
 from ..requests import Request, RequestAnswer
 from ..validators import non_empty_alphabet_validator, past_date_validator, national_identifier_validator
-from .common import clear_screen_and_show_log
+from .common import clear_screen_and_show_log, print_title, print_list_title
 
 class PlayerMenus:
 
     @clear_screen_and_show_log
     def show_manage_player_menu(self) -> RequestAnswer:
-        q.print("==== Player Menu ===")
+        print_title("Players menu")
         question = q.select(
             "What do you want to do ?",
             choices=[
@@ -21,7 +21,8 @@ class PlayerMenus:
 
     @clear_screen_and_show_log
     def show_list_players_menu(self, total_players):
-        q.print(f"Total {total_players} players")
+        print_title("Players list menu")
+        q.print(f">> Total {total_players} players")
         question = q.select(
             "What do you want to do ?",
             choices=[
@@ -33,6 +34,7 @@ class PlayerMenus:
 
     @clear_screen_and_show_log
     def print_players(self, players_info):
+        print_list_title("Players list")
         for player_info in players_info:
             q.print(player_info)
         back_choice = q.Choice(title="Back", value=Request.MANAGE_PLAYER)
@@ -51,6 +53,7 @@ class PlayerMenus:
 
     @clear_screen_and_show_log
     def show_player_selection(self, players_id):
+        print_title("Player selection menu")
         question = q.autocomplete(
             "Enter the player ID :",
             choices=players_id, validate=lambda x: x in players_id)
@@ -58,6 +61,7 @@ class PlayerMenus:
 
     @clear_screen_and_show_log
     def show_player_registration(self) -> RequestAnswer:
+        print_title("Player registration menu")
         add_player_questions = [
             {
                 "type": "text", "name": "first_name", "qmark": ">",
@@ -86,6 +90,7 @@ class PlayerMenus:
 
     @clear_screen_and_show_log
     def show_edit_player_menu(self, player_info):
+        print_title("Player edition menu")
         what_to_edit = q.select("What to edit ?", choices=[
             q.Choice(title="First name", value="first_name"),
             q.Choice(title="Last name", value="last_name"),

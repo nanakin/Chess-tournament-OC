@@ -4,7 +4,7 @@ from .players_menus import PlayerMenus
 from .matches_menus import MatchesMenus
 from .tournaments_menus import TournamentsMenus
 from .participants_menus import ParticipantsMenus
-from .common import clear_screen_and_show_log
+from .common import clear_screen_and_show_log, print_title
 import questionary as q
 import os
 
@@ -19,6 +19,8 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
         self.logged.append((ok_status, to_print))
 
     def show_log(self):
+        if self.logged:
+            q.print("-- status " + "-" * 70)
         for log in self.logged:
             ok_status, to_print = log
             if ok_status:
@@ -32,7 +34,7 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
 
     @clear_screen_and_show_log
     def show_main_menu(self) -> RequestAnswer:
-        q.print("==== Main Menu ===")
+        print_title("Main menu")
         question = q.select(
             "What do you want to do ?",
             choices=[

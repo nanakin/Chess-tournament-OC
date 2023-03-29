@@ -1,13 +1,13 @@
 import questionary as q
 from ..requests import Request, RequestAnswer
 from ..validators import *
-from .common import clear_screen_and_show_log
+from .common import clear_screen_and_show_log, print_title
 
 class TournamentsMenus:
 
     @clear_screen_and_show_log
     def show_manage_tournaments_menu(self):
-        q.print("==== Tournament Menu ===")
+        print_title("Tournaments menu")
         question = q.select(
             "What do you want to do ?",
             choices=[
@@ -21,6 +21,7 @@ class TournamentsMenus:
 
     @clear_screen_and_show_log
     def show_manage_unready_tournament_menu(self, tournament_info):
+        print_title("Unready tournament menu")
         choice_generate_matches = q.Choice(title=f"Generate pairs of the first round", value=Request.GET_MATCHES_LIST)
         if tournament_info["total_participants"] < 2:
             choice_generate_matches.disabled = "Not enough participants"
@@ -39,6 +40,7 @@ class TournamentsMenus:
 
     @clear_screen_and_show_log
     def show_manage_tournament_menu(self, tournament_info):
+        print_title("Tournament menu")
         #print(f"selected tournament : {tournament_info['str']}")
         #print(f"{tournament_info['total_started_rounds']=}")
         #print(f"{tournament_info['total_matches']=}")
@@ -77,6 +79,7 @@ class TournamentsMenus:
 
     @clear_screen_and_show_log
     def keep_or_change_tournament(self, last_edited_tournament):
+        print_title("Tournament selection menu")
         question = q.select(
             "What do you want to do ?",
             choices=[
@@ -88,6 +91,7 @@ class TournamentsMenus:
 
     @clear_screen_and_show_log
     def show_tournament_registration(self) -> RequestAnswer:
+        print_title("Tournament registration menu")
         add_tournament_questions = [
             {
                 "type": "text", "name": "name", "qmark": ">",
@@ -122,6 +126,7 @@ class TournamentsMenus:
 
     @clear_screen_and_show_log
     def how_to_choose_tournament(self, statistics) -> RequestAnswer:
+        print_title("Tournament selection method menu")
         question = q.select(
             "Which tournament do you want to manage ?",
             choices=[
@@ -137,6 +142,7 @@ class TournamentsMenus:
 
     @clear_screen_and_show_log
     def choose_tournament_by_name(self, tournaments_info):
+        print_title("Tournament selection menu")
         tournaments_meta = {f"{t}- {tournament_info[0]}": tournament_info[1] for t, tournament_info in enumerate(tournaments_info)}
         question = q.autocomplete(
             "Enter the tournament name :",
