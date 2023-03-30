@@ -32,6 +32,12 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
     def show_confirmation(self, to_confirm):
         return Request.CONFIRM, q.confirm(to_confirm).ask()
 
+    def ask_saving_path(self):
+        answer = q.path("Where do you want to save the list ?").ask()
+        if not answer:
+            return Request.EXIT_LOCAL_MENU
+        return Request.SELECTED_PATH, answer
+
     @clear_screen_and_show_log
     def show_main_menu(self) -> RequestAnswer:
         print_title("Main menu")

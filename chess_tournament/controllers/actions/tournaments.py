@@ -1,5 +1,6 @@
 from chess_tournament.controllers.states import State
 from chess_tournament.views.requests import Request
+from ..helpers import write_list_in_file
 import datetime
 
 
@@ -109,11 +110,18 @@ class TournamentsController:
         total_tournaments = self.model.get_total_tournaments()
         action = self.view.show_list_tournaments_menu(total_tournaments)
         if action not in (Request.PRINT_TOURNAMENTS, Request.EXPORT_TOURNAMENTS):
-            self.status = State.MANAGE_TOURNAMENT_MENU
+            self.status = State.MANAGE_TOURNAMENTS_MENU
             return
-        players_info = self.model.get_ordered_tournaments_str()
+        tournaments_info = self.model.get_ordered_tournaments_str()
         if action == Request.PRINT_TOURNAMENTS:
-            self.view.print_tournaments(players_info)
-        else:
-            pass  # to-do
-        self.status = State.MANAGE_TOURNAMENT_MENU
+            action = self.view.print_tournaments(tournaments_info)
+        if action == Request.EXPORT_TOURNAMENTS:
+            action, action_data = self.view.ask_saving_path()
+            if action == Request.SELECTED_PATH:
+                filename = action_data
+                status_ok, absolute_path = write_list_in_file(tournaments_info, filename, "tournaments")
+                if status_ok:
+                    self.view.log(True, f"List correctly saved in {absolute_path}.")
+                else:
+                    self.view.log(False, f"Cannot save data in {absolute_path}.")
+        self.status = State.MANAGE_TOURNAMENTS_MENU

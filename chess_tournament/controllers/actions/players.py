@@ -1,6 +1,7 @@
 from chess_tournament.controllers.states import State
 from chess_tournament.views.requests import Request
 from chess_tournament.models.model import AlreadyUsedID
+from ..helpers import write_list_in_file
 
 
 class PlayerController:
@@ -63,7 +64,14 @@ class PlayerController:
             return
         players_info = self.model.get_ordered_players_str()
         if action == Request.PRINT_PLAYERS:
-            self.view.print_players(players_info)
-        else:
-            pass  # to-do
+            action = self.view.print_players(players_info)
+        if action == Request.EXPORT_PLAYERS:
+            action, action_data = self.view.ask_saving_path()
+            if action == Request.SELECTED_PATH:
+                filename = action_data
+                status_ok, absolute_path = write_list_in_file(players_info, filename, "players")
+                if status_ok:
+                    self.view.log(True, f"List correctly saved in {absolute_path}.")
+                else:
+                    self.view.log(False, f"Cannot save data in {absolute_path}.")
         self.status = State.MANAGE_PLAYER_MENU
