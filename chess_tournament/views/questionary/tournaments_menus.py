@@ -1,7 +1,7 @@
 import questionary as q
 from ..requests import Request, RequestAnswer
 from ..validators import *
-from .common import clear_screen_and_show_log, print_title
+from .common import clear_screen_and_show_log, print_title, print_list_title
 
 class TournamentsMenus:
 
@@ -169,3 +169,34 @@ class TournamentsMenus:
             return Request.MANAGE_TOURNAMENT, None
         else:
             return Request.SELECTED_TOURNAMENT, answer
+
+    @clear_screen_and_show_log
+    def show_list_tournaments_menu(self, total_tournaments):
+        # some kind repetitive code with player list. to-do: refactor ?
+        print_title("Tournaments list menu")
+        q.print(f">> Total {total_tournaments} tournaments")
+        question = q.select(
+            "What do you want to do ?",
+            choices=[
+                q.Choice(title="Print list", value=Request.PRINT_TOURNAMENTS),
+                q.Choice(title="Export list", value=Request.EXPORT_TOURNAMENTS),
+                q.Separator(),
+                q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
+        return question.ask()
+
+    @clear_screen_and_show_log
+    def print_tournaments(self, tournaments_info):
+        print_list_title("Tournaments list")
+        for tournament_info in tournaments_info:
+            q.print(tournament_info)
+        back_choice = q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)
+        question = q.select(
+            "",
+            choices=[
+                back_choice,
+                q.Choice(title="Export this list", value=Request.EXPORT_TOURNAMENTS)],
+            default=back_choice)
+        answer = question.ask()
+        if not answer:
+            return Request.MANAGE_TOURNAMENT
+        return answer

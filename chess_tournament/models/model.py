@@ -77,6 +77,13 @@ class Model:
                                           if func_status_filter(tournament))
         return statistics
 
+    def get_ordered_tournaments_str(self):
+        sorted_tournaments = sorted(self.tournaments)
+        return [str(tournament) for tournament in sorted_tournaments]
+
+    def get_total_tournaments(self):
+        return len(self.tournaments)
+
     def get_tournaments_str(self, status="all"):
         return [(t_index, tournament.name, str(tournament)) for t_index, tournament in enumerate(self.tournaments)
                 if self.status_filter[status](tournament)]

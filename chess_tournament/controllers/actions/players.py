@@ -60,6 +60,7 @@ class PlayerController:
         action = self.view.show_list_players_menu(total_players)
         if action not in (Request.PRINT_PLAYERS, Request.EXPORT_PLAYERS):
             self.status = State.MANAGE_PLAYER
+            return
         players_info = self.model.get_ordered_players_str()
         if action == Request.PRINT_PLAYERS:
             self.view.print_players(players_info)

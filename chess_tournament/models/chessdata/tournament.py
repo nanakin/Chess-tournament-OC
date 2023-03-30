@@ -29,6 +29,9 @@ class Tournament:
         return (f'Tournament "{self.name}" located in {self.location} from {str(self.begin_date)} to {str(self.end_date)}'
                 f'. {len(self.participants)} participants. {self.total_rounds} rounds ({self.total_finished_rounds}/{self.total_rounds} finished).')
 
+    def __lt__(self, other):
+        return self.begin_date < other.begin_date
+
     @property
     def current_round(self):
         return self.rounds[-1] if self.rounds else None
