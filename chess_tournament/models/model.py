@@ -1,3 +1,4 @@
+import datetime
 from dataclasses import dataclass, field
 from pathlib import Path
 from datetime import date
@@ -21,6 +22,12 @@ class Model:
     data_path: Path | None
     players: dict[Player] = field(default_factory=dict)
     tournaments: list[Tournament] = field(default_factory=list)
+    status_filter = {
+        "past": lambda tournament: tournament.end_date < datetime.date.today() or (tournament.end_date == datetime.date.today() and tournament.is_ended),
+        "future": lambda tournament: tournament.begin_date > datetime.date.today() or (tournament.begin_date == datetime.date.today() and not tournament.total_started_rounds),
+        "ongoing": lambda tournament: tournament.begin_date <= datetime.date.today() and tournament.total_started_rounds > 0,
+        "all": lambda tournament: True
+    }
 
     # public methods accessible by the controller and the load/backup system
 
@@ -63,8 +70,16 @@ class Model:
     def get_total_players(self):
         return len(self.players)
 
-    def get_tournaments_str(self, filter=None):
-        return [(tournament.name, str(tournament)) for tournament in self.tournaments]
+    def get_tournaments_states_statistics(self):
+        statistics = {}
+        for filter_name, func_status_filter in self.status_filter.items():
+            statistics[filter_name] = sum(1 for tournament in self.tournaments
+                                          if func_status_filter(tournament))
+        return statistics
+
+    def get_tournaments_str(self, status="all"):
+        return [(t_index, tournament.name, str(tournament)) for t_index, tournament in enumerate(self.tournaments)
+                if self.status_filter[status](tournament)]
 
     def get_participants_id(self, tournament_t):
         return (participant.player.identifier for participant in self.tournaments[tournament_t].participants)

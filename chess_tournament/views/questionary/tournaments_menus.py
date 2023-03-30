@@ -143,13 +143,29 @@ class TournamentsMenus:
     @clear_screen_and_show_log
     def choose_tournament_by_name(self, tournaments_info):
         print_title("Tournament selection menu")
-        tournaments_meta = {f"{t}- {tournament_info[0]}": tournament_info[1] for t, tournament_info in enumerate(tournaments_info)}
+        tournaments_meta = {f"{t_index}- {tournament_name}": tournament_str
+                            for t_index, tournament_name, tournament_str in tournaments_info}
         question = q.autocomplete(
             "Enter the tournament name :",
-            choices=list(tournaments_meta.keys()), meta_information=tournaments_meta, validate=lambda x: x in list(tournaments_meta.keys()))
+            choices=list(tournaments_meta.keys()), meta_information=tournaments_meta,
+            validate=lambda x: x in list(tournaments_meta.keys()))
         answer = question.ask()
         if answer is None:
-            return Request.EDIT_TOURNAMENT, None
+            return Request.MANAGE_TOURNAMENT, None
         else:
             selected_tournament = int(answer.partition("-")[0])
             return Request.SELECTED_TOURNAMENT, selected_tournament
+
+    @clear_screen_and_show_log
+    def choose_tournament_by_list(self, tournaments_info):
+        print_title("Tournament selection menu")
+        choices = [q.Choice(title=tournament_name, value=t_index) for t_index, tournament_name, _ in tournaments_info]
+        choices.extend([q.Separator(), q.Choice("Back")])
+        question = q.select(
+            "Select a tournament: ",
+            choices=choices)
+        answer = question.ask()
+        if answer is None or answer is "Back":
+            return Request.MANAGE_TOURNAMENT, None
+        else:
+            return Request.SELECTED_TOURNAMENT, answer

@@ -34,6 +34,10 @@ class Tournament:
         return self.rounds[-1] if self.rounds else None
 
     @property
+    def is_ended(self):
+        return self.total_finished_rounds == self.total_rounds
+
+    @property
     def total_started_rounds(self):
         return len(self.rounds)
 

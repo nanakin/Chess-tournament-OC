@@ -8,31 +8,37 @@ class TournamentsController:
         action, action_data = self.view.show_tournament_registration()
         if action == Request.REGISTER_TOURNAMENT_DATA:
             tournament_data = action_data
-            try:
-                self.model.add_tournaments(tournament_data)
-                self.view.log(True, "correctly added")  # to-do: change message
-            except AlreadyUsedID as err:
-                self.view.log(False)
+            self.model.add_tournaments(tournament_data)
+            self.view.log(True, "correctly added")  # to-do: change message
         self.status = State.MANAGE_TOURNAMENTS_MENU
 
     def show_select_tournament_menu(self):
         # improvement : use round info to know if a tournament really ended
-        statistics = {
-            "all": len(self.model.tournaments),
-            "ongoing": sum(1 for tournament in self.model.tournaments if
-                           tournament.end_date <= datetime.date.today() >= tournament.begin_date),
-            "future": sum(
-                1 for tournament in self.model.tournaments if tournament.begin_date > datetime.date.today()),
-            "past": sum(1 for tournament in self.model.tournaments if tournament.end_date < datetime.date.today())
-        }
+        statistics = self.model.get_tournaments_states_statistics()
         action = self.view.how_to_choose_tournament(statistics)
-        if action == Request.FIND_TOURNAMENT_BY_NAME:
-            tournaments_info = self.model.get_tournaments_str()
-            action, action_data = self.view.choose_tournament_by_name(tournaments_info)
+        if action in (Request.FIND_TOURNAMENT_BY_NAME, Request.FIND_TOURNAMENT_BY_LIST_ONGOING,
+                      Request.FIND_TOURNAMENT_BY_LIST_FUTURE, Request.FIND_TOURNAMENT_BY_LIST_PAST,
+                      Request.FIND_TOURNAMENT_BY_LIST_ALL):
+            if action == Request.FIND_TOURNAMENT_BY_NAME:
+                tournaments_info = self.model.get_tournaments_str()
+                action, action_data = self.view.choose_tournament_by_name(tournaments_info)
+            else:
+                if action == Request.FIND_TOURNAMENT_BY_LIST_ONGOING:
+                    tournaments_info = self.model.get_tournaments_str("ongoing")
+                elif action == Request.FIND_TOURNAMENT_BY_LIST_FUTURE:
+                    tournaments_info = self.model.get_tournaments_str("future")
+                elif action == Request.FIND_TOURNAMENT_BY_LIST_PAST:
+                    tournaments_info = self.model.get_tournaments_str("past")
+                elif action == Request.FIND_TOURNAMENT_BY_LIST_ALL:
+                    tournaments_info = self.model.get_tournaments_str("all")
+                action, action_data = self.view.choose_tournament_by_list(tournaments_info)
+
             if action == Request.SELECTED_TOURNAMENT:
                 selected_tournament = action_data
                 self.context = selected_tournament
                 self.status = State.MANAGE_TOURNAMENT_MENU
+            else:
+                self.status = State.MANAGE_TOURNAMENTS_MENU
         else:
             self.status = State.MANAGE_TOURNAMENTS_MENU
 
