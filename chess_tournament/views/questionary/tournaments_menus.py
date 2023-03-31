@@ -15,7 +15,6 @@ class TournamentsMenus:
                 q.Choice(title="Manage existing tournament", value=Request.EDIT_TOURNAMENT),
                 q.Choice(title="List tournaments", value=Request.LIST_TOURNAMENTS),
                 q.Separator(),
-                "Save",
                 q.Choice(title="Back", value=Request.MAIN_MENU)])
         return question.ask()
 
@@ -31,7 +30,6 @@ class TournamentsMenus:
                 q.Choice(title=f"Manage participants ({tournament_info['total_participants']})", value=Request.MANAGE_PARTICIPANTS),
                 choice_generate_matches,
                 q.Separator(),
-                "Save",
                 q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
         answer = question.ask()
         if not answer:
@@ -73,7 +71,6 @@ class TournamentsMenus:
                 q.Separator(),
                 q.Choice(title="Summary report of all rounds and scores", value=Request.LIST_ROUNDS_SCORES),
                 q.Separator(),
-                "Save",
                 q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
         return question.ask()
 
@@ -136,7 +133,6 @@ class TournamentsMenus:
                 q.Choice(title=f"Find from list of past tournaments ({statistics['past']})", value=Request.FIND_TOURNAMENT_BY_LIST_PAST),
                 q.Choice(title=f"Find from list of all tournaments ({statistics['all']})", value=Request.FIND_TOURNAMENT_BY_LIST_ALL),
                 q.Separator(),
-                "Save",
                 q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
         return question.ask()
 

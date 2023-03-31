@@ -6,7 +6,9 @@ from .chessdata.player import Player
 from .chessdata.tournament import Tournament
 from .chessdata.participant import Participant
 from .chessdata.match import Match
+from .save_load_system import BackupManager, save_at_the_end
 from pprint import pprint
+import json
 
 
 class AlreadyUsedID(Exception):
@@ -15,8 +17,9 @@ class AlreadyUsedID(Exception):
     def __str__(self):
         return "bla"
 
+
 @dataclass
-class Model:
+class Model(BackupManager):
     """The only external interface to manipulate chess data."""
 
     data_path: Path | None
@@ -31,6 +34,7 @@ class Model:
 
     # public methods accessible by the controller and the load/backup system
 
+    @save_at_the_end(players_file=True)
     def add_players(self, *players_data):
         for player_data in players_data:
             if player_data["identifier"] not in self.players:
@@ -45,6 +49,7 @@ class Model:
             else:
                 raise AlreadyUsedID(player_data["identifier"])
 
+    @save_at_the_end(players_file=True)
     def edit_player_attributes(self, player_data):
         player = self.players[player_data["identifier"]]
         player.first_name = player_data["first_name"].capitalize()
@@ -102,6 +107,7 @@ class Model:
                 "total_finished_rounds": tournament.total_finished_rounds,
                 "total_participants": len(tournament.participants)}
 
+    @save_at_the_end(tournaments_file=True)
     def add_tournaments(self, *tournaments_data):
         for tournament_data in tournaments_data:
             tournament_data["name"] = tournament_data["name"].strip()
@@ -113,10 +119,12 @@ class Model:
             # to-do: verify begin_date < end_date
             self.tournaments.append(Tournament(**tournament_data))
 
+    @save_at_the_end(tournaments_file=True)
     def add_participants_to_tournament(self, tournament_t, *participants_data):
         for player_id in participants_data:
             self.tournaments[tournament_t].participants.append(Participant(self.players[player_id]))
 
+    @save_at_the_end(tournaments_file=True)
     def register_score(self, tournament_t, match_m, first_player_result_str):
         round = self.tournaments[tournament_t].current_round
         first_result = Match.Points[first_player_result_str]
@@ -127,12 +135,14 @@ class Model:
         if are_all_matches_ended:
             round.end_round()
 
+    @save_at_the_end(tournaments_file=True)
     def start_round(self, tournament_t):
         self.tournaments[tournament_t].start_round()
 
     def get_rounds(self, tournament_t):
         return self.tournaments[tournament_t].rounds
 
+    @save_at_the_end(tournaments_file=True)
     def get_round_matches(self, tournament_t, round_r=None):
         if round_r is None:
             round_r = max(0, len(self.tournaments[tournament_t].rounds) - 1)

@@ -2,10 +2,11 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Tuple
 from .participant import Participant
+from ..serialization import Serializable
 
 
 @dataclass
-class Match:
+class Match(Serializable):
     """Round's match data."""
     class Points(Enum):
         WIN = 1.0
@@ -31,3 +32,18 @@ class Match:
         self.participants_scores = participants_status
         for participant, score in zip(self.participants_pair, self.participants_scores):
             participant.add_score(score.value)
+
+    def encode(self):
+        return {
+            "participants_pair": [participant.encode() for participant in self.participants_pair],
+            "participants_scores": [score.name for score in self.participants_scores] if self.is_ended else []
+        }
+
+    @classmethod
+    def decode(cls, encoded_data):
+        encoded_data["participants_scores"] = tuple([cls.Points[encoded_score]
+                                                     for encoded_score in encoded_data["participants_scores"]]) if encoded_data["participants_scores"] else None
+        encoded_data["participants_pair"] = tuple([Participant.decode(encoded_participant)
+                                                   for encoded_participant in encoded_data["participants_pair"]])
+
+        return cls(**encoded_data)

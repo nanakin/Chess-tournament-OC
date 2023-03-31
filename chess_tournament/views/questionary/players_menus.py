@@ -15,7 +15,6 @@ class PlayerMenus:
                 q.Choice(title="Edit player", value=Request.EDIT_PLAYER),
                 q.Choice(title="List players", value=Request.LIST_PLAYERS),
                 q.Separator(),
-                "Save",
                 q.Choice(title="Back", value=Request.MAIN_MENU)])
         return question.ask()
 

@@ -17,7 +17,6 @@ class ParticipantsMenus:
                 q.Separator(),
                 q.Choice(title="List participants", value=Request.LIST_PARTICIPANTS),
                 q.Separator(),
-                "Save",
                 q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
         answer = question.ask()
         if not answer:

@@ -6,7 +6,6 @@ from .tournaments_menus import TournamentsMenus
 from .participants_menus import ParticipantsMenus
 from .common import clear_screen_and_show_log, print_title
 import questionary as q
-import os
 
 
 class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView):
@@ -47,6 +46,5 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
                 q.Choice(title="Manage players", value=Request.MANAGE_PLAYER),
                 q.Choice(title="Manage tournaments", value=Request.MANAGE_TOURNAMENT),
                 q.Separator(),
-                "Save",
                 q.Choice(title="Exit", value=Request.EXIT_APP)])
         return question.ask()

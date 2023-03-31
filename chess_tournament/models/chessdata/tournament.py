@@ -3,10 +3,11 @@ from datetime import date
 from .match import Match
 from .participant import Participant
 from .round import Round
+from ..serialization import Serializable
 
 
 @dataclass
-class Tournament:
+class Tournament(Serializable):
     """Tournament data."""
     name: str
     location: str
@@ -70,3 +71,23 @@ class Tournament:
             return None
         return self.rounds[round_r].matches
 
+    def encode(self):
+        return {
+            "name": self.name,
+            "location": self.location,
+            "begin_date": str(self.begin_date),
+            "end_date": str(self.end_date),
+            "total_rounds": self.total_rounds,
+            "participants": [participant.encode() for participant in self.participants],
+            "rounds": [round.encode() for round in self.rounds]
+        }
+
+    @classmethod
+    def decode(cls, encoded_data):
+        encoded_data["begin_date"] = date.fromisoformat(encoded_data["begin_date"])
+        encoded_data["end_date"] = date.fromisoformat(encoded_data["end_date"])
+        encoded_data["rounds"] = [Round.decode(encoded_round)
+                                  for encoded_round in encoded_data["rounds"]]
+        encoded_data["participants"] = [Participant.decode(encoded_participant)
+                                        for encoded_participant in encoded_data["participants"]]
+        return cls(**encoded_data)

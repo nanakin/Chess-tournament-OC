@@ -13,9 +13,14 @@ class Controller(PlayerController, MatchesController, TournamentsController, Par
     def __init__(self, view, data_path):
         # view
         self.view = view
+
         # model
         self.model = Model(data_path)
-        self.add_default_entries()  # temporary
+        total_players_loaded, total_tournaments_loaded = self.model.load()
+        self.view.log(bool(total_players_loaded), f"{total_players_loaded} players loaded from save file.")
+        self.view.log(bool(total_tournaments_loaded), f"{total_tournaments_loaded} tournaments loaded from save file.")
+        #self.add_default_entries()
+
         # controller
         self.status = State.MAIN_MENU
         self.context = None
