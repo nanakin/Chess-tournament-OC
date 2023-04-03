@@ -17,6 +17,12 @@ class Participant(Serializable):
     def __lt__(self, other):
         return self.score < other.score
 
+    def __str__(self):
+        return f"{self.player.identifier} ({self.score} points)"
+
+    def __hash__(self):
+        return hash(self.player.identifier)
+
     def encode(self):
         return {
             "player": self.player.encode(),
