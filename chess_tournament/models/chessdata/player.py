@@ -12,7 +12,7 @@ class Player(Serializable):
     birth_date: date
 
     def __str__(self):
-        return f"player {self.identifier}: {self.last_name} {self.first_name} ({self.birth_date})"
+        return f"{self.last_name} {self.first_name} ({self.identifier})"
 
     def __lt__(self, other):
         return self.last_name.upper() < other.last_name.upper()

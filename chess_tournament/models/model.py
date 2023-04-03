@@ -7,8 +7,12 @@ from .chessdata.tournament import Tournament
 from .chessdata.participant import Participant
 from .chessdata.match import Match
 from .save_load_system import BackupManager, save_at_the_end
+import logging
 from pprint import pprint
-import json
+
+
+logging.basicConfig(filename='log', level=logging.DEBUG)
+logging.debug(f'-------------------{str(datetime.datetime.now())}')
 
 
 class AlreadyUsedID(Exception):
@@ -101,6 +105,8 @@ class Model(BackupManager):
         return {"str": str(tournament),
                 "name": tournament.name, "location": tournament.location, "begin_date": str(tournament.begin_date),
                 "end_date": str(tournament.end_date), "total_rounds": tournament.total_rounds,
+                "is_current_round_started": tournament.current_round.is_started if tournament.current_round is not None else False,
+                "current_round_name": tournament.current_round.name if tournament.current_round is not None else None,
                 "total_started_rounds": tournament.total_started_rounds,
                 "total_finished_matches": sum(1 for match in tournament.current_round.matches if match.is_ended) if tournament.total_started_rounds > 0 else 0,
                 "total_matches": len(tournament.current_round.matches) if tournament.total_started_rounds > 0 else 0,
@@ -112,6 +118,7 @@ class Model(BackupManager):
         for tournament_data in tournaments_data:
             tournament_data["name"] = tournament_data["name"].strip()
             tournament_data["location"] = tournament_data["location"].capitalize()
+            tournament_data["total_rounds"] = int(tournament_data["total_rounds"])
             if isinstance(tournament_data["begin_date"], str):
                 tournament_data["begin_date"] = date.fromisoformat(tournament_data["begin_date"])
             if isinstance(tournament_data["end_date"], str):
@@ -126,14 +133,22 @@ class Model(BackupManager):
 
     @save_at_the_end(tournaments_file=True)
     def register_score(self, tournament_t, match_m, first_player_result_str):
-        round = self.tournaments[tournament_t].current_round
+        logging.debug(f"register score {match_m} {first_player_result_str=}")
+        tournament = self.tournaments[tournament_t]
+        round = tournament.current_round
         first_result = Match.Points[first_player_result_str]
         pair_result = Match.get_pairs_score_from_first(first_result)
         round.matches[match_m].register_score(pair_result)
-        are_all_matches_ended = all([True for match in round.matches
-                                     if match.participants_scores is not None])
+        are_all_matches_ended = all([bool(match.participants_scores is not None) for match in round.matches])
         if are_all_matches_ended:
+            logging.debug("all matches ended")
+            logging.debug(are_all_matches_ended)
+            logging.debug([str(match) for match in round.matches])
             round.end_round()
+            logging.debug(f"{tournament.total_finished_rounds=}, {tournament.total_rounds=}")
+            if tournament.total_finished_rounds < tournament.total_rounds:
+                tournament.set_next_round()
+
 
     @save_at_the_end(tournaments_file=True)
     def start_round(self, tournament_t):
@@ -141,6 +156,9 @@ class Model(BackupManager):
 
     def get_rounds(self, tournament_t):
         return self.tournaments[tournament_t].rounds
+
+    def start_tournament(self, tournament_t):
+        self.get_round_matches(tournament_t)
 
     @save_at_the_end(tournaments_file=True)
     def get_round_matches(self, tournament_t, round_r=None):

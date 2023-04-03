@@ -71,11 +71,8 @@ class TournamentsController:
         action = self.view.show_manage_unready_tournament_menu(tournament_info)
         if action == Request.MANAGE_PARTICIPANTS:
             self.status = State.MANAGE_PARTICIPANTS_MENU
-        elif action == Request.GET_MATCHES_LIST:
-            matches_info = [(match.participants_pair[0].player.identifier,
-                             match.participants_pair[1].player.identifier)
-                            for match in self.model.get_round_matches(selected_tournament)]
-            self.view.show_matches(matches_info)
+        elif action == Request.GENERATE_MATCHES:
+            self.model.start_tournament(selected_tournament)
             self.status = State.MANAGE_TOURNAMENT_MENU
         else:
             self.status = State.MAIN_MENU
@@ -93,7 +90,7 @@ class TournamentsController:
         # ------------- to move ------------------------
         if action == Request.START_ROUND:
             self.model.start_round(selected_tournament)
-            self.view.log(True, f"round started {self.model.tournaments[selected_tournament].rounds}")
+            # self.view.log(True, f"round started {self.model.tournaments[selected_tournament].rounds}")
             self.status = State.MANAGE_TOURNAMENT_MENU
         if action == Request.GET_MATCHES_LIST:
             round_r = self.model.get_rounds(selected_tournament)[-1]

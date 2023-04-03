@@ -1,7 +1,7 @@
 import questionary as q
 from ..requests import Request, RequestAnswer
 from ..validators import *
-from .common import clear_screen_and_show_log, print_title, print_list_title
+from .common import clear_screen_and_show_log, print_title, print_list_title, print_important_info
 
 class TournamentsMenus:
 
@@ -21,14 +21,17 @@ class TournamentsMenus:
     @clear_screen_and_show_log
     def show_manage_unready_tournament_menu(self, tournament_info):
         print_title("Unready tournament menu")
-        choice_generate_matches = q.Choice(title=f"Generate pairs of the first round", value=Request.GET_MATCHES_LIST)
+        print_important_info(f"{tournament_info['str']}")
+        choice_start_tournament = q.Choice(title=f"Start tournament", value=Request.GENERATE_MATCHES)
         if tournament_info["total_participants"] < 2:
-            choice_generate_matches.disabled = "Not enough participants"
+            choice_start_tournament.disabled = "Not enough participants"
+        elif tournament_info["total_participants"] % 2 == 1:
+            choice_start_tournament.disabled = "Select an even number of participants"
         question = q.select(
             "What do you want to do ?",
             choices=[
                 q.Choice(title=f"Manage participants ({tournament_info['total_participants']})", value=Request.MANAGE_PARTICIPANTS),
-                choice_generate_matches,
+                choice_start_tournament,
                 q.Separator(),
                 q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
         answer = question.ask()
@@ -39,39 +42,41 @@ class TournamentsMenus:
     @clear_screen_and_show_log
     def show_manage_tournament_menu(self, tournament_info):
         print_title("Tournament menu")
+        print_important_info(f"{tournament_info['str']}")
+
         #print(f"selected tournament : {tournament_info['str']}")
         #print(f"{tournament_info['total_started_rounds']=}")
-        #print(f"{tournament_info['total_matches']=}")
+        # print(f"{tournament_info['total_matches']=}")
+        # print(f'{tournament_info["total_finished_matches"]=}')
+        #print(f'{tournament_info["is_current_round_started"]=}')
         #print(f'{tournament_info["name"]=}, {tournament_info["location"]=}, {tournament_info["begin_date"]=},'
         #      f'{tournament_info["end_date"]=}, {tournament_info["total_rounds"]=}, {tournament_info["total_started_rounds"]=},'
         #      f'{tournament_info["total_finished_matches"]=}, {tournament_info["total_matches"]=}',
         #      f'{tournament_info["total_finished_rounds"]=}, {tournament_info["total_participants"]=}')
 
-
-        if tournament_info["total_matches"] == 0:
-            choice_list_or_generate_matches = q.Choice(title="Generate matches", value=Request.GENERATE_MATCHES)
-        else:
-            choice_list_or_generate_matches = q.Choice(title="List matches of the current round", value=Request.LIST_MATCHES)
-
-        if tournament_info["total_finished_matches"] == tournament_info["total_matches"]:
-            choice_register_or_start_round = q.Choice(title="Start new round", value=Request.START_ROUND)
-            if tournament_info["total_finished_rounds"] == tournament_info["total_rounds"]:
-                choice_register_or_start_round.disabled = "All rounds ended"
-        else:
-            choice_register_or_start_round = q.Choice(title="Register a match score", value=Request.REGISTER_MATCH_SCORE)
-        if tournament_info["total_participants"] < 2:
-            choice_register_or_start_round.disabled = "Not enough participants"
-            choice_list_or_generate_matches.disabled = "Not enough participants"
-
-        question = q.select(
-            "What do you want to do ?",
-            choices=[
-                choice_list_or_generate_matches,
+        choices = []
+        if tournament_info["total_finished_rounds"] < tournament_info["total_rounds"]:
+            print_important_info(
+                f"{tournament_info['current_round_name']} ({tournament_info['total_started_rounds']}/{tournament_info['total_rounds']})")
+            if not tournament_info["is_current_round_started"]:
+                choice_register_or_start_round = q.Choice(title="Start the round", value=Request.START_ROUND)
+            else:
+                choice_register_or_start_round = q.Choice(title="Register a match score",
+                                                          value=Request.REGISTER_MATCH_SCORE)
+            choices.extend([
                 choice_register_or_start_round,
                 q.Separator(),
-                q.Choice(title="Summary report of all rounds and scores", value=Request.LIST_ROUNDS_SCORES),
-                q.Separator(),
-                q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
+                q.Choice(title="List matches of the current round", value=Request.LIST_MATCHES)])
+        else:
+            print_important_info("Tournament Ended")
+
+        choices.extend([
+            q.Choice(title="Summary report of all rounds and scores", value=Request.LIST_ROUNDS_SCORES),
+            q.Separator(),
+            q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
+
+        question = q.select(
+            "What do you want to do ?", choices=choices)
         return question.ask()
 
     @clear_screen_and_show_log

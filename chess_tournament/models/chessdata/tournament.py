@@ -8,6 +8,7 @@ from ..serialization import Serializable
 import random
 from ortools.sat.python import cp_model
 from itertools import combinations
+import logging
 
 
 
@@ -78,8 +79,8 @@ class Tournament(Serializable):
             return len(self.rounds) - 1 if self.rounds[-1].end_time is None else len(self.rounds)
 
     def __str__(self):
-        return (f'Tournament "{self.name}" located in {self.location} from {str(self.begin_date)} to {str(self.end_date)}'
-                f'. {len(self.participants)} participants. {self.total_rounds} rounds ({self.total_finished_rounds}/{self.total_rounds} finished).')
+        return (f'Tournament "{self.name}" in {self.location} ({str(self.begin_date)} > {str(self.end_date)})'
+                f'. {len(self.participants)} participant{"s" if len(self.participants) > 1 else ""}.')
 
     def __lt__(self, other):
         return self.begin_date < other.begin_date
@@ -133,6 +134,9 @@ class Tournament(Serializable):
 
     def set_next_round(self):
         matches_list = self._generate_pairs()
+        logging.debug(f"Generated matches list for round {self.total_started_rounds + 1}:")
+        for match in matches_list:
+            logging.debug(f"{str(match.participants_pair[0])} vs {str(match.participants_pair[1])}")
         round = Round(name=f"Round {(len(self.rounds) + 1)}",
                       matches=matches_list)
         self.rounds.append(round)
@@ -155,7 +159,7 @@ class Tournament(Serializable):
             "location": self.location,
             "begin_date": str(self.begin_date),
             "end_date": str(self.end_date),
-            "total_rounds": self.total_rounds,
+            "total_rounds": int(self.total_rounds),
             "participants": [participant.encode() for participant in self.participants],
             "rounds": [round.encode() for round in self.rounds]
         }

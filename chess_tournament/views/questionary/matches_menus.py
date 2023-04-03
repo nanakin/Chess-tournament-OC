@@ -13,7 +13,7 @@ class MatchesMenus:
     @clear_screen_and_show_log
     def select_match(self, matches_info) -> RequestAnswer:
         print_title("Match selection menu")
-        print(matches_info)
+        # print(matches_info)
         question = q.select(
             "Which match ?",
             choices=matches_info)
@@ -26,12 +26,14 @@ class MatchesMenus:
             return Request.MANAGE_TOURNAMENT, None
 
     @clear_screen_and_show_log
-    def enter_score(self, match_info) -> RequestAnswer:
+    def enter_score(self, players) -> RequestAnswer:
         print_title("Score registration menu")
-        # to-do : print the first player info or detail the 2 names in the choices
         question = q.select(
             "Select the result of the match, for the first player",
-            choices=["WIN", "LOSE", "DRAW"])
+            choices=[
+                q.Choice(title=f"{players[0]}: WIN  - {players[1]}: LOSE ", value="WIN"),
+                q.Choice(title=f"{players[0]}: LOSE - {players[1]}: WIN ", value="LOSE"),
+                q.Choice(title="DRAW", value="DRAW")])
         answer = question.ask()
         if answer:
             return Request.ADD_MATCH_RESULT, answer

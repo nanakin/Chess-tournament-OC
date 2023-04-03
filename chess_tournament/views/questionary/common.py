@@ -1,6 +1,9 @@
 import os
 import questionary as q
 
+DEFAULT_COLUMNS = 80
+
+
 def clear_screen_and_show_log(function):
     def clear():
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -14,10 +17,14 @@ def clear_screen_and_show_log(function):
 
 def print_title(title):
     title = f" {title} "
-    q.print(title.center(80, "="), style="bold")
+    q.print(title.center(DEFAULT_COLUMNS, "="), style="bold")
 
 
 def print_list_title(title):
     title = f" {title} "
-    q.print(title.center(80, "+"), style="bold")
+    q.print(title.center(DEFAULT_COLUMNS, "+"), style="bold")
 
+
+def print_important_info(info):
+    info = f">>> {info} <<<"
+    q.print(info)

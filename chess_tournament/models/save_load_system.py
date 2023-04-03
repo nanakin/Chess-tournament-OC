@@ -4,9 +4,6 @@ import datetime
 from .chessdata.player import Player
 from .chessdata.tournament import Tournament
 
-logging.basicConfig(filename='log', level=logging.DEBUG)
-logging.debug(f'-------------------{str(datetime.datetime.now())}')
-
 
 def save_at_the_end(players_file=False, tournaments_file=False):
     def save_at_the_end_decorator(function):
@@ -46,6 +43,7 @@ class BackupManager:
             tournaments_encoded = []
             for tournament in self.tournaments:
                 tournaments_encoded.append(tournament.encode())
+            # logging.debug(tournaments_encoded)
             is_ok, abs_path = save_to_json(path=(self.data_path / "tournaments.json"), data=tournaments_encoded)
             logging.debug(f"{is_ok=}: tournaments autosave in {self.data_path}")
 

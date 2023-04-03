@@ -17,6 +17,10 @@ class Round(Serializable):
     def is_ended(self):
         return self.end_time is not None
 
+    @property
+    def is_started(self):
+        return self.start_time is not None
+
     def start_round(self, start_time: datetime = datetime.now()):
         self.start_time = start_time
 
