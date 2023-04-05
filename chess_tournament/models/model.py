@@ -79,6 +79,11 @@ class Model(BackupManager):
     def get_total_players(self):
         return len(self.players)
 
+    def get_total_matches(self, tournament_t, round_r=None):
+        if round_r is None:
+            round_r = max(0, len(self.tournaments[tournament_t].rounds) - 1)
+        return len(self.tournaments[tournament_t].get_round_matches(round_r))
+
     def get_tournaments_states_statistics(self):
         statistics = {}
         for filter_name, func_status_filter in self.status_filter.items():
@@ -167,3 +172,8 @@ class Model(BackupManager):
         if round_r == len(self.tournaments[tournament_t].rounds):
             self.tournaments[tournament_t].set_next_round()
         return self.tournaments[tournament_t].get_round_matches(round_r)
+
+    def get_matches_str(self, tournament_t, round_r=None):
+        if round_r is None:
+            round_r = max(0, len(self.tournaments[tournament_t].rounds) - 1)
+        return [str(match) for match in self.tournaments[tournament_t].get_round_matches(round_r)]

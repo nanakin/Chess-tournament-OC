@@ -10,6 +10,7 @@ class State(Enum):
         LIST_TOURNAMENTS_MENU = auto(),
         ADD_TOURNAMENT_MENU = auto(),
         REGISTER_MATCH_SCORE_MENU = auto(),
+        LIST_MATCHES_MENU = auto(),
         ADD_PARTICIPANT_MENU = auto(),
         DELETE_PARTICIPANT_MENU = auto(),
         MANAGE_PARTICIPANTS_MENU = auto(),

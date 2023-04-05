@@ -28,3 +28,9 @@ class MatchesController:
                 self.status = State.MANAGE_TOURNAMENT_MENU
         else:
             self.status = State.MANAGE_TOURNAMENT_MENU
+
+    def show_list_matches_menu(self):
+        selected_tournament = self.context
+        self.report(total=self.model.get_total_matches(selected_tournament),
+                    data_info=self.model.get_matches_str(selected_tournament),
+                    conjugated_name=self.conjugated_match, back_state=State.MANAGE_TOURNAMENT_MENU)
