@@ -1,10 +1,12 @@
 from chess_tournament.controllers.states import State
 from chess_tournament.views.requests import Request
 from chess_tournament.models.model import AlreadyUsedID
-from ..helpers import write_list_in_file
+from ..helpers import write_list_in_file, ConjugatedWord
 
 
 class PlayerController:
+
+    conjugated_player = ConjugatedWord(singular="player", plural="players")
 
     def show_manage_player_menu(self):
         action = self.view.show_manage_player_menu()
@@ -56,22 +58,8 @@ class PlayerController:
                 self.view.log(False)
         self.status = State.MANAGE_PLAYER_MENU
 
+
     def show_list_players_menu(self):
-        total_players = self.model.get_total_players()
-        action = self.view.show_list_players_menu(total_players)
-        if action not in (Request.PRINT_PLAYERS, Request.EXPORT_PLAYERS):
-            self.status = State.MANAGE_PLAYER
-            return
-        players_info = self.model.get_ordered_players_str()
-        if action == Request.PRINT_PLAYERS:
-            action = self.view.print_players(players_info)
-        if action == Request.EXPORT_PLAYERS:
-            action, action_data = self.view.ask_saving_path()
-            if action == Request.SELECTED_PATH:
-                filename = action_data
-                status_ok, absolute_path = write_list_in_file(players_info, filename, "players")
-                if status_ok:
-                    self.view.log(True, f"List correctly saved in {absolute_path}.")
-                else:
-                    self.view.log(False, f"Cannot save data in {absolute_path}.")
-        self.status = State.MANAGE_PLAYER_MENU
+        self.report(total=self.model.get_total_players(), data_info=self.model.get_ordered_players_str(),
+                    conjugated_name=PlayerController.conjugated_player, back_state=State.MANAGE_PLAYER_MENU)
+

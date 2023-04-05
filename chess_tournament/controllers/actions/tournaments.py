@@ -1,10 +1,12 @@
 from chess_tournament.controllers.states import State
 from chess_tournament.views.requests import Request
-from ..helpers import write_list_in_file
+from ..helpers import write_list_in_file, ConjugatedWord
 import datetime
 
 
 class TournamentsController:
+
+    conjugated_tournament = ConjugatedWord(singular="tournament", plural="tournaments")
 
     def show_manage_tournaments_menu(self):
         action = self.view.show_manage_tournaments_menu()
@@ -104,21 +106,5 @@ class TournamentsController:
             self.status = State.MANAGE_TOURNAMENTS_MENU
 
     def show_list_tournaments_menu(self):
-        total_tournaments = self.model.get_total_tournaments()
-        action = self.view.show_list_tournaments_menu(total_tournaments)
-        if action not in (Request.PRINT_TOURNAMENTS, Request.EXPORT_TOURNAMENTS):
-            self.status = State.MANAGE_TOURNAMENTS_MENU
-            return
-        tournaments_info = self.model.get_ordered_tournaments_str()
-        if action == Request.PRINT_TOURNAMENTS:
-            action = self.view.print_tournaments(tournaments_info)
-        if action == Request.EXPORT_TOURNAMENTS:
-            action, action_data = self.view.ask_saving_path()
-            if action == Request.SELECTED_PATH:
-                filename = action_data
-                status_ok, absolute_path = write_list_in_file(tournaments_info, filename, "tournaments")
-                if status_ok:
-                    self.view.log(True, f"List correctly saved in {absolute_path}.")
-                else:
-                    self.view.log(False, f"Cannot save data in {absolute_path}.")
-        self.status = State.MANAGE_TOURNAMENTS_MENU
+        self.report(total=self.model.get_total_tournaments(), data_info=self.model.get_ordered_tournaments_str(),
+                    conjugated_name=self.conjugated_tournament, back_state=State.MANAGE_TOURNAMENTS_MENU)

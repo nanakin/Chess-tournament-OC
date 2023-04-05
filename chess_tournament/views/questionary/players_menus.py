@@ -19,38 +19,6 @@ class PlayerMenus:
         return question.ask()
 
     @clear_screen_and_show_log
-    def show_list_players_menu(self, total_players):
-        print_title("Players list menu")
-        q.print(f">> Total {total_players} players")
-        question = q.select(
-            "What do you want to do ?",
-            choices=[
-                q.Choice(title="Print list", value=Request.PRINT_PLAYERS),
-                q.Choice(title="Export list", value=Request.EXPORT_PLAYERS),
-                q.Separator(),
-                q.Choice(title="Back", value=Request.MANAGE_PLAYER)])
-        return question.ask()
-
-    @clear_screen_and_show_log
-    def print_players(self, players_info):
-        print_list_title("Players list")
-        for player_info in players_info:
-            q.print(player_info)
-        back_choice = q.Choice(title="Back", value=Request.MANAGE_PLAYER)
-        question = q.select(
-            "",
-            choices=[
-                back_choice,
-                q.Choice(title="Export this list", value=Request.EXPORT_PLAYERS)],
-            default=back_choice)
-        answer = question.ask()
-        if not answer:
-            return Request.MANAGE_PLAYER
-        return answer
-
-
-
-    @clear_screen_and_show_log
     def show_player_selection(self, players_id):
         print_title("Player selection menu")
         question = q.autocomplete(

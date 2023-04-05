@@ -4,7 +4,7 @@ from .players_menus import PlayerMenus
 from .matches_menus import MatchesMenus
 from .tournaments_menus import TournamentsMenus
 from .participants_menus import ParticipantsMenus
-from .common import clear_screen_and_show_log, print_title
+from .common import clear_screen_and_show_log, print_title, print_list_title
 import questionary as q
 
 
@@ -48,3 +48,33 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
                 q.Separator(),
                 q.Choice(title="Exit", value=Request.EXIT_APP)])
         return question.ask()
+
+    @clear_screen_and_show_log
+    def show_list_menu(self, total, data_name):
+        print_title(f"{data_name.capitalize()} list menu")
+        q.print(f">> Total {total} {data_name}")
+        question = q.select(
+            "What do you want to do ?",
+            choices=[
+                q.Choice(title="Print list", value=Request.PRINT),
+                q.Choice(title="Export list", value=Request.EXPORT),
+                q.Separator(),
+                q.Choice(title="Back", value=Request.EXIT_LOCAL_MENU)])
+        return question.ask()
+
+    @clear_screen_and_show_log
+    def print_list(self, data_name, info_list):
+        print_list_title(f"{data_name.capitalize()} list")
+        for info in info_list:
+            q.print(info)
+        back_choice = q.Choice(title="Back", value=Request.EXIT_LOCAL_MENU)
+        question = q.select(
+            "",
+            choices=[
+                back_choice,
+                q.Choice(title="Export this list", value=Request.EXPORT)],
+            default=back_choice)
+        answer = question.ask()
+        if not answer:
+            return Request.EXIT_LOCAL_MENU
+        return answer

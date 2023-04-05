@@ -1,8 +1,11 @@
 from chess_tournament.controllers.states import State
 from chess_tournament.views.requests import Request
+from ..helpers import ConjugatedWord
 
 
 class MatchesController:
+
+    conjugated_match = ConjugatedWord(singular="match", plural="matches")
 
     def show_register_match_score_menu(self):
         selected_tournament = self.context

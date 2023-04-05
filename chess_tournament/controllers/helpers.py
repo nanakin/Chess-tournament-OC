@@ -1,5 +1,14 @@
 from pathlib import Path
+from dataclasses import dataclass
 
+
+@dataclass
+class ConjugatedWord:
+    singular: str
+    plural: str
+
+    def conjugated_with_number(self, number):
+        return self.plural if number > 1 else self.singular
 
 def write_list_in_file(data_list, export_path, data_type):
     path = Path(export_path).expanduser()
