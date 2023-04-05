@@ -11,8 +11,6 @@ from itertools import combinations
 import logging
 
 
-
-# def solve_by_constraints(players_scores, remaining_matches_possibilities):
 def solve_by_constraints(participants, remaining_matches_possibilities):
     def weight(participants_pair, match_model_variable):
         return match_model_variable * (abs(participants_pair[0].score - participants_pair[1].score) ** 2)
@@ -79,8 +77,7 @@ class Tournament(Serializable):
             return len(self.rounds) - 1 if self.rounds[-1].end_time is None else len(self.rounds)
 
     def __str__(self):
-        return (f'Tournament "{self.name}" in {self.location} ({str(self.begin_date)} > {str(self.end_date)})'
-                f'. {len(self.participants)} participant{"s" if len(self.participants) > 1 else ""}.')
+        return f'"{self.name}" in {self.location} ({str(self.begin_date)} > {str(self.end_date)})'
 
     def __lt__(self, other):
         return self.begin_date < other.begin_date
@@ -92,6 +89,10 @@ class Tournament(Serializable):
     @property
     def is_ended(self):
         return self.total_finished_rounds == self.total_rounds
+
+    @property
+    def is_started(self):
+        return len(self.rounds) > 0
 
     @property
     def total_started_rounds(self):

@@ -32,7 +32,7 @@ class Model(BackupManager):
     status_filter = {
         "past": lambda tournament: tournament.end_date < datetime.date.today() or (tournament.end_date == datetime.date.today() and tournament.is_ended),
         "future": lambda tournament: tournament.begin_date > datetime.date.today() or (tournament.begin_date == datetime.date.today() and not tournament.total_started_rounds),
-        "ongoing": lambda tournament: tournament.begin_date <= datetime.date.today() and tournament.total_started_rounds > 0,
+        "ongoing": lambda tournament: tournament.begin_date <= datetime.date.today() and tournament.is_started and not tournament.is_ended,
         "all": lambda tournament: True
     }
 
