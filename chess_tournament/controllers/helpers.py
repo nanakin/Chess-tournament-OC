@@ -2,7 +2,7 @@ from pathlib import Path
 
 
 def write_list_in_file(data_list, export_path, data_type):
-    path = Path(export_path)
+    path = Path(export_path).expanduser()
     if path.is_dir():
         path = path / f"export_{data_type}.txt"
     try:
@@ -10,6 +10,6 @@ def write_list_in_file(data_list, export_path, data_type):
             for line in data_list:
                 f.write(f"{line}\n")
     except FileNotFoundError:
-        return False, None
+        return False, path.absolute()
     else:
         return True, path.absolute()
