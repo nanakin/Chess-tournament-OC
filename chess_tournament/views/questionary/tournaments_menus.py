@@ -71,7 +71,8 @@ class TournamentsMenus:
             print_important_info("Tournament Ended")
 
         choices.extend([
-            q.Choice(title="Summary report of all rounds and scores", value=Request.LIST_ROUNDS_SCORES),
+            q.Choice(title="List all rounds matches (and scores)", value=Request.LIST_ROUNDS_SCORES),
+            q.Choice(title="List participants", value=Request.LIST_PARTICIPANTS),
             q.Separator(),
             q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
 

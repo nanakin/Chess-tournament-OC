@@ -94,16 +94,18 @@ class TournamentsController:
             self.model.start_round(selected_tournament)
             # self.view.log(True, f"round started {self.model.tournaments[selected_tournament].rounds}")
             self.status = State.MANAGE_TOURNAMENT_MENU
+        if action == Request.LIST_PARTICIPANTS:
+            self.status = State.LIST_PARTICIPANTS_MENU
         if action == Request.LIST_MATCHES:
             self.status = State.LIST_MATCHES_MENU
         if action == Request.LIST_ROUNDS_SCORES:
             self.status = State.LIST_ALL_ROUNDS_MENU
-            rounds = self.model.get_rounds(selected_tournament)
-            matches_info = [(match.participants_pair[0].player.identifier,
-                             match.participants_pair[1].player.identifier)
-                            for round_r in range(len(rounds))
-                            for match in self.model.get_round_matches(selected_tournament, round_r)]
-            self.view.show_matches(matches_info)
+            # rounds = self.model.get_rounds(selected_tournament)
+            #matches_info = [(match.participants_pair[0].player.identifier,
+            #                 match.participants_pair[1].player.identifier)
+            #                for round_r in range(len(rounds))
+            #                for match in self.model.get_round_matches(selected_tournament, round_r)]
+            #self.view.show_matches(matches_info)
         if action == Request.REGISTER_MATCH_SCORE:
             self.status = State.REGISTER_MATCH_SCORE_MENU
         if action == Request.MANAGE_TOURNAMENT:

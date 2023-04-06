@@ -1,8 +1,11 @@
 from chess_tournament.controllers.states import State
 from chess_tournament.views.requests import Request
-
+from ..helpers import ConjugatedWord
 
 class ParticipantsController:
+
+    conjugated_participant = ConjugatedWord(singular="participant", plural="participants")
+
     def show_manage_participants_menu(self):
         total_participants = len(list(self.model.get_participants_id(self.context)))  # to-do : change method
         action = self.view.show_manage_participants_menu(total_participants)
@@ -32,3 +35,9 @@ class ParticipantsController:
 
     def show_delete_participant_menu(self):
         pass
+
+    def show_list_participants_menu(self):
+        selected_tournament = self.context
+        self.report(total=self.model.get_total_participants(selected_tournament),
+                    data_info=self.model.get_ordered_participants_str(selected_tournament),
+                    conjugated_name=self.conjugated_participant, back_state=State.MANAGE_TOURNAMENT_MENU)

@@ -79,6 +79,9 @@ class Model(BackupManager):
     def get_total_players(self):
         return len(self.players)
 
+    def get_total_participants(self, tournament_t):
+        return len(self.tournaments[tournament_t].participants)
+
     def get_total_matches(self, tournament_t, round_r=None):
         if round_r is None:
             round_r = max(0, len(self.tournaments[tournament_t].rounds) - 1)
@@ -95,6 +98,12 @@ class Model(BackupManager):
             matches.append(round.name)
             matches.extend(self.get_matches_str(tournament_t, r))
         return matches
+
+    def get_ordered_participants_str(self, tournament_t):
+        sorted_participants = sorted(self.tournaments[tournament_t].participants,
+                                     key=lambda participant: participant.player)
+        return [str(participant)
+                for participant in sorted_participants]
 
     def get_tournaments_states_statistics(self):
         statistics = {}

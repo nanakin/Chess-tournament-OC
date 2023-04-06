@@ -18,7 +18,7 @@ class Participant(Serializable):
         return self.score < other.score
 
     def __str__(self):
-        return f"{self.player} (total: {self.score} points)"
+        return f"{self.player} - {self.score} points"
 
     def __hash__(self):
         return hash(self.player.identifier)

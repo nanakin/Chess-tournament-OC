@@ -39,6 +39,7 @@ class Controller(PlayerController, MatchesController, TournamentsController, Par
             State.MANAGE_UNREADY_TOURNAMENT_MENU: self.show_manage_unready_tournament_menu,
             State.ADD_TOURNAMENT_MENU: self.show_tournament_registration,
             State.SELECT_TOURNAMENT_MENU: self.show_select_tournament_menu,
+            State.LIST_PARTICIPANTS_MENU: self.show_list_participants_menu,
             State.LIST_MATCHES_MENU: self.show_list_matches_menu,
             State.LIST_ALL_ROUNDS_MENU: self.show_list_all_rounds_menu,
             State.MANAGE_PARTICIPANTS_MENU: self.show_manage_participants_menu,
