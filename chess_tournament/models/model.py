@@ -84,6 +84,18 @@ class Model(BackupManager):
             round_r = max(0, len(self.tournaments[tournament_t].rounds) - 1)
         return len(self.tournaments[tournament_t].get_round_matches(round_r))
 
+    def get_total_all_matches(self, tournament_t):
+        tournament = self.tournaments[tournament_t]
+        return sum(len(tournament.get_round_matches(round_r)) for round_r in range(tournament.total_started_rounds))
+
+    def get_all_matches_str(self, tournament_t):
+        tournament = self.tournaments[tournament_t]
+        matches = []
+        for r, round in enumerate(tournament.rounds):
+            matches.append(round.name)
+            matches.extend(self.get_matches_str(tournament_t, r))
+        return matches
+
     def get_tournaments_states_statistics(self):
         statistics = {}
         for filter_name, func_status_filter in self.status_filter.items():
@@ -138,7 +150,6 @@ class Model(BackupManager):
 
     @save_at_the_end(tournaments_file=True)
     def register_score(self, tournament_t, match_m, first_player_result_str):
-        logging.debug(f"register score {match_m} {first_player_result_str=}")
         tournament = self.tournaments[tournament_t]
         round = tournament.current_round
         first_result = Match.Points[first_player_result_str]

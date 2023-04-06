@@ -97,10 +97,11 @@ class TournamentsController:
         if action == Request.LIST_MATCHES:
             self.status = State.LIST_MATCHES_MENU
         if action == Request.LIST_ROUNDS_SCORES:
+            self.status = State.LIST_ALL_ROUNDS_MENU
             rounds = self.model.get_rounds(selected_tournament)
             matches_info = [(match.participants_pair[0].player.identifier,
                              match.participants_pair[1].player.identifier)
-                            for round_r in rounds
+                            for round_r in range(len(rounds))
                             for match in self.model.get_round_matches(selected_tournament, round_r)]
             self.view.show_matches(matches_info)
         if action == Request.REGISTER_MATCH_SCORE:

@@ -17,7 +17,10 @@ class Match(Serializable):
     participants_scores: Tuple[Points, Points] | None = None
 
     def __str__(self):
-        return f"{self.participants_pair[0].player} vs {self.participants_pair[1].player}"
+        player_1, player_2 = self.participants_pair[0].player, self.participants_pair[1].player
+        score_player_1, score_player_2 = (self.participants_scores[0].name, self.participants_scores[1].name)\
+            if self.participants_scores is not None else ("", "")
+        return f"{player_1} {score_player_1}".ljust(39) + "vs" + f"{player_2} {score_player_2}".rjust(39)
 
     @property
     def is_ended(self):
