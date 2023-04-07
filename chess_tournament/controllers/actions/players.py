@@ -5,7 +5,6 @@ from ..helpers import write_list_in_file, ConjugatedWord
 
 
 class PlayerController:
-
     conjugated_player = ConjugatedWord(singular="player", plural="players")
 
     def show_manage_player_menu(self):
@@ -58,8 +57,10 @@ class PlayerController:
                 self.view.log(False)
         self.status = State.MANAGE_PLAYER_MENU
 
-
     def show_list_players_menu(self):
-        self.report(total=self.model.get_total_players(), data_info=self.model.get_ordered_players_str(),
-                    conjugated_name=PlayerController.conjugated_player, back_state=State.MANAGE_PLAYER_MENU)
-
+        self.report(
+            total=self.model.get_total_players(),
+            data_info=self.model.get_ordered_players_str(),
+            conjugated_name=PlayerController.conjugated_player,
+            back_state=State.MANAGE_PLAYER_MENU,
+        )

@@ -34,22 +34,28 @@ def solve_by_constraints(participants, remaining_matches_possibilities):
     # e.g. AB or AC or AD (i.e. AB + AC + AD = 1)
     for player in participants:
         player_matches_model_variables = [
-            model_variable for match, model_variable in matches_model_variables.items()
-            if player in match]
+            model_variable for match, model_variable in matches_model_variables.items() if player in match
+        ]
         model.Add(sum(player_matches_model_variables) == 1)
 
     # specify to model how to select the best choice by giving a weight to each possibility
     # here based on players scores difference
     model.Minimize(
-        sum((weight(players_pair, match_model_variable)
-             for players_pair, match_model_variable in matches_model_variables.items())))
+        sum(
+            (
+                weight(players_pair, match_model_variable)
+                for players_pair, match_model_variable in matches_model_variables.items()
+            )
+        )
+    )
 
     # call the solver to find the best solution respecting the given constraints
     # i.e. selecting exactly one match per player AND selecting minimal weight)
     status = solver.Solve(model)
     if status == cp_model.OPTIMAL:
-        solution = [players_pair for players_pair, match_var in matches_model_variables.items()
-                    if solver.Value(match_var)]
+        solution = [
+            players_pair for players_pair, match_var in matches_model_variables.items() if solver.Value(match_var)
+        ]
     else:
         solution = None
     return solution
@@ -58,6 +64,7 @@ def solve_by_constraints(participants, remaining_matches_possibilities):
 @dataclass
 class Tournament(Serializable):
     """Tournament data."""
+
     name: str
     location: str
     begin_date: date
@@ -100,15 +107,7 @@ class Tournament(Serializable):
 
     def _generate_pairs_random(self):
         shuffled_participants = random.sample(self.participants, len(self.participants))
-        # to-do replace by list(zip(u[::2], u[1::2]))
-        # or use
-        # def n_clusters(iterable, n=2):
-        #     return zip(*[iter(iterable)] * n)
-        pairs = []
-        n = 0
-        while n < len(shuffled_participants):
-            pairs.append(tuple(shuffled_participants[n:n + 2]))
-            n += 2
+        pairs = list(zip(shuffled_participants[::2], shuffled_participants[1::2]))
         return pairs
 
     def _generate_pairs_from_score(self):
@@ -138,12 +137,9 @@ class Tournament(Serializable):
         logging.debug(f"Generated matches list for round {self.total_started_rounds + 1}:")
         for match in matches_list:
             logging.debug(f"{str(match.participants_pair[0])} vs {str(match.participants_pair[1])}")
-        round = Round(name=f"Round {(len(self.rounds) + 1)}",
-                      matches=matches_list)
+        round = Round(name=f"Round {(len(self.rounds) + 1)}", matches=matches_list)
         self.rounds.append(round)
 
-    # no neeed end_round, it will be automatically launch after last match
-    # end_round will also call set_next_round
     def start_round(self):
         if not self.current_round:
             self.set_next_round()
@@ -162,15 +158,15 @@ class Tournament(Serializable):
             "end_date": str(self.end_date),
             "total_rounds": int(self.total_rounds),
             "participants": [participant.encode() for participant in self.participants],
-            "rounds": [round.encode() for round in self.rounds]
+            "rounds": [round.encode() for round in self.rounds],
         }
 
     @classmethod
     def decode(cls, encoded_data):
         encoded_data["begin_date"] = date.fromisoformat(encoded_data["begin_date"])
         encoded_data["end_date"] = date.fromisoformat(encoded_data["end_date"])
-        encoded_data["rounds"] = [Round.decode(encoded_round)
-                                  for encoded_round in encoded_data["rounds"]]
-        encoded_data["participants"] = [Participant.decode(encoded_participant)
-                                        for encoded_participant in encoded_data["participants"]]
+        encoded_data["rounds"] = [Round.decode(encoded_round) for encoded_round in encoded_data["rounds"]]
+        encoded_data["participants"] = [
+            Participant.decode(encoded_participant) for encoded_participant in encoded_data["participants"]
+        ]
         return cls(**encoded_data)

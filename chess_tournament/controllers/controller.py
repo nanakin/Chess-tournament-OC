@@ -5,11 +5,15 @@ from .actions.matches import MatchesController
 from .actions.tournaments import TournamentsController
 from .actions.participants import ParticipantsController
 from .actions.main import MainMenuController
-from .fill_db import FillDB  # temporary
 
 
-class Controller(PlayerController, MatchesController, TournamentsController, ParticipantsController, MainMenuController, FillDB):
-
+class Controller(
+    PlayerController,
+    MatchesController,
+    TournamentsController,
+    ParticipantsController,
+    MainMenuController,
+):
     def __init__(self, view, data_path):
         # view
         self.view = view
@@ -17,16 +21,21 @@ class Controller(PlayerController, MatchesController, TournamentsController, Par
         # model
         self.model = Model(data_path)
         total_players_loaded, total_tournaments_loaded = self.model.load()
-        self.view.log(bool(total_players_loaded), f"{total_players_loaded} players loaded from save file.")
-        self.view.log(bool(total_tournaments_loaded), f"{total_tournaments_loaded} tournaments loaded from save file.")
-        #self.add_default_entries()
+        self.view.log(
+            bool(total_players_loaded),
+            f"{total_players_loaded} players loaded from save file.",
+        )
+        self.view.log(
+            bool(total_tournaments_loaded),
+            f"{total_tournaments_loaded} tournaments loaded from save file.",
+        )
+        # self.add_default_entries()
 
         # controller
         self.status = State.MAIN_MENU
         self.context = None
 
     def run(self):
-
         state_to_action = {
             State.MAIN_MENU: self.show_main_menu,
             State.MANAGE_PLAYER_MENU: self.show_manage_player_menu,
@@ -45,7 +54,7 @@ class Controller(PlayerController, MatchesController, TournamentsController, Par
             State.MANAGE_PARTICIPANTS_MENU: self.show_manage_participants_menu,
             State.ADD_PARTICIPANT_MENU: self.show_add_participant_menu,
             State.DELETE_PARTICIPANT_MENU: self.show_delete_participant_menu,
-            State.REGISTER_MATCH_SCORE_MENU: self.show_register_match_score_menu
+            State.REGISTER_MATCH_SCORE_MENU: self.show_register_match_score_menu,
         }
 
         while self.status != State.QUIT:

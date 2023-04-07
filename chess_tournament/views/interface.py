@@ -3,7 +3,6 @@ from .requests import RequestAnswer
 
 
 class IView(ABC):
-
     @abstractmethod
     def log(self, ok_status, to_print=None):
         pass
@@ -23,4 +22,3 @@ class IView(ABC):
     @abstractmethod
     def show_tournament_registration(self) -> RequestAnswer:
         pass
-

@@ -1,6 +1,5 @@
 import json
 import logging
-import datetime
 from .chessdata.player import Player
 from .chessdata.tournament import Tournament
 
@@ -11,13 +10,15 @@ def save_at_the_end(players_file=False, tournaments_file=False):
             return_values = function(self, *args, **kwargs)
             self.save(players_file, tournaments_file)
             return return_values
+
         return wrapper
+
     return save_at_the_end_decorator
 
 
 def save_to_json(data, path):
     try:
-        with open(path, 'w') as json_file:
+        with open(path, "w") as json_file:
             json.dump(data, json_file, indent=2)
     except FileNotFoundError:
         return False, None

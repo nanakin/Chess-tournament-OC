@@ -6,6 +6,7 @@ from ..serialization import Serializable
 @dataclass
 class Player(Serializable):
     """Player's data."""
+
     identifier: str
     last_name: str
     first_name: str
@@ -22,7 +23,8 @@ class Player(Serializable):
             "identifier": self.identifier,
             "last_name": self.last_name,
             "first_name": self.first_name,
-            "birth_date": str(self.birth_date)}
+            "birth_date": str(self.birth_date),
+        }
 
     @classmethod
     def decode(cls, encoded_data):

@@ -4,7 +4,6 @@ from ..helpers import ConjugatedWord, write_list_in_file
 
 
 class MainMenuController:
-
     def show_main_menu(self):
         action = self.view.show_main_menu()
         if action == Request.EXIT_APP:

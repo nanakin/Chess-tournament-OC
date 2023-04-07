@@ -2,9 +2,11 @@ from dataclasses import dataclass
 from .player import Player
 from ..serialization import Serializable
 
+
 @dataclass
 class Participant(Serializable):
     """Tournament's participant data."""
+
     player: Player
     score: float = 0
 

@@ -8,16 +8,16 @@ from .chessdata.participant import Participant
 from .chessdata.match import Match
 from .save_load_system import BackupManager, save_at_the_end
 import logging
-from pprint import pprint
 
 
-logging.basicConfig(filename='log', level=logging.DEBUG)
-logging.debug(f'-------------------{str(datetime.datetime.now())}')
+logging.basicConfig(filename="log", level=logging.DEBUG)
+logging.debug(f"-------------------{str(datetime.datetime.now())}")
 
 
 class AlreadyUsedID(Exception):
     def __init__(self, *args):
         super().__init__(args)
+
     def __str__(self):
         return "bla"
 
@@ -30,10 +30,14 @@ class Model(BackupManager):
     players: dict[Player] = field(default_factory=dict)
     tournaments: list[Tournament] = field(default_factory=list)
     status_filter = {
-        "past": lambda tournament: tournament.end_date < datetime.date.today() or (tournament.end_date == datetime.date.today() and tournament.is_ended),
-        "future": lambda tournament: tournament.begin_date > datetime.date.today() or (tournament.begin_date == datetime.date.today() and not tournament.total_started_rounds),
-        "ongoing": lambda tournament: tournament.begin_date <= datetime.date.today() and tournament.is_started and not tournament.is_ended,
-        "all": lambda tournament: True
+        "past": lambda tournament: tournament.end_date < datetime.date.today()
+        or (tournament.end_date == datetime.date.today() and tournament.is_ended),
+        "future": lambda tournament: tournament.begin_date > datetime.date.today()
+        or (tournament.begin_date == datetime.date.today() and not tournament.total_started_rounds),
+        "ongoing": lambda tournament: tournament.begin_date <= datetime.date.today()
+        and tournament.is_started
+        and not tournament.is_ended,
+        "all": lambda tournament: True,
     }
 
     # public methods accessible by the controller and the load/backup system
@@ -69,8 +73,12 @@ class Model(BackupManager):
     def get_player_attributes(self, identifier):
         # maybe implement to_dict method
         player = self.players[identifier]
-        return {"identifier": player.identifier, "first_name": player.first_name,
-                "last_name": player.last_name, "birth_date": str(player.birth_date)}
+        return {
+            "identifier": player.identifier,
+            "first_name": player.first_name,
+            "last_name": player.last_name,
+            "birth_date": str(player.birth_date),
+        }
 
     def get_ordered_players_str(self):
         sorted_players = sorted(self.players.values())
@@ -100,16 +108,16 @@ class Model(BackupManager):
         return matches
 
     def get_ordered_participants_str(self, tournament_t):
-        sorted_participants = sorted(self.tournaments[tournament_t].participants,
-                                     key=lambda participant: participant.player)
-        return [str(participant)
-                for participant in sorted_participants]
+        sorted_participants = sorted(
+            self.tournaments[tournament_t].participants,
+            key=lambda participant: participant.player,
+        )
+        return [str(participant) for participant in sorted_participants]
 
     def get_tournaments_states_statistics(self):
         statistics = {}
         for filter_name, func_status_filter in self.status_filter.items():
-            statistics[filter_name] = sum(1 for tournament in self.tournaments
-                                          if func_status_filter(tournament))
+            statistics[filter_name] = sum(1 for tournament in self.tournaments if func_status_filter(tournament))
         return statistics
 
     def get_ordered_tournaments_str(self):
@@ -120,24 +128,36 @@ class Model(BackupManager):
         return len(self.tournaments)
 
     def get_tournaments_str(self, status="all"):
-        return [(t_index, tournament.name, str(tournament)) for t_index, tournament in enumerate(self.tournaments)
-                if self.status_filter[status](tournament)]
+        return [
+            (t_index, tournament.name, str(tournament))
+            for t_index, tournament in enumerate(self.tournaments)
+            if self.status_filter[status](tournament)
+        ]
 
     def get_participants_id(self, tournament_t):
         return (participant.player.identifier for participant in self.tournaments[tournament_t].participants)
 
     def get_tournament_info(self, tournament_t):
         tournament = self.tournaments[tournament_t]
-        return {"str": str(tournament),
-                "name": tournament.name, "location": tournament.location, "begin_date": str(tournament.begin_date),
-                "end_date": str(tournament.end_date), "total_rounds": tournament.total_rounds,
-                "is_current_round_started": tournament.current_round.is_started if tournament.current_round is not None else False,
-                "current_round_name": tournament.current_round.name if tournament.current_round is not None else None,
-                "total_started_rounds": tournament.total_started_rounds,
-                "total_finished_matches": sum(1 for match in tournament.current_round.matches if match.is_ended) if tournament.total_started_rounds > 0 else 0,
-                "total_matches": len(tournament.current_round.matches) if tournament.total_started_rounds > 0 else 0,
-                "total_finished_rounds": tournament.total_finished_rounds,
-                "total_participants": len(tournament.participants)}
+        return {
+            "str": str(tournament),
+            "name": tournament.name,
+            "location": tournament.location,
+            "begin_date": str(tournament.begin_date),
+            "end_date": str(tournament.end_date),
+            "total_rounds": tournament.total_rounds,
+            "is_current_round_started": tournament.current_round.is_started
+            if tournament.current_round is not None
+            else False,
+            "current_round_name": tournament.current_round.name if tournament.current_round is not None else None,
+            "total_started_rounds": tournament.total_started_rounds,
+            "total_finished_matches": sum(1 for match in tournament.current_round.matches if match.is_ended)
+            if tournament.total_started_rounds > 0
+            else 0,
+            "total_matches": len(tournament.current_round.matches) if tournament.total_started_rounds > 0 else 0,
+            "total_finished_rounds": tournament.total_finished_rounds,
+            "total_participants": len(tournament.participants),
+        }
 
     @save_at_the_end(tournaments_file=True)
     def add_tournaments(self, *tournaments_data):
@@ -173,7 +193,6 @@ class Model(BackupManager):
             logging.debug(f"{tournament.total_finished_rounds=}, {tournament.total_rounds=}")
             if tournament.total_finished_rounds < tournament.total_rounds:
                 tournament.set_next_round()
-
 
     @save_at_the_end(tournaments_file=True)
     def start_round(self, tournament_t):

@@ -1,56 +1,46 @@
-from enum import Enum
+from enum import Enum, auto
 from typing import TypeAlias
 
-Request = Enum("Request", [
-    "EXIT_APP",
-    "EXIT_LOCAL_MENU",
-    "MAIN_MENU",
-    "SAVE",
-    "MANAGE_PLAYER",
-    "ADD_PLAYER",
-    "REGISTER_PLAYER_DATA",
-    "LIST_PLAYERS",
-    "EDIT_PLAYER",
-    "PRINT_PLAYERS",
-    "EXPORT_PLAYERS",
-    "SHOW_SELECT_PLAYER",
-    "SELECTED_PLAYER",
-    "CONFIRM",
-    "SHOW_CONFIRM_PLAYER",
-    "SHOW_EDIT_PLAYER_MENU",
-    "MANAGE_TOURNAMENT",
-    "GENERATE_MATCHES",
-    "ADD_TOURNAMENT",
-    "EDIT_TOURNAMENT",
-    "LIST_TOURNAMENTS",
-    "START_ROUND",
-    "PRINT",
-    "EXPORT",
-    "KEEP_SELECTED_TOURNAMENT",
-    "CHANGE_SELECTED_TOURNAMENT",
-    "REGISTER_TOURNAMENT_DATA",
-    "PRINT_TOURNAMENTS",
-    "EXPORT_TOURNAMENTS",
-    "SELECTED_PATH",
-    "LIST_MATCHES",
-    "MANAGE_PARTICIPANTS",
-    "ADD_PARTICIPANT",
-    "DELETE_PARTICIPANT",
-    "LIST_PARTICIPANTS",
-    "GET_MATCHES_LIST",
-    "REGISTER_MATCH_SCORE",
-    "CHOSEN_TOURNAMENT",
-    "SELECTED_MATCH",
-    "SELECTED_TOURNAMENT",
-    "LIST_ROUNDS_SCORES",
-    "CHOSEN_MATCH",
-    "CHOSEN_ROUND",
-    "ADD_MATCH_RESULT",
-    "FIND_TOURNAMENT_BY_NAME",
-    "FIND_TOURNAMENT_BY_LIST_ONGOING",
-    "FIND_TOURNAMENT_BY_LIST_FUTURE",
-    "FIND_TOURNAMENT_BY_LIST_PAST",
-    "FIND_TOURNAMENT_BY_LIST_ALL",
-])
+
+class Request(Enum):
+    EXIT_APP = auto()
+    EXIT_LOCAL_MENU = auto()
+    MAIN_MENU = auto()
+    SAVE = auto()
+    MANAGE_PLAYER = auto()
+    ADD_PLAYER = auto()
+    REGISTER_PLAYER_DATA = auto()
+    LIST_PLAYERS = auto()
+    EDIT_PLAYER = auto()
+    SELECTED_PLAYER = auto()
+    CONFIRM = auto()
+    MANAGE_TOURNAMENT = auto()
+    GENERATE_MATCHES = auto()
+    ADD_TOURNAMENT = auto()
+    EDIT_TOURNAMENT = auto()
+    LIST_TOURNAMENTS = auto()
+    START_ROUND = auto()
+    PRINT = auto()
+    EXPORT = auto()
+    KEEP_SELECTED_TOURNAMENT = auto()
+    CHANGE_SELECTED_TOURNAMENT = auto()
+    REGISTER_TOURNAMENT_DATA = auto()
+    SELECTED_PATH = auto()
+    LIST_MATCHES = auto()
+    MANAGE_PARTICIPANTS = auto()
+    ADD_PARTICIPANT = auto()
+    DELETE_PARTICIPANT = auto()
+    LIST_PARTICIPANTS = auto()
+    REGISTER_MATCH_SCORE = auto()
+    SELECTED_MATCH = auto()
+    SELECTED_TOURNAMENT = auto()
+    LIST_ROUNDS_SCORES = auto()
+    ADD_MATCH_RESULT = auto()
+    FIND_TOURNAMENT_BY_NAME = auto()
+    FIND_TOURNAMENT_BY_LIST_ONGOING = auto()
+    FIND_TOURNAMENT_BY_LIST_FUTURE = auto()
+    FIND_TOURNAMENT_BY_LIST_PAST = auto()
+    FIND_TOURNAMENT_BY_LIST_ALL = auto()
+
 
 RequestAnswer: TypeAlias = Request | tuple[Request, list[object]]

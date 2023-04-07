@@ -5,7 +5,6 @@ import datetime
 
 
 class TournamentsController:
-
     conjugated_tournament = ConjugatedWord(singular="tournament", plural="tournaments")
 
     def show_manage_tournaments_menu(self):
@@ -41,9 +40,13 @@ class TournamentsController:
         # improvement : use round info to know if a tournament really ended
         statistics = self.model.get_tournaments_states_statistics()
         action = self.view.how_to_choose_tournament(statistics)
-        if action in (Request.FIND_TOURNAMENT_BY_NAME, Request.FIND_TOURNAMENT_BY_LIST_ONGOING,
-                      Request.FIND_TOURNAMENT_BY_LIST_FUTURE, Request.FIND_TOURNAMENT_BY_LIST_PAST,
-                      Request.FIND_TOURNAMENT_BY_LIST_ALL):
+        if action in (
+            Request.FIND_TOURNAMENT_BY_NAME,
+            Request.FIND_TOURNAMENT_BY_LIST_ONGOING,
+            Request.FIND_TOURNAMENT_BY_LIST_FUTURE,
+            Request.FIND_TOURNAMENT_BY_LIST_PAST,
+            Request.FIND_TOURNAMENT_BY_LIST_ALL,
+        ):
             if action == Request.FIND_TOURNAMENT_BY_NAME:
                 tournaments_info = self.model.get_tournaments_str()
                 action, action_data = self.view.choose_tournament_by_name(tournaments_info)
@@ -101,16 +104,20 @@ class TournamentsController:
         if action == Request.LIST_ROUNDS_SCORES:
             self.status = State.LIST_ALL_ROUNDS_MENU
             # rounds = self.model.get_rounds(selected_tournament)
-            #matches_info = [(match.participants_pair[0].player.identifier,
+            # matches_info = [(match.participants_pair[0].player.identifier,
             #                 match.participants_pair[1].player.identifier)
             #                for round_r in range(len(rounds))
             #                for match in self.model.get_round_matches(selected_tournament, round_r)]
-            #self.view.show_matches(matches_info)
+            # self.view.show_matches(matches_info)
         if action == Request.REGISTER_MATCH_SCORE:
             self.status = State.REGISTER_MATCH_SCORE_MENU
         if action == Request.MANAGE_TOURNAMENT:
             self.status = State.MANAGE_TOURNAMENTS_MENU
 
     def show_list_tournaments_menu(self):
-        self.report(total=self.model.get_total_tournaments(), data_info=self.model.get_ordered_tournaments_str(),
-                    conjugated_name=self.conjugated_tournament, back_state=State.MANAGE_TOURNAMENTS_MENU)
+        self.report(
+            total=self.model.get_total_tournaments(),
+            data_info=self.model.get_ordered_tournaments_str(),
+            conjugated_name=self.conjugated_tournament,
+            back_state=State.MANAGE_TOURNAMENTS_MENU,
+        )

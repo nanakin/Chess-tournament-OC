@@ -9,7 +9,6 @@ import questionary as q
 
 
 class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView):
-
     def __init__(self):
         self.logged = []
         q.print("------------------- Chess Tournament Manager ---------------------")
@@ -46,7 +45,9 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
                 q.Choice(title="Manage players", value=Request.MANAGE_PLAYER),
                 q.Choice(title="Manage tournaments", value=Request.MANAGE_TOURNAMENT),
                 q.Separator(),
-                q.Choice(title="Exit", value=Request.EXIT_APP)])
+                q.Choice(title="Exit", value=Request.EXIT_APP),
+            ],
+        )
         return question.ask()
 
     @clear_screen_and_show_log
@@ -59,7 +60,9 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
                 q.Choice(title="Print list", value=Request.PRINT),
                 q.Choice(title="Export list", value=Request.EXPORT),
                 q.Separator(),
-                q.Choice(title="Back", value=Request.EXIT_LOCAL_MENU)])
+                q.Choice(title="Back", value=Request.EXIT_LOCAL_MENU),
+            ],
+        )
         return question.ask()
 
     @clear_screen_and_show_log
@@ -72,8 +75,10 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
             "",
             choices=[
                 back_choice,
-                q.Choice(title="Export this list", value=Request.EXPORT)],
-            default=back_choice)
+                q.Choice(title="Export this list", value=Request.EXPORT),
+            ],
+            default=back_choice,
+        )
         answer = question.ask()
         if not answer:
             return Request.EXIT_LOCAL_MENU
