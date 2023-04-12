@@ -1,24 +1,27 @@
+"""Define the interface for all the views classes, theses methods will be used by the controller."""
 from abc import ABC, abstractmethod
 from .requests import RequestAnswer
 
 
 class IView(ABC):
+    """A "valid" view must implements the following methods."""
+
     @abstractmethod
     def log(self, ok_status, to_print=None):
-        pass
+        """Add a log to the log queue."""
 
     @abstractmethod
     def show_log(self):
-        pass
+        """Display logs and purge the queue."""
 
     @abstractmethod
     def show_main_menu(self) -> RequestAnswer:
-        pass
+        """Display the main select menu."""
 
     @abstractmethod
     def show_player_registration(self) -> RequestAnswer:
-        pass
+        """Ask for player’s first/last name, birthdate and ID."""
 
     @abstractmethod
     def show_tournament_registration(self) -> RequestAnswer:
-        pass
+        """Ask for tournament name, location, dates and rounds number."""

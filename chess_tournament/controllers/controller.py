@@ -1,6 +1,8 @@
+"""Define the main Controller behaviour."""
+
 from chess_tournament.models.model import Model
 from .states import State
-from .actions.players import PlayerController
+from .actions.players import PlayersController
 from .actions.matches import MatchesController
 from .actions.tournaments import TournamentsController
 from .actions.participants import ParticipantsController
@@ -8,13 +10,16 @@ from .actions.main import MainMenuController
 
 
 class Controller(
-    PlayerController,
+    PlayersController,
     MatchesController,
     TournamentsController,
     ParticipantsController,
     MainMenuController,
 ):
+    """Main Controller class (which inherits from specialized ones)."""
+
     def __init__(self, view, data_path):
+        """Initialize the controller with the given view and load from backup save."""
         # view
         self.view = view
 
@@ -29,13 +34,13 @@ class Controller(
             bool(total_tournaments_loaded),
             f"{total_tournaments_loaded} tournaments loaded from save file.",
         )
-        # self.add_default_entries()
 
         # controller
         self.status = State.MAIN_MENU
         self.context = None
 
     def run(self):
+        """The main program loop, that execute an action depending on the current program’s state."""
         state_to_action = {
             State.MAIN_MENU: self.show_main_menu,
             State.MANAGE_PLAYER_MENU: self.show_manage_player_menu,
@@ -58,4 +63,4 @@ class Controller(
         }
 
         while self.status != State.QUIT:
-            state_to_action[self.status]()
+            state_to_action[self.status]()  # execute the action corresponding to the current state

@@ -1,17 +1,15 @@
+"""Define chess matches related user interface."""
 import questionary as q
 from ..requests import Request, RequestAnswer
 from .common import clear_screen_and_show_log, print_title
 
 
 class MatchesMenus:
-    @clear_screen_and_show_log
-    def show_matches(self, matches):
-        print_title("Matches list")
-        for match in matches:
-            print(match)
+    """Matches related View’s mixin class."""
 
     @clear_screen_and_show_log
     def select_match(self, matches_info) -> RequestAnswer:
+        """Display a select menu with the round’s matches list."""
         print_title("Match selection menu")
         # print(matches_info)
         question = q.select("Which match ?", choices=matches_info)
@@ -25,6 +23,7 @@ class MatchesMenus:
 
     @clear_screen_and_show_log
     def enter_score(self, players) -> RequestAnswer:
+        """Display a select menu to choose the participants score (WIN/LOSE/DRAW)."""
         print_title("Score registration menu")
         question = q.select(
             "Select the result of the match, for the first player",

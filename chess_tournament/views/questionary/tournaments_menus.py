@@ -1,3 +1,5 @@
+"""Define chess tournaments related user interface."""
+
 import questionary as q
 from ..requests import Request, RequestAnswer
 from ..validators import *
@@ -10,8 +12,11 @@ from .common import (
 
 
 class TournamentsMenus:
+    """Tournaments related View’s mixin class."""
+
     @clear_screen_and_show_log
     def show_manage_tournaments_menu(self):
+        """Display a select menu to add/manage/list tournaments and back."""
         print_title("Tournaments menu")
         question = q.select(
             "What do you want to do ?",
@@ -27,6 +32,7 @@ class TournamentsMenus:
 
     @clear_screen_and_show_log
     def show_manage_unready_tournament_menu(self, tournament_info):
+        """Display a select menu to manage participants or start the selected tournament."""
         print_title("Unready tournament menu")
         print_important_info(f"{tournament_info['str']}")
         choice_start_tournament = q.Choice(title=f"Start tournament", value=Request.GENERATE_MATCHES)
@@ -53,6 +59,7 @@ class TournamentsMenus:
 
     @clear_screen_and_show_log
     def show_manage_tournament_menu(self, tournament_info):
+        """Display a select menu to manage rounds and scores of the selected tournament."""
         print_title("Tournament menu")
         print_important_info(f"{tournament_info['str']}")
         choices = []
@@ -96,6 +103,7 @@ class TournamentsMenus:
 
     @clear_screen_and_show_log
     def keep_or_change_tournament(self, last_edited_tournament):
+        """Display a select menu to choose between keep editing the last selected tournament or change."""
         print_title("Tournament selection menu")
         question = q.select(
             "What do you want to do ?",
@@ -113,6 +121,7 @@ class TournamentsMenus:
 
     @clear_screen_and_show_log
     def show_tournament_registration(self) -> RequestAnswer:
+        """Prompt 5 input questions (name, location, dates, rounds number) with user entries validation."""
         print_title("Tournament registration menu")
         add_tournament_questions = [
             {
@@ -160,6 +169,7 @@ class TournamentsMenus:
 
     @clear_screen_and_show_log
     def how_to_choose_tournament(self, statistics) -> RequestAnswer:
+        """Display a select menu to choose the filter and the method to find an existing tournament."""
         print_title("Tournament selection method menu")
         question = q.select(
             "Which tournament do you want to manage ?",
@@ -189,6 +199,7 @@ class TournamentsMenus:
 
     @clear_screen_and_show_log
     def choose_tournament_by_name(self, tournaments_info):
+        """Display an autocomplete question for the tournament name."""
         print_title("Tournament selection menu")
         tournaments_meta = {
             f"{t_index}- {tournament_name}": tournament_str
@@ -209,6 +220,7 @@ class TournamentsMenus:
 
     @clear_screen_and_show_log
     def choose_tournament_by_list(self, tournaments_info):
+        """Display a select menu with a list of tournaments."""
         print_title("Tournament selection menu")
         choices = [q.Choice(title=tournament_name, value=t_index) for t_index, tournament_name, _ in tournaments_info]
         choices.extend([q.Separator(), q.Choice("Back")])
@@ -218,19 +230,3 @@ class TournamentsMenus:
             return Request.MANAGE_TOURNAMENT, None
         else:
             return Request.SELECTED_TOURNAMENT, answer
-
-    @clear_screen_and_show_log
-    def show_list_tournaments_menu(self, total_tournaments):
-        # some kind repetitive code with player list. to-do: refactor ?
-        print_title("Tournaments list menu")
-        q.print(f">> Total {total_tournaments} tournaments")
-        question = q.select(
-            "What do you want to do ?",
-            choices=[
-                q.Choice(title="Print list", value=Request.PRINT_TOURNAMENTS),
-                q.Choice(title="Export list", value=Request.EXPORT_TOURNAMENTS),
-                q.Separator(),
-                q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT),
-            ],
-        )
-        return question.ask()

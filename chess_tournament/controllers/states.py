@@ -1,7 +1,11 @@
+"""Define controller’s states related class(es) and function(s)."""
+
 from enum import Enum, auto
 
 
 class State(Enum):
+    """List of allowed controller states."""
+
     MAIN_MENU = auto()
     MANAGE_PLAYER_MENU = auto()
     ADD_PLAYER_MENU = auto()

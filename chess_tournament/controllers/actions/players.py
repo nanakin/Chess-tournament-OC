@@ -1,13 +1,18 @@
+"""Define players related Controller’s behaviours."""
+
 from chess_tournament.controllers.states import State
 from chess_tournament.views.requests import Request
 from chess_tournament.models.model import AlreadyUsedID
 from ..helpers import write_list_in_file, ConjugatedWord
 
 
-class PlayerController:
+class PlayersController:
+    """Players related Controller’s mixin class."""
+
     conjugated_player = ConjugatedWord(singular="player", plural="players")
 
     def show_manage_player_menu(self):
+        """Show the main players menu and redirect the user’s request to the main state manager system."""
         action = self.view.show_manage_player_menu()
         if action == Request.MAIN_MENU:
             self.status = State.MAIN_MENU
@@ -21,6 +26,7 @@ class PlayerController:
             self.status = State.MAIN_MENU
 
     def show_edit_player_menu(self):
+        """Show the player edition menu, modify the player, then back to the previous state."""
         players_id = self.model.get_players_id()
         action, action_data = self.view.show_player_selection(players_id)
         if action == Request.SELECTED_PLAYER:
@@ -48,6 +54,7 @@ class PlayerController:
             self.status = State.MANAGE_PLAYER_MENU
 
     def show_add_player_menu(self):
+        """Show the player registration menu, register the player, then back to the previous state."""
         action, action_data = self.view.show_player_registration()
         if action == Request.REGISTER_PLAYER_DATA:
             try:
@@ -58,9 +65,10 @@ class PlayerController:
         self.status = State.MANAGE_PLAYER_MENU
 
     def show_list_players_menu(self):
+        """Show the players report list."""
         self.report(
             total=self.model.get_total_players(),
             data_info=self.model.get_ordered_players_str(),
-            conjugated_name=PlayerController.conjugated_player,
+            conjugated_name=PlayersController.conjugated_player,
             back_state=State.MANAGE_PLAYER_MENU,
         )

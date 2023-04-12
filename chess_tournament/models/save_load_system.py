@@ -1,3 +1,5 @@
+"""Define backup manager class(es) and function(s)."""
+
 import json
 import logging
 from .chessdata.player import Player
@@ -5,6 +7,8 @@ from .chessdata.tournament import Tournament
 
 
 def save_at_the_end(players_file=False, tournaments_file=False):
+    """Decorator that saves data to JSON file(s) once the function ended."""
+
     def save_at_the_end_decorator(function):
         def wrapper(self, *args, **kwargs):
             return_values = function(self, *args, **kwargs)
@@ -17,6 +21,7 @@ def save_at_the_end(players_file=False, tournaments_file=False):
 
 
 def save_to_json(data, path):
+    """Write compatible JSON data to JSON file."""
     try:
         with open(path, "w") as json_file:
             json.dump(data, json_file, indent=2)
@@ -34,6 +39,9 @@ class BackupManager:
     #    self.path = path
 
     def save(self, players_file=False, tournaments_file=False):
+        """Encode model’s data then write them to JSON file(s).
+
+        This function is called by the save_at_the_end decorator used on modifying data Model’s methods."""
         if players_file:
             players_encoded = []
             for player in self.players.values():
@@ -49,7 +57,11 @@ class BackupManager:
             logging.debug(f"{is_ok=}: tournaments autosave in {self.data_path}")
 
     def load(self):
+        """Load model’s data from JSON files."""
+        # TODO: review the function structure
+
         def json_load_data(filename):
+            """Load data from a given JSON file."""
             with open(filename, "r") as json_file:
                 encoded_data = json.load(json_file)
             return encoded_data

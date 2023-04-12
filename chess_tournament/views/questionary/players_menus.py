@@ -1,3 +1,5 @@
+"""Define chess players related user interface."""
+
 import questionary as q
 from ..requests import Request, RequestAnswer
 from ..validators import (
@@ -9,8 +11,11 @@ from .common import clear_screen_and_show_log, print_title
 
 
 class PlayerMenus:
+    """Players related View’s mixin class."""
+
     @clear_screen_and_show_log
     def show_manage_player_menu(self) -> RequestAnswer:
+        """Display a select menu : add/edit/list players or back."""
         print_title("Players menu")
         question = q.select(
             "What do you want to do ?",
@@ -26,6 +31,7 @@ class PlayerMenus:
 
     @clear_screen_and_show_log
     def show_player_selection(self, players_id):
+        """Display an autocomplete question for players ID."""
         print_title("Player selection menu")
         question = q.autocomplete(
             "Enter the player ID :",
@@ -36,6 +42,7 @@ class PlayerMenus:
 
     @clear_screen_and_show_log
     def show_player_registration(self) -> RequestAnswer:
+        """Prompt 4 input questions (first/last name, birthdate, ID) with user entries validation."""
         print_title("Player registration menu")
         add_player_questions = [
             {
@@ -75,6 +82,7 @@ class PlayerMenus:
 
     @clear_screen_and_show_log
     def show_edit_player_menu(self, player_info):
+        """Display a menu to select the attribute to change then an input question (with user entry validation)."""
         print_title("Player edition menu")
         what_to_edit = q.select(
             "What to edit ?",

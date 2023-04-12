@@ -1,4 +1,5 @@
-# import itertools
+"""Define tournaments related data structures."""
+
 from dataclasses import dataclass, field
 from datetime import date
 from .match import Match
@@ -12,14 +13,18 @@ import logging
 
 
 def solve_by_constraints(participants, remaining_matches_possibilities):
+    """Return a list of participants pairs generated using a constraints solver.
+
+    in formal methods, a SAT solver aims to solve the boolean satisfiability (SAT) problem
+    cp = Constraint Programming
+    here we want :
+    - to select exactly one match per player from all possible (remaining) combination of 2
+    - to consider the global minimal score difference between players (calculated for each possibility)
+    """
     def weight(participants_pair, match_model_variable):
+        """Privilege the smallest score gaps for matchmaking."""
         return match_model_variable * (abs(participants_pair[0].score - participants_pair[1].score) ** 2)
 
-    # in formal methods, a SAT solver aims to solve the boolean satisfiability (SAT) problem
-    # cp = Constraint Programming
-    # here we want :
-    # - to select exactly one match per player from all possible (remaining) combination of 2
-    # - to consider the global minimal score difference between players (calculated for each possibility)
     model = cp_model.CpModel()
     solver = cp_model.CpSolver()
 
@@ -50,7 +55,7 @@ def solve_by_constraints(participants, remaining_matches_possibilities):
     )
 
     # call the solver to find the best solution respecting the given constraints
-    # i.e. selecting exactly one match per player AND selecting minimal weight)
+    # i.e. selecting exactly one match per player AND selecting minimal weight
     status = solver.Solve(model)
     if status == cp_model.OPTIMAL:
         solution = [
@@ -73,66 +78,83 @@ class Tournament(Serializable):
     total_rounds: int = 4
     rounds: list[Round] = field(default_factory=list)
     _remaining_matches_possibilities = None
-    # necessary ? it is not always the last of the list ?
-    # current_round: int | None = None
 
     @property
     def total_finished_rounds(self):
+        """Return the total number of finished rounds."""
         if not self.rounds:
             return 0
         else:
             return len(self.rounds) - 1 if self.rounds[-1].end_time is None else len(self.rounds)
 
     def __str__(self):
+        """Return the string representation of the tournament instance."""
         return f'"{self.name}" in {self.location} ({str(self.begin_date)} > {str(self.end_date)})'
 
     def __lt__(self, other):
+        """Order tournaments by starting date."""
         return self.begin_date < other.begin_date
 
     @property
     def current_round(self):
+        """Return the last started round."""
         return self.rounds[-1] if self.rounds else None
 
     @property
     def is_ended(self):
+        """Return True if all rounds are finished, False otherwise."""
         return self.total_finished_rounds == self.total_rounds
 
     @property
     def is_started(self):
-        return len(self.rounds) > 0
+        """Return True if a least one round has been generated, False otherwise."""
+        return self.total_started_rounds > 0
 
     @property
     def total_started_rounds(self):
+        """Return the total number of rounds generated."""
         return len(self.rounds)
 
     def _generate_pairs_random(self):
+        """Generate list of participant pairs with a random matchmaking."""
         shuffled_participants = random.sample(self.participants, len(self.participants))
         pairs = list(zip(shuffled_participants[::2], shuffled_participants[1::2]))
         return pairs
 
     def _generate_pairs_from_score(self):
+        """Generate list of participant pairs using a constraints solver to do the matchmaking."""
         pairs = solve_by_constraints(self.participants, self._remaining_matches_possibilities)
         return pairs
 
     def _generate_pairs(self):
+        """Do the matchmaking by generating list of participant pairs (matches)."""
+
+        # generate all possibilities of matches pairs
+        # (it is useful for the matchmaking by score and to avoid duplicate encounters)
+        # initialized at the first round and when the list of remaining possibilities is exhausted
         if self._remaining_matches_possibilities is None or not self._remaining_matches_possibilities:
             self._generate_all_matches_possibilities()
 
         if self.total_started_rounds == 0:
-            pairs_list = self._generate_pairs_random()
+            pairs_list = self._generate_pairs_random()  # first round is generated randomly
         else:
-            pairs_list = self._generate_pairs_from_score()
+            pairs_list = (
+                self._generate_pairs_from_score()
+            )  # after the first round, matchmaking is realized by a solver
 
-        self._update_remaining_matches_possibilities(pairs_list)
+        self._update_remaining_matches_possibilities(pairs_list)  # to avoid duplicate encounters
         return tuple(Match(pair) for pair in pairs_list)
 
     def _update_remaining_matches_possibilities(self, matches_list):
+        """Remove current round matches from the not done/remaining matches possibilities."""
         self._remaining_matches_possibilities -= set(matches_list)
 
     def _generate_all_matches_possibilities(self):
+        """Generate all possible combination of 2 from a list of participants."""
         self._remaining_matches_possibilities = set(combinations(self.participants, 2))
 
     def set_next_round(self):
+        """Do the matchmaking and register the round internally."""
         matches_list = self._generate_pairs()
         logging.debug(f"Generated matches list for round {self.total_started_rounds + 1}:")
         for match in matches_list:
@@ -141,16 +163,19 @@ class Tournament(Serializable):
         self.rounds.append(round)
 
     def start_round(self):
-        if not self.current_round:
+        """Register the starting time of the current round."""
+        if not self.current_round:  # TODO: verify if it can happen
             self.set_next_round()
         self.current_round.start_round()
 
     def get_round_matches(self, round_r):
+        """Return matches of the given round index."""
         if not self.rounds or round_r >= len(self.rounds):
             return None
         return self.rounds[round_r].matches
 
     def encode(self):
+        """Transform the instance of the object into JSON compatible format."""
         return {
             "name": self.name,
             "location": self.location,
@@ -163,6 +188,7 @@ class Tournament(Serializable):
 
     @classmethod
     def decode(cls, encoded_data):
+        """Instantiate a new object from data in JSON format."""
         encoded_data["begin_date"] = date.fromisoformat(encoded_data["begin_date"])
         encoded_data["end_date"] = date.fromisoformat(encoded_data["end_date"])
         encoded_data["rounds"] = [Round.decode(encoded_round) for encoded_round in encoded_data["rounds"]]

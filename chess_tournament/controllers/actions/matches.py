@@ -1,14 +1,19 @@
+"""Define matches related Controller’s behaviours."""
+
 from chess_tournament.controllers.states import State
 from chess_tournament.views.requests import Request
 from ..helpers import ConjugatedWord
 
 
 class MatchesController:
+    """Matches related Controller’s mixin class."""
+
     conjugated_match = ConjugatedWord(singular="match", plural="matches")
 
     def show_register_match_score_menu(self):
+        """Show the score registration menu, register the score, then back to the tournament menu."""
         selected_tournament = self.context
-        matches = self.model.get_round_matches(selected_tournament)
+        matches = self.model._get_round_matches(selected_tournament)
         matches_info = [
             f"{str(match.participants_pair[0].player)} vs {str(match.participants_pair[1].player)}"
             for match in matches
@@ -37,6 +42,7 @@ class MatchesController:
             self.status = State.MANAGE_TOURNAMENT_MENU
 
     def show_list_matches_menu(self):
+        """Show the matches report list of the current round (of the current tournament)."""
         selected_tournament = self.context
         self.report(
             total=self.model.get_total_matches(selected_tournament),
@@ -46,6 +52,7 @@ class MatchesController:
         )
 
     def show_list_all_rounds_menu(self):
+        """Show the matches report list of all generated rounds (of the current tournament)."""
         selected_tournament = self.context
         self.report(
             total=self.model.get_total_all_matches(selected_tournament),

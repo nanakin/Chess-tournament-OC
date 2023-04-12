@@ -1,9 +1,13 @@
+"""Define helping function(s) and class(es) used by the controllers classes."""
+
 from pathlib import Path
 from dataclasses import dataclass
 
 
 @dataclass
 class ConjugatedWord:
+    """Simplify the conjugation management in console and log printed messages."""
+
     singular: str
     plural: str
 
@@ -12,6 +16,7 @@ class ConjugatedWord:
 
 
 def write_list_in_file(data_list, export_path, data_type):
+    """Save the given data list in the given path."""
     path = Path(export_path).expanduser()
     if path.is_dir():
         path = path / f"export_{data_type}.txt"

@@ -1,3 +1,5 @@
+"""Define all the model methods required by the controller."""
+
 import datetime
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -15,6 +17,8 @@ logging.debug(f"-------------------{str(datetime.datetime.now())}")
 
 
 class AlreadyUsedID(Exception):
+    """Exception raised when an ID is already used."""
+
     def __init__(self, *args):
         super().__init__(args)
 
@@ -24,7 +28,9 @@ class AlreadyUsedID(Exception):
 
 @dataclass
 class Model(BackupManager):
-    """The only external interface to manipulate chess data."""
+    """Expose public methods to allow chess data manipulation from the controller.
+
+    This class abstract the internal data structure to the controller."""
 
     data_path: Path | None
     players: dict[Player] = field(default_factory=dict)
@@ -40,10 +46,10 @@ class Model(BackupManager):
         "all": lambda tournament: True,
     }
 
-    # public methods accessible by the controller and the load/backup system
-
     @save_at_the_end(players_file=True)
     def add_players(self, *players_data):
+        """Create new players and register them in the internal list."""
+        # + cleaning user input and checking ID duplicates.
         for player_data in players_data:
             if player_data["identifier"] not in self.players:
                 # formatting (to move to Player init method ?)
@@ -60,6 +66,7 @@ class Model(BackupManager):
 
     @save_at_the_end(players_file=True)
     def edit_player_attributes(self, player_data):
+        """Edit existing player attributes."""
         player = self.players[player_data["identifier"]]
         player.first_name = player_data["first_name"].capitalize()
         player.last_name = player_data["last_name"].upper()
@@ -67,12 +74,15 @@ class Model(BackupManager):
         return str(player)
 
     def get_players_id(self):
+        """Return list of players ID."""
         return self.players.keys()
 
     def get_player_str(self, identifier):
+        """Return player description."""
         return str(self.players[identifier])
 
     def get_player_attributes(self, identifier):
+        """Return the players attributes as dictionary."""
         # maybe implement to_dict method
         player = self.players[identifier]
         return {
@@ -83,25 +93,31 @@ class Model(BackupManager):
         }
 
     def get_ordered_players_str(self):
+        """Return ordered players descriptions."""
         sorted_players = sorted(self.players.values())
         return [self.get_player_str(player.identifier) for player in sorted_players]
 
     def get_total_players(self):
+        """Return the total number of existing players."""
         return len(self.players)
 
     def get_total_participants(self, tournament_t):
+        """Return the total number of participant from a given tournament."""
         return len(self.tournaments[tournament_t].participants)
 
     def get_total_matches(self, tournament_t, round_r=None):
+        """Return the total number of matches from a given tournament’s round."""
         if round_r is None:
             round_r = max(0, len(self.tournaments[tournament_t].rounds) - 1)
         return len(self.tournaments[tournament_t].get_round_matches(round_r))
 
     def get_total_all_matches(self, tournament_t):
+        """Return the total number of matches from a given tournaments (all rounds)."""
         tournament = self.tournaments[tournament_t]
         return sum(len(tournament.get_round_matches(round_r)) for round_r in range(tournament.total_started_rounds))
 
     def get_all_matches_str(self, tournament_t):
+        """Return matches descriptions."""
         tournament = self.tournaments[tournament_t]
         matches = []
         for r, round in enumerate(tournament.rounds):
@@ -110,6 +126,7 @@ class Model(BackupManager):
         return matches
 
     def get_ordered_participants_str(self, tournament_t):
+        """Return participants descriptions."""
         sorted_participants = sorted(
             self.tournaments[tournament_t].participants,
             key=lambda participant: participant.player,
@@ -117,19 +134,23 @@ class Model(BackupManager):
         return [str(participant) for participant in sorted_participants]
 
     def get_tournaments_states_statistics(self):
+        """Return tournaments states statistics (number of ongoing/past/future/all)."""
         statistics = {}
         for filter_name, func_status_filter in self.status_filter.items():
             statistics[filter_name] = sum(1 for tournament in self.tournaments if func_status_filter(tournament))
         return statistics
 
     def get_ordered_tournaments_str(self):
+        """Return ordered tournaments descriptions."""
         sorted_tournaments = sorted(self.tournaments)
         return [str(tournament) for tournament in sorted_tournaments]
 
     def get_total_tournaments(self):
+        """Return the total number of tournaments."""
         return len(self.tournaments)
 
     def get_tournaments_str(self, status="all"):
+        """Return tournaments descriptions."""
         return [
             (t_index, tournament.name, str(tournament))
             for t_index, tournament in enumerate(self.tournaments)
@@ -137,9 +158,11 @@ class Model(BackupManager):
         ]
 
     def get_participants_id(self, tournament_t):
+        """Return the participants ID from a given tournament."""
         return (participant.player.identifier for participant in self.tournaments[tournament_t].participants)
 
     def get_tournament_info(self, tournament_t):
+        """Return various tournament data as dictionary."""
         tournament = self.tournaments[tournament_t]
         return {
             "str": str(tournament),
@@ -163,6 +186,7 @@ class Model(BackupManager):
 
     @save_at_the_end(tournaments_file=True)
     def add_tournaments(self, *tournaments_data):
+        """Create new tournaments and add them to the internal list."""
         for tournament_data in tournaments_data:
             tournament_data["name"] = tournament_data["name"].strip()
             tournament_data["location"] = tournament_data["location"].capitalize()
@@ -178,6 +202,7 @@ class Model(BackupManager):
 
     @save_at_the_end(tournaments_file=True)
     def add_participants_to_tournament(self, tournament_t, *participants_data):
+        """Create participants from players and link them to the given tournaments."""
         tournament = self.tournaments[tournament_t]
         for player_id in participants_data:
             participant = Participant(self.players[player_id])
@@ -186,6 +211,7 @@ class Model(BackupManager):
 
     @save_at_the_end(tournaments_file=True)
     def register_score(self, tournament_t, match_m, first_player_result_str):
+        """Register participant score for a given match."""
         tournament = self.tournaments[tournament_t]
         round = tournament.current_round
         first_result = Match.Points[first_player_result_str]
@@ -200,17 +226,17 @@ class Model(BackupManager):
 
     @save_at_the_end(tournaments_file=True)
     def start_round(self, tournament_t):
+        """Start the next round of the given tournament."""
         self.tournaments[tournament_t].start_round()
 
-    def get_rounds(self, tournament_t):
-        return self.tournaments[tournament_t].rounds
-
     def start_tournament(self, tournament_t):
-        matches = self.get_round_matches(tournament_t)
+        """Start the given tournament (and generate the first round matches)."""
+        matches = self._get_round_matches(tournament_t)
         return str(self.tournaments[tournament_t]), len(matches)
 
     @save_at_the_end(tournaments_file=True)
-    def get_round_matches(self, tournament_t, round_r=None):
+    def _get_round_matches(self, tournament_t, round_r=None):
+        """Return matches of the given round."""
         if round_r is None:
             round_r = max(0, len(self.tournaments[tournament_t].rounds) - 1)
         if round_r == len(self.tournaments[tournament_t].rounds):
@@ -218,6 +244,7 @@ class Model(BackupManager):
         return self.tournaments[tournament_t].get_round_matches(round_r)
 
     def get_matches_str(self, tournament_t, round_r=None):
+        """Return matches descriptions."""
         if round_r is None:
             round_r = max(0, len(self.tournaments[tournament_t].rounds) - 1)
         return [str(match) for match in self.tournaments[tournament_t].get_round_matches(round_r)]

@@ -1,12 +1,17 @@
+"""Define tournaments related Controller’s behaviours."""
+
 from chess_tournament.controllers.states import State
 from chess_tournament.views.requests import Request
 from ..helpers import ConjugatedWord
 
 
 class TournamentsController:
+    """Tournaments related Controller’s mixin class."""
+
     conjugated_tournament = ConjugatedWord(singular="tournament", plural="tournaments")
 
     def show_manage_tournaments_menu(self):
+        """Show the main tournaments menu and redirect the user’s request to the main state manager system."""
         action = self.view.show_manage_tournaments_menu()
         if action == Request.ADD_TOURNAMENT:
             self.status = State.ADD_TOURNAMENT_MENU
@@ -28,6 +33,7 @@ class TournamentsController:
             self.status = State.MAIN_MENU
 
     def show_tournament_registration(self):
+        """Show the tournament registration menu, register the tournament, then back to the previous state."""
         action, action_data = self.view.show_tournament_registration()
         if action == Request.REGISTER_TOURNAMENT_DATA:
             tournament_data = action_data
@@ -36,6 +42,7 @@ class TournamentsController:
         self.status = State.MANAGE_TOURNAMENTS_MENU
 
     def show_select_tournament_menu(self):
+        """Show methods to choose, then list tournament to select from, register selection in the context."""
         # improvement : use round info to know if a tournament really ended
         statistics = self.model.get_tournaments_states_statistics()
         action = self.view.how_to_choose_tournament(statistics)
@@ -70,6 +77,7 @@ class TournamentsController:
             self.status = State.MANAGE_TOURNAMENTS_MENU
 
     def show_manage_unready_tournament_menu(self):
+        """The selected tournament did not start: display "unready" menu, then deal with the user’s request."""
         selected_tournament = self.context
         tournament_info = self.model.get_tournament_info(selected_tournament)
         action = self.view.show_manage_unready_tournament_menu(tournament_info)
@@ -84,8 +92,7 @@ class TournamentsController:
             self.status = State.MAIN_MENU
 
     def show_manage_tournament_menu(self):
-        # main menu (if not started) : manage participants or start tournament
-        # main menu (if started) : same as this one but without participants
+        """The selected tournament started, display the normal tournament menu, then deal with the user’s request."""
         selected_tournament = self.context
         tournament_info = self.model.get_tournament_info(selected_tournament)
         if not self.model.tournaments[selected_tournament].rounds:
@@ -116,6 +123,7 @@ class TournamentsController:
             self.status = State.MANAGE_TOURNAMENTS_MENU
 
     def show_list_tournaments_menu(self):
+        """Show the tournaments report list."""
         self.report(
             total=self.model.get_total_tournaments(),
             data_info=self.model.get_ordered_tournaments_str(),

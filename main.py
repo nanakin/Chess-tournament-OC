@@ -1,15 +1,18 @@
+"""Define the chess manager entry point and main function."""
 from chess_tournament.controllers.controller import Controller
 import argparse
 from pathlib import Path
 
 
 def main(view_class, data_path):
+    """Main program function that initializes the view and the controller then call its main function loop."""
     view = view_class()
     chess_tournament_manager = Controller(view, data_path)
     chess_tournament_manager.run()
 
 
 if __name__ == "__main__":
+    # Program entry point that parses optional argument then call the main function.
     parser = argparse.ArgumentParser(description="Chess Tournament Manager")
     view_group = parser.add_mutually_exclusive_group()
     view_group.add_argument(

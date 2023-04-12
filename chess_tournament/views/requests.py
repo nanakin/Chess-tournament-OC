@@ -3,6 +3,8 @@ from typing import TypeAlias
 
 
 class Request(Enum):
+    """List of allowed view requests."""
+
     EXIT_APP = auto()
     EXIT_LOCAL_MENU = auto()
     MAIN_MENU = auto()
