@@ -32,8 +32,9 @@ class ParticipantsController:
         if action == Request.SELECTED_PLAYER:
             selected_id = action_data
             # action, action_data = self.view.show_participant_registration(players)
-            self.model.add_participants_to_tournament(selected_tournament, selected_id)
-            self.view.log(True, f"participant added")
+            participant_to_log, tournament_to_log = self.model.add_participants_to_tournament(
+                selected_tournament, selected_id)
+            self.view.log(True, f"Participant: {participant_to_log} >>> added to {tournament_to_log}")
         self.status = State.MANAGE_PARTICIPANTS_MENU
 
     def show_delete_participant_menu(self):

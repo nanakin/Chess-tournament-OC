@@ -11,7 +11,7 @@ import questionary as q
 class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView):
     def __init__(self):
         self.logged = []
-        q.print("------------------- Chess Tournament Manager ---------------------")
+        q.print("------------------ ♔ Chess Tournament Manager ♔ --------------------")
 
     def log(self, ok_status, to_print=None):
         self.logged.append((ok_status, to_print))
@@ -22,9 +22,10 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
         for log in self.logged:
             ok_status, to_print = log
             if ok_status:
-                q.print(f"🟢 OK : {to_print}")
+                q.print(f"✅: {to_print}")
             else:
-                q.print(f"🟥 FAIL {to_print}")
+                q.print(f"❌: {to_print}")
+        q.print("")
         self.logged = []
 
     def show_confirmation(self, to_confirm):

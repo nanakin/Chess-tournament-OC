@@ -28,9 +28,11 @@ class MatchesController:
             )
             if action == Request.ADD_MATCH_RESULT:
                 first_player_result = action_data
-                self.model.register_score(selected_tournament, match_m, first_player_result)
-                self.view.log(True, "score saved")
+                scores_to_log = self.model.register_score(selected_tournament, match_m, first_player_result)
+                self.view.log(True, f"Scores: {scores_to_log}\n>>> registered")
                 self.status = State.MANAGE_TOURNAMENT_MENU
+            else:
+                pass  # to review
         else:
             self.status = State.MANAGE_TOURNAMENT_MENU
 

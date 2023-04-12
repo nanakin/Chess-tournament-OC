@@ -35,8 +35,8 @@ class PlayerController:
                     action, action_data = self.view.show_edit_player_menu(attributes_info)
                     if action == Request.REGISTER_PLAYER_DATA:
                         player_data = action_data
-                        self.model.edit_player_attributes(player_data)
-                        self.view.log(True, self.model.get_player_str(player_data["identifier"]))
+                        player_to_log = self.model.edit_player_attributes(player_data)
+                        self.view.log(True, f"Player: {player_to_log} >>> edited")
                         self.status = State.MANAGE_PLAYER_MENU
                     else:
                         self.status = State.MANAGE_PLAYER_MENU
@@ -51,8 +51,8 @@ class PlayerController:
         action, action_data = self.view.show_player_registration()
         if action == Request.REGISTER_PLAYER_DATA:
             try:
-                self.model.add_players(action_data)
-                self.view.log(True, self.model.get_player_str(action_data["identifier"]))
+                player_to_log = self.model.add_players(action_data)
+                self.view.log(True, f"Player: {player_to_log} >>> created")
             except AlreadyUsedID as err:
                 self.view.log(False)
         self.status = State.MANAGE_PLAYER_MENU

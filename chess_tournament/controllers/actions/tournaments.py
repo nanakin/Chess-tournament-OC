@@ -1,7 +1,6 @@
 from chess_tournament.controllers.states import State
 from chess_tournament.views.requests import Request
-from ..helpers import write_list_in_file, ConjugatedWord
-import datetime
+from ..helpers import ConjugatedWord
 
 
 class TournamentsController:
@@ -32,8 +31,8 @@ class TournamentsController:
         action, action_data = self.view.show_tournament_registration()
         if action == Request.REGISTER_TOURNAMENT_DATA:
             tournament_data = action_data
-            self.model.add_tournaments(tournament_data)
-            self.view.log(True, "correctly added")  # to-do: change message
+            tournament_to_log = self.model.add_tournaments(tournament_data)
+            self.view.log(True, f"Tournament: {tournament_to_log} >>> created")
         self.status = State.MANAGE_TOURNAMENTS_MENU
 
     def show_select_tournament_menu(self):
@@ -77,7 +76,9 @@ class TournamentsController:
         if action == Request.MANAGE_PARTICIPANTS:
             self.status = State.MANAGE_PARTICIPANTS_MENU
         elif action == Request.GENERATE_MATCHES:
-            self.model.start_tournament(selected_tournament)
+            tournament_to_log, matches_to_log = self.model.start_tournament(selected_tournament)
+            self.view.log(True, f"Tournament: {tournament_to_log} >>> started")
+            self.view.log(True, f"{matches_to_log} matches >>> generated")
             self.status = State.MANAGE_TOURNAMENT_MENU
         else:
             self.status = State.MAIN_MENU

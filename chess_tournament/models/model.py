@@ -56,6 +56,7 @@ class Model(BackupManager):
                 self.players[player_data["identifier"]] = Player(**player_data)
             else:
                 raise AlreadyUsedID(player_data["identifier"])
+        return str(self.players[player_data["identifier"]])
 
     @save_at_the_end(players_file=True)
     def edit_player_attributes(self, player_data):
@@ -63,6 +64,7 @@ class Model(BackupManager):
         player.first_name = player_data["first_name"].capitalize()
         player.last_name = player_data["last_name"].upper()
         player.birth_date = date.fromisoformat(player_data["birth_date"])
+        return str(player)
 
     def get_players_id(self):
         return self.players.keys()
@@ -170,12 +172,17 @@ class Model(BackupManager):
             if isinstance(tournament_data["end_date"], str):
                 tournament_data["end_date"] = date.fromisoformat(tournament_data["end_date"])
             # to-do: verify begin_date < end_date
-            self.tournaments.append(Tournament(**tournament_data))
+            tournament = Tournament(**tournament_data)
+            self.tournaments.append(tournament)
+            return str(tournament)
 
     @save_at_the_end(tournaments_file=True)
     def add_participants_to_tournament(self, tournament_t, *participants_data):
+        tournament = self.tournaments[tournament_t]
         for player_id in participants_data:
-            self.tournaments[tournament_t].participants.append(Participant(self.players[player_id]))
+            participant = Participant(self.players[player_id])
+            tournament.participants.append(participant)
+        return str(participant.player), str(tournament)
 
     @save_at_the_end(tournaments_file=True)
     def register_score(self, tournament_t, match_m, first_player_result_str):
@@ -186,13 +193,10 @@ class Model(BackupManager):
         round.matches[match_m].register_score(pair_result)
         are_all_matches_ended = all([bool(match.participants_scores is not None) for match in round.matches])
         if are_all_matches_ended:
-            logging.debug("all matches ended")
-            logging.debug(are_all_matches_ended)
-            logging.debug([str(match) for match in round.matches])
             round.end_round()
-            logging.debug(f"{tournament.total_finished_rounds=}, {tournament.total_rounds=}")
             if tournament.total_finished_rounds < tournament.total_rounds:
                 tournament.set_next_round()
+        return str(round.matches[match_m])
 
     @save_at_the_end(tournaments_file=True)
     def start_round(self, tournament_t):
@@ -202,7 +206,8 @@ class Model(BackupManager):
         return self.tournaments[tournament_t].rounds
 
     def start_tournament(self, tournament_t):
-        self.get_round_matches(tournament_t)
+        matches = self.get_round_matches(tournament_t)
+        return str(self.tournaments[tournament_t]), len(matches)
 
     @save_at_the_end(tournaments_file=True)
     def get_round_matches(self, tournament_t, round_r=None):
