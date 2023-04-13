@@ -2,11 +2,10 @@
 
 import questionary as q
 from ..requests import Request, RequestAnswer
-from ..validators import *
+from ..validators import non_empty_alphabet_validator, date_validator
 from .common import (
     clear_screen_and_show_log,
     print_title,
-    print_list_title,
     print_important_info,
 )
 
@@ -35,7 +34,7 @@ class TournamentsMenus:
         """Display a select menu to manage participants or start the selected tournament."""
         print_title("Unready tournament menu")
         print_important_info(f"{tournament_info['str']}")
-        choice_start_tournament = q.Choice(title=f"Start tournament", value=Request.GENERATE_MATCHES)
+        choice_start_tournament = q.Choice(title="Start tournament", value=Request.GENERATE_MATCHES)
         if tournament_info["total_participants"] < 2:
             choice_start_tournament.disabled = "Not enough participants"
         elif tournament_info["total_participants"] % 2 == 1:
@@ -65,8 +64,8 @@ class TournamentsMenus:
         choices = []
         if tournament_info["total_finished_rounds"] < tournament_info["total_rounds"]:
             print_important_info(
-                f"{tournament_info['current_round_name']} ({tournament_info['total_started_rounds']}/{tournament_info['total_rounds']})"
-            )
+                f"{tournament_info['current_round_name']} ({tournament_info['total_started_rounds']}" +
+                f"/{tournament_info['total_rounds']})")
             if not tournament_info["is_current_round_started"]:
                 choice_register_or_start_round = q.Choice(title="Start the round", value=Request.START_ROUND)
             else:
@@ -226,7 +225,7 @@ class TournamentsMenus:
         choices.extend([q.Separator(), q.Choice("Back")])
         question = q.select("Select a tournament: ", choices=choices)
         answer = question.ask()
-        if answer is None or answer is "Back":
+        if answer is None or answer == "Back":
             return Request.MANAGE_TOURNAMENT, None
         else:
             return Request.SELECTED_TOURNAMENT, answer

@@ -3,7 +3,7 @@
 from chess_tournament.controllers.states import State
 from chess_tournament.views.requests import Request
 from chess_tournament.models.model import AlreadyUsedID
-from ..helpers import write_list_in_file, ConjugatedWord
+from ..helpers import ConjugatedWord
 
 
 class PlayersController:
@@ -60,7 +60,7 @@ class PlayersController:
             try:
                 player_to_log = self.model.add_players(action_data)
                 self.view.log(True, f"Player: {player_to_log} >>> created")
-            except AlreadyUsedID as err:
+            except AlreadyUsedID:
                 self.view.log(False)
         self.status = State.MANAGE_PLAYER_MENU
 
