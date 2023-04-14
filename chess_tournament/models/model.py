@@ -211,6 +211,18 @@ class Model(BackupManager):
         return str(participant.player), str(tournament)
 
     @save_at_the_end(tournaments_file=True)
+    def delete_participants_from_tournament(self, tournament_t, *participants_data):
+        """Create participants from players and link them to the given tournaments."""
+        tournament = self.tournaments[tournament_t]
+        for player_id in participants_data:
+            participant_to_log = str(self.players[player_id])
+            for p_index, participant in enumerate(tournament.participants):
+                if participant.player.identifier == player_id:
+                    del tournament.participants[p_index]
+                    break
+        return participant_to_log, str(tournament)
+
+    @save_at_the_end(tournaments_file=True)
     def register_score(self, tournament_t, match_m, first_player_result_str):
         """Register participant score for a given match."""
         tournament = self.tournaments[tournament_t]

@@ -89,7 +89,7 @@ class Tournament(Serializable):
 
     def __str__(self):
         """Return the string representation of the tournament instance."""
-        return f'"{self.name}" in {self.location} ({str(self.begin_date)} > {str(self.end_date)})'
+        return f'{self.name} in {self.location} ({str(self.begin_date)} > {str(self.end_date)})'
 
     def __lt__(self, other):
         """Order tournaments by starting date."""

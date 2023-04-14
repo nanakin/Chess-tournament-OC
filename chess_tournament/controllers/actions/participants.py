@@ -47,14 +47,27 @@ class ParticipantsController:
 
     def show_delete_participant_menu(self):
         """Show the tournament participant deletion menu, delete the player, then back to the previous state."""
-        pass
+        selected_tournament = self.context
+        participants_id = list(self.model.get_participants_id(selected_tournament))
+        if not participants_id:
+            self.view.log(False, "No participant to delete")
+        else:
+            action, action_data = self.view.show_player_selection(participants_id)
+            if action == Request.SELECTED_PLAYER:
+                selected_id = action_data
+                participant_to_log, tournament_to_log = self.model.delete_participants_from_tournament(
+                    selected_tournament, selected_id
+                )
+                self.view.log(True, f"Participant: {participant_to_log} >>> deleted from {tournament_to_log}")
+        self.status = State.MANAGE_PARTICIPANTS_MENU
 
     def show_list_participants_menu(self):
         """Show the participants report list of the current tournament."""
         selected_tournament = self.context
+        tournament_is_started = self.model.get_tournament_info(selected_tournament)["total_started_rounds"] > 0
         self.report(
             total=self.model.get_total_participants(selected_tournament),
             data_info=self.model.get_ordered_participants_str(selected_tournament),
             conjugated_name=self.conjugated_participant,
-            back_state=State.MANAGE_TOURNAMENT_MENU,
+            back_state=State.MANAGE_TOURNAMENT_MENU if tournament_is_started else State.MANAGE_PARTICIPANTS_MENU,
         )
