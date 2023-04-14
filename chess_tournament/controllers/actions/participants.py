@@ -18,6 +18,8 @@ class ParticipantsController:
             self.status = State.ADD_PARTICIPANT_MENU
         elif action == Request.DELETE_PARTICIPANT:
             self.status = State.DELETE_PARTICIPANT_MENU
+        elif action == Request.LIST_PARTICIPANTS:
+            self.status = State.LIST_PARTICIPANTS_MENU
         else:
             self.status = State.MANAGE_TOURNAMENT_MENU
 
