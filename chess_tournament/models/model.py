@@ -26,15 +26,11 @@ class AlreadyUsedID(Exception):
         return "bla"
 
 
-@dataclass
 class Model(BackupManager):
     """Expose public methods to allow chess data manipulation from the controller.
 
     This class abstract the internal data structure to the controller."""
 
-    data_path: Path | None
-    players: dict[Player] = field(default_factory=dict)
-    tournaments: list[Tournament] = field(default_factory=list)
     status_filter = {
         "past": lambda tournament: tournament.end_date < datetime.date.today()
         or (tournament.end_date == datetime.date.today() and tournament.is_ended),
@@ -45,6 +41,11 @@ class Model(BackupManager):
         and not tournament.is_ended,
         "all": lambda tournament: True,
     }
+
+    def __init__(self, data_path):
+        super().__init__(data_path)
+        self.players = {}
+        self.tournaments = []
 
     @save_at_the_end(players_file=True)
     def add_players(self, *players_data):

@@ -1,6 +1,7 @@
 """Define backup manager class(es) and function(s)."""
 
 import json
+from pathlib import Path
 import logging
 from .chessdata.player import Player
 from .chessdata.tournament import Tournament
@@ -20,23 +21,29 @@ def save_at_the_end(players_file=False, tournaments_file=False):
     return save_at_the_end_decorator
 
 
+def make_dirs(directory):
+    """Create directories (recursive) for the given paths."""
+    if not directory.exists():
+        directory.mkdir(exist_ok=True, parents=True)
+
+
 def save_to_json(data, path):
     """Write compatible JSON data to JSON file."""
     try:
         with open(path, "w") as json_file:
             json.dump(data, json_file, indent=2)
-    except FileNotFoundError:
-        return False, None
+    except FileNotFoundError as err:
+        return False, f"Unable to save to {path.absolute()} ({err.strerror})"
     else:
-        return True, path.absolute()
+        return True, f"autosave in {path.absolute()}"
 
 
 class BackupManager:
     """Save and load system."""
 
-    # to-do : store data_path attribute in this class.
-    # def __init__(self, path=""):
-    #    self.path = path
+    def __init__(self, path):
+        self.data_path = Path(path)
+        make_dirs(self.data_path)
 
     def save(self, players_file=False, tournaments_file=False):
         """Encode model’s data then write them to JSON file(s).
@@ -46,15 +53,15 @@ class BackupManager:
             players_encoded = []
             for player in self.players.values():
                 players_encoded.append(player.encode())
-            is_ok, abs_path = save_to_json(path=(self.data_path / "players.json"), data=players_encoded)
-            logging.debug(f"{is_ok=}: players autosave in {self.data_path}")
+            log_status, log_msg = save_to_json(path=(self.data_path / "players.json"), data=players_encoded)
+            logging.debug(f"{log_status=}: {log_msg}")
         if tournaments_file:
             tournaments_encoded = []
             for tournament in self.tournaments:
                 tournaments_encoded.append(tournament.encode())
             # logging.debug(tournaments_encoded)
-            is_ok, abs_path = save_to_json(path=(self.data_path / "tournaments.json"), data=tournaments_encoded)
-            logging.debug(f"{is_ok=}: tournaments autosave in {self.data_path}")
+            log_status, log_msg = save_to_json(path=(self.data_path / "tournaments.json"), data=tournaments_encoded)
+            logging.debug(f"{log_status=}: {log_msg}")
 
     def load(self):
         """Load model’s data from JSON files."""
@@ -71,19 +78,22 @@ class BackupManager:
         try:
             encoded_players = json_load_data(players_file)
         except FileNotFoundError as err:
-            return False, err
+            status_players_to_log = False, f"No data loaded from {players_file} ({err.strerror})"
         else:
             for encoded_player in encoded_players:
                 player = Player.decode(encoded_player)
                 self.players[player.identifier] = player
-
+            status_players_to_log = True, f"{len(encoded_players)} player(s) loaded from {players_file}"
         try:
             encoded_tournaments = json_load_data(tournaments_file)
         except FileNotFoundError as err:
-            return False, err
+            status_tournaments_to_log = False, f"No data loaded from {tournaments_file} ({err.strerror})"
         else:
             for encoded_tournament in encoded_tournaments:
                 tournament = Tournament.decode(encoded_tournament)
                 self.tournaments.append(tournament)
+            status_tournaments_to_log = True, f"{len(encoded_tournaments)} tournaments(s) loaded" + \
+                                              f" from {tournaments_file}"
             logging.debug(f"{len(encoded_tournaments)} tournaments loaded")
-        return len(encoded_players), len(encoded_tournaments)
+
+        return status_players_to_log, status_tournaments_to_log

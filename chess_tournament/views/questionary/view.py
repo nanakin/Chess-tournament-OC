@@ -31,7 +31,7 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
             if ok_status:
                 q.print(f"✅: {to_print}")
             else:
-                q.print(f"❌: {to_print}")
+                q.print(f"⚠️: {to_print}")
         q.print("")
         self.logged = []
 
