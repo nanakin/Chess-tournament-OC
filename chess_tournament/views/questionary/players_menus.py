@@ -70,7 +70,7 @@ class PlayerMenus:
                 "type": "text",
                 "name": "identifier",
                 "qmark": ">",
-                "message": "Enter player's national identifier :",
+                "message": "Enter player's national identifier (AB12345):",
                 "validate": national_identifier_validator,
             },
         ]
