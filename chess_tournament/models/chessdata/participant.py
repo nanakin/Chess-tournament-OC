@@ -16,12 +16,9 @@ class Participant(Serializable):
         """Add up the participant score."""
         self.score += to_add
 
-    def __le__(self, other):  # to remove ?
-        return self.score <= other.score
-
     def __lt__(self, other):
         """Order participant by score."""
-        return self.score < other.score
+        return self.score > other.score
 
     def __str__(self):
         """Return string representation of a participant instance."""

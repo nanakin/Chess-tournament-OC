@@ -84,6 +84,10 @@ class TournamentsMenus:
             )
         else:
             print_important_info("Tournament Ended")
+            q.print(f"Top {len(tournament_info['winners'])} players " +
+                    f"({tournament_info['total_participants']} participants):")
+            for position, participant in enumerate(tournament_info["winners"]):
+                q.print(f"{position + 1}: {participant}")
 
         choices.extend(
             [

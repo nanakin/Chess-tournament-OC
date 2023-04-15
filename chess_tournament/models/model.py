@@ -156,6 +156,20 @@ class Model(BackupManager):
         """Return the participants ID from a given tournament."""
         return (participant.player.identifier for participant in self.tournaments[tournament_t].participants)
 
+    def _get_winners(self, tournament):
+        """Return strings representation of tournaments winners."""
+        ordered_participants = sorted(tournament.participants)
+        bests = []
+        for i in range(len(ordered_participants)):
+            bests.append(str(ordered_participants[i]))
+            if i >= 2:
+                # in case of tie, continue listing winners with the same score
+                if (len(ordered_participants) > i + 1 and
+                        ordered_participants[i].score == ordered_participants[i + 1].score):
+                    continue
+                break
+        return bests
+
     def get_tournament_info(self, tournament_t):
         """Return various tournament data as dictionary."""
         tournament = self.tournaments[tournament_t]
@@ -177,6 +191,7 @@ class Model(BackupManager):
             "total_matches": len(tournament.current_round.matches) if tournament.total_started_rounds > 0 else 0,
             "total_finished_rounds": tournament.total_finished_rounds,
             "total_participants": len(tournament.participants),
+            "winners": self._get_winners(tournament) if tournament.is_ended else None
         }
 
     @save_at_the_end(tournaments_file=True)
