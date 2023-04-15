@@ -19,12 +19,6 @@ logging.debug(f"-------------------{str(datetime.datetime.now())}")
 class AlreadyUsedID(Exception):
     """Exception raised when an ID is already used."""
 
-    def __init__(self, *args):
-        super().__init__(args)
-
-    def __str__(self):
-        return "bla"
-
 
 class Model(BackupManager):
     """Expose public methods to allow chess data manipulation from the controller.
@@ -52,7 +46,7 @@ class Model(BackupManager):
         """Create new players and register them in the internal list."""
         # + cleaning user input and checking ID duplicates.
         for player_data in players_data:
-            if player_data["identifier"] not in self.players:
+            if player_data["identifier"].upper() not in self.players:
                 # formatting (to move to Player init method ?)
                 player_data["last_name"] = player_data["last_name"].upper()
                 player_data["first_name"] = player_data["first_name"].capitalize()

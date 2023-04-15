@@ -60,8 +60,8 @@ class PlayersController:
             try:
                 player_to_log = self.model.add_players(action_data)
                 self.view.log(True, f"Player: {player_to_log} >>> created")
-            except AlreadyUsedID:
-                self.view.log(False)
+            except AlreadyUsedID as err:
+                self.view.log(False, f"A player with ID:{err.args[0]} already exists")
         self.status = State.MANAGE_PLAYER_MENU
 
     def show_list_players_menu(self):
