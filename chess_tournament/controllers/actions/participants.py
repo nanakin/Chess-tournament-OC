@@ -3,12 +3,16 @@
 from chess_tournament.controllers.states import State
 from chess_tournament.views.requests import Request
 from ..helpers import ConjugatedWord
+from chess_tournament.controllers.actions.common import CommonController
+
+from typing import Union
 
 
-class ParticipantsController:
+class ParticipantsController(CommonController):
     """Participants related Controller’s mixin class."""
 
     conjugated_participant = ConjugatedWord(singular="participant", plural="participants")
+
 
     def show_manage_participants_menu(self):
         """Show the main participants menu and redirect the user’s request to the main state manager system."""

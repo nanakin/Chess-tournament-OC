@@ -4,9 +4,10 @@ from chess_tournament.controllers.states import State
 from chess_tournament.views.requests import Request
 from chess_tournament.models.model import AlreadyUsedID
 from ..helpers import ConjugatedWord
+from chess_tournament.controllers.actions.common import CommonController
 
 
-class PlayersController:
+class PlayersController(CommonController):
     """Players related Controller’s mixin class."""
 
     conjugated_player = ConjugatedWord(singular="player", plural="players")

@@ -22,7 +22,6 @@ class Controller(
         """Initialize the controller with the given view and load from backup save."""
         # view
         self.view = view
-
         # model
         self.model = Model(data_path)
         players_load_log, tournaments_load_log = self.model.load()
@@ -57,3 +56,4 @@ class Controller(
 
         while self.status != State.QUIT:
             state_to_action[self.status]()  # execute the action corresponding to the current state
+

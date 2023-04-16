@@ -1,4 +1,4 @@
-"""Define the interface for all the views classes, theses methods will be used by the controller."""
+"""Define the interface for all the views classes, these methods will be used by the controller."""
 from abc import ABC, abstractmethod
 from .requests import RequestAnswer
 

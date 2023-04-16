@@ -2,10 +2,11 @@
 
 from chess_tournament.controllers.states import State
 from chess_tournament.views.requests import Request
+from chess_tournament.controllers.actions.common import CommonController
 from ..helpers import ConjugatedWord
 
 
-class MatchesController:
+class MatchesController(CommonController):
     """Matches related Controller’s mixin class."""
 
     conjugated_match = ConjugatedWord(singular="match", plural="matches")
