@@ -1,6 +1,7 @@
 """Define backup manager class(es) and function(s)."""
 
 import json
+from json import JSONDecodeError
 from pathlib import Path
 import logging
 from .chessdata.player import Player
@@ -79,6 +80,8 @@ class BackupManager:
             encoded_players = json_load_data(players_file)
         except FileNotFoundError as err:
             status_players_to_log = False, f"No data loaded from {players_file} ({err.strerror})"
+        except JSONDecodeError as err:
+            status_players_to_log = False, f"Corrupted JSON {players_file} file ({err.msg})"
         else:
             for encoded_player in encoded_players:
                 player = Player.decode(encoded_player)
@@ -88,6 +91,8 @@ class BackupManager:
             encoded_tournaments = json_load_data(tournaments_file)
         except FileNotFoundError as err:
             status_tournaments_to_log = False, f"No data loaded from {tournaments_file} ({err.strerror})"
+        except JSONDecodeError as err:
+            status_tournaments_to_log = False, f"Corrupted JSON {tournaments_file} file ({err.msg})"
         else:
             for encoded_tournament in encoded_tournaments:
                 tournament = Tournament.decode(encoded_tournament)
