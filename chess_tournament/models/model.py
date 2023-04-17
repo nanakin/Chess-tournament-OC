@@ -10,6 +10,10 @@ class AlreadyUsedID(Exception):
     """Exception raised when an ID is already used."""
 
 
+class InconsistentDates(Exception):
+    """Exception raised when ending is anterior to starting."""
+
+
 class Model(BackupManager):
     """Expose public methods to allow chess data manipulation from the controller.
 
@@ -195,7 +199,9 @@ class Model(BackupManager):
                 tournament_data["begin_date"] = date.fromisoformat(tournament_data["begin_date"])
             if isinstance(tournament_data["end_date"], str):
                 tournament_data["end_date"] = date.fromisoformat(tournament_data["end_date"])
-            # to-do: verify begin_date < end_date
+            if tournament_data["end_date"] < tournament_data["begin_date"]:
+                raise InconsistentDates(f"{tournament_data['name']} ending date ({tournament_data['end_date']})" +
+                                        f" is anterior to starting date ({tournament_data['begin_date']})")
             tournament = Tournament(**tournament_data)
             self.tournaments.append(tournament)
             return str(tournament)

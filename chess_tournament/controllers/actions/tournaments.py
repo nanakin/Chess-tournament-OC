@@ -1,6 +1,7 @@
 """Define tournaments related Controller’s behaviours."""
 
 from chess_tournament.controllers.states import State
+from chess_tournament.models.model import InconsistentDates
 from chess_tournament.views.requests import Request
 
 from ..helpers import ConjugatedWord
@@ -39,8 +40,12 @@ class TournamentsController(CommonController):
         action, action_data = self.view.show_tournament_registration()
         if action == Request.REGISTER_TOURNAMENT_DATA:
             tournament_data = action_data
-            tournament_to_log = self.model.add_tournaments(tournament_data)
-            self.view.log(True, f"Tournament: {tournament_to_log} >>> created")
+            try:
+                tournament_to_log = self.model.add_tournaments(tournament_data)
+            except InconsistentDates as err:
+                self.view.log(False, err.args[0] + " >>> not created")
+            else:
+                self.view.log(True, f"Tournament: {tournament_to_log} >>> created")
         self.status = State.MANAGE_TOURNAMENTS_MENU
 
     def show_select_tournament_menu(self):
