@@ -44,9 +44,10 @@ class Match(Serializable):
         """Complete a pair score from one result (i.e. if one win, the other lose)."""
         if first_result == cls.Points.WIN:
             return cls.Points.WIN, cls.Points.LOSE
-        if first_result == cls.Points.LOSE:
+        elif first_result == cls.Points.LOSE:
             return cls.Points.LOSE, cls.Points.WIN
-        return cls.Points.DRAW, cls.Points.DRAW
+        else:
+            return cls.Points.DRAW, cls.Points.DRAW
 
     def register_score(self, participants_status: Tuple[Points, Points]):
         """Register the score in the match attribute and update participant total tournament score."""
@@ -57,20 +58,28 @@ class Match(Serializable):
     def encode(self):
         """Transform the instance of the object into JSON compatible format."""
         return {
-            "participants_pair": [participant.encode() for participant in self.participants_pair],
+            "participants_pair": [participant.player.identifier for participant in self.participants_pair],
             "participants_scores": [score.name for score in self.participants_scores] if self.is_ended else [],
         }
 
     @classmethod
-    def decode(cls, encoded_data):
+    def decode(cls, encoded_data, participants_db):
         """Instantiate a new object from data in JSON format."""
+
+        def get_participant_index_from_player_id(player_id):
+            """Return the participant index from its player ID."""
+            for p_index, participant in enumerate(participants_db):
+                if participant.player.identifier == player_id:
+                    return p_index
+
         encoded_data["participants_scores"] = (
             tuple([cls.Points[encoded_score] for encoded_score in encoded_data["participants_scores"]])
             if encoded_data["participants_scores"]
             else None
         )
         encoded_data["participants_pair"] = tuple(
-            [Participant.decode(encoded_participant) for encoded_participant in encoded_data["participants_pair"]]
+            [participants_db[get_participant_index_from_player_id(encoded_participant)]
+             for encoded_participant in encoded_data["participants_pair"]]
         )
 
         return cls(**encoded_data)

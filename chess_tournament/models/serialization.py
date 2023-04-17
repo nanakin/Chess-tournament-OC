@@ -11,5 +11,5 @@ class Serializable(ABC):
         """Transform the instance of the object into JSON compatible format."""
 
     @classmethod
-    def decode(cls, encoded_dict):
+    def decode(cls, encoded_dict, *db):
         """Instantiate a new object from data in JSON format."""

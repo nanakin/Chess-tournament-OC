@@ -13,7 +13,8 @@ class MatchesMenus:
         print_title("Match selection menu")
         question = q.select("Which match ?", choices=matches_info)
         answer = question.ask()
-        return valid_request_or_exit(check=answer, return_if_ok=(Request.SELECTED_MATCH, matches_info.index(answer)))
+        return valid_request_or_exit(check=answer, return_if_ok=(
+            Request.SELECTED_MATCH, matches_info.index(answer) if answer else None))
 
     @clear_screen_and_show_log
     def enter_score(self, players) -> RequestAnswer:

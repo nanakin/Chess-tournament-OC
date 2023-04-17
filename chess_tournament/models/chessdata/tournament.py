@@ -187,12 +187,12 @@ class Tournament(Serializable):
         }
 
     @classmethod
-    def decode(cls, encoded_data):
+    def decode(cls, encoded_data, players_db):
         """Instantiate a new object from data in JSON format."""
         encoded_data["begin_date"] = date.fromisoformat(encoded_data["begin_date"])
         encoded_data["end_date"] = date.fromisoformat(encoded_data["end_date"])
-        encoded_data["rounds"] = [Round.decode(encoded_round) for encoded_round in encoded_data["rounds"]]
         encoded_data["participants"] = [
-            Participant.decode(encoded_participant) for encoded_participant in encoded_data["participants"]
+            Participant.decode(encoded_participant, players_db) for encoded_participant in encoded_data["participants"]
         ]
+        encoded_data["rounds"] = [Round.decode(encoded_round, encoded_data["participants"]) for encoded_round in encoded_data["rounds"]]
         return cls(**encoded_data)

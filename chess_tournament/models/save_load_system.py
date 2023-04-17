@@ -95,7 +95,7 @@ class BackupManager:
             status_tournaments_to_log = False, f"Corrupted JSON {tournaments_file} file ({err.msg})"
         else:
             for encoded_tournament in encoded_tournaments:
-                tournament = Tournament.decode(encoded_tournament)
+                tournament = Tournament.decode(encoded_tournament, self.players)
                 self.tournaments.append(tournament)
             status_tournaments_to_log = True, f"{len(encoded_tournaments)} tournaments(s) loaded" + \
                                               f" from {tournaments_file}"

@@ -31,13 +31,13 @@ class Participant(Serializable):
     def encode(self):
         """Transform the instance of the object into JSON compatible format."""
         return {
-            "player": self.player.encode(),
+            "player": self.player.identifier,
             "score": self.score,
         }
 
     @classmethod
-    def decode(cls, encoded_data):
+    def decode(cls, encoded_data, players_db):
         """Instantiate a new object from data in JSON format."""
-        encoded_data["player"] = Player.decode(encoded_data["player"])
+        encoded_data["player"] = players_db[encoded_data["player"]]
         encoded_data["score"] = float(encoded_data["score"])
         return cls(**encoded_data)

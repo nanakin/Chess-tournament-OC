@@ -77,7 +77,8 @@ class PlayerMenus:
             },
         ]
         raw_player_data = q.prompt(add_player_questions)
-        return valid_request_or_exit(check=raw_player_data, return_if_ok=(Request.REGISTER_PLAYER_DATA, raw_player_data))
+        return valid_request_or_exit(check=raw_player_data,
+                                     return_if_ok=(Request.REGISTER_PLAYER_DATA, raw_player_data))
 
     @clear_screen_and_show_log
     def show_edit_player_menu(self, player_info):
