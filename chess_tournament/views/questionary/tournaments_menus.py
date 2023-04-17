@@ -226,4 +226,4 @@ class TournamentsMenus:
         choices.extend([q.Separator(), q.Choice("Back")])
         question = q.select("Select a tournament: ", choices=choices)
         answer = question.ask()
-        return valid_request_or_exit(check=answer, return_if_ok=(Request.SELECTED_TOURNAMENT, answer))
+        return valid_request_or_exit(check=bool(answer is not None), return_if_ok=(Request.SELECTED_TOURNAMENT, answer))
