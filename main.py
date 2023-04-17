@@ -15,6 +15,7 @@ def main(view_class, data_path):
 if __name__ == "__main__":
     # Program entry point that parses optional argument then call the main function.
     parser = argparse.ArgumentParser(description="Chess Tournament Manager")
-    parser.add_argument("-p", "--data-path", default=(Path(".") / "data"))
+    parser.add_argument("-p", "--data-path", default=(Path(".") / "data"),
+                        help="specify a backup path (default: ./data/)")
     args = parser.parse_args()
     main(view_class=View, data_path=args.data_path)
