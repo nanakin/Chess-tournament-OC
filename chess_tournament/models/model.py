@@ -1,13 +1,8 @@
 """Define all the model methods required by the controller."""
 
 import datetime
-from dataclasses import dataclass, field
-from pathlib import Path
 from datetime import date
-from .chessdata.player import Player
-from .chessdata.tournament import Tournament
-from .chessdata.participant import Participant
-from .chessdata.match import Match
+from .chessdata import Match, Tournament, Player, Participant
 from .save_load_system import BackupManager, save_at_the_end
 import logging
 

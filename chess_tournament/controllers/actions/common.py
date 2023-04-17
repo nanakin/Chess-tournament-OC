@@ -3,8 +3,8 @@
 from chess_tournament.models.model import Model
 from chess_tournament.views.requests import Request
 from chess_tournament.views.interface import IView
-from chess_tournament.controllers.states import State
-from chess_tournament.controllers.helpers import ConjugatedWord, write_list_in_file
+from ..states import State
+from ..helpers import ConjugatedWord, write_list_in_file
 from typing import Any
 
 

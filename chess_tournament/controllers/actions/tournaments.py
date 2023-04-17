@@ -3,7 +3,7 @@
 from chess_tournament.controllers.states import State
 from chess_tournament.views.requests import Request
 from ..helpers import ConjugatedWord
-from chess_tournament.controllers.actions.common import CommonController
+from .common import CommonController
 
 
 class TournamentsController(CommonController):

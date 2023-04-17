@@ -2,11 +2,8 @@
 
 from chess_tournament.models.model import Model
 from .states import State
-from .actions.players import PlayersController
-from .actions.matches import MatchesController
-from .actions.tournaments import TournamentsController
-from .actions.participants import ParticipantsController
-from .actions.main import MainMenuController
+from .actions import PlayersController, MatchesController, TournamentsController, \
+    ParticipantsController, MainMenuController
 
 
 class Controller(
@@ -20,16 +17,16 @@ class Controller(
 
     def __init__(self, view, data_path):
         """Initialize the controller with the given view and load from backup save."""
-        # view
+        # -- view --
         self.view = view
-        # model
+        # -- model --
         self.model = Model(data_path)
-        players_load_log, tournaments_load_log = self.model.load()
+        players_load_log, tournaments_load_log = self.model.load()  # load previous data
         self.view.log(*players_load_log)
         self.view.log(*tournaments_load_log)
-        # controller
+        # -- controller --
         self.status = State.MAIN_MENU
-        self.context = None
+        self.context = None  # used to remember the selected tournament
 
     def run(self):
         """The main program loop, that execute an action depending on the current program’s state."""

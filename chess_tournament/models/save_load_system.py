@@ -4,8 +4,7 @@ import json
 from json import JSONDecodeError
 from pathlib import Path
 import logging
-from .chessdata.player import Player
-from .chessdata.tournament import Tournament
+from .chessdata import Player, Tournament
 
 
 def save_at_the_end(players_file=False, tournaments_file=False):

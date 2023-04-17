@@ -1,11 +1,9 @@
 """Define participants related Controller’s behaviours."""
 
-from chess_tournament.controllers.states import State
+from ..states import State
 from chess_tournament.views.requests import Request
 from ..helpers import ConjugatedWord
-from chess_tournament.controllers.actions.common import CommonController
-
-from typing import Union
+from .common import CommonController
 
 
 class ParticipantsController(CommonController):
