@@ -17,7 +17,7 @@ class CommonController:
     context: Any
 
     def report(self, total, data_info, conjugated_name: ConjugatedWord, back_state):
-        """Show the the given list, deal with print and export requests, then back to the previous state."""
+        """Show the given list, deal with print and export requests, then back to the previous state."""
         action = self.view.show_list_menu(total, conjugated_name.conjugated_with_number(total))
         if action not in (Request.PRINT, Request.EXPORT):
             self.status = back_state

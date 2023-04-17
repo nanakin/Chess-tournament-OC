@@ -42,7 +42,6 @@ class ParticipantsController(CommonController):
         action, action_data = self.view.show_player_selection(players_id)
         if action == Request.SELECTED_PLAYER:
             selected_id = action_data
-            # action, action_data = self.view.show_participant_registration(players)
             participant_to_log, tournament_to_log = self.model.add_participants_to_tournament(
                 selected_tournament, selected_id
             )

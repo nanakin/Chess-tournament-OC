@@ -1,7 +1,7 @@
 """Define chess players related user interface."""
 
 import questionary as q
-from ..requests import Request, RequestAnswer
+from ..requests import Request, RequestAnswer, valid_request_or_exit
 from ..validators import (
     non_empty_alphabet_validator,
     past_date_validator,
@@ -27,7 +27,8 @@ class PlayerMenus:
                 q.Choice(title="Back", value=Request.MAIN_MENU),
             ],
         )
-        return question.ask()
+        answer = question.ask()
+        return valid_request_or_exit(check=answer, return_if_ok=answer)
 
     @clear_screen_and_show_log
     def show_player_selection(self, players_id):
@@ -38,7 +39,8 @@ class PlayerMenus:
             choices=players_id,
             validate=lambda x: x in players_id,
         )
-        return Request.SELECTED_PLAYER, question.ask()
+        answer = question.ask()
+        return valid_request_or_exit(check=answer, return_if_ok=(Request.SELECTED_PLAYER, answer))
 
     @clear_screen_and_show_log
     def show_player_registration(self) -> RequestAnswer:
@@ -75,10 +77,7 @@ class PlayerMenus:
             },
         ]
         raw_player_data = q.prompt(add_player_questions)
-        if not raw_player_data:  # ctrl-c
-            return Request.MANAGE_PLAYER, None
-        else:
-            return Request.REGISTER_PLAYER_DATA, raw_player_data
+        return valid_request_or_exit(check=raw_player_data, return_if_ok=(Request.REGISTER_PLAYER_DATA, raw_player_data))
 
     @clear_screen_and_show_log
     def show_edit_player_menu(self, player_info):
@@ -104,6 +103,6 @@ class PlayerMenus:
             ).ask()
         elif answer == "birth_date":
             player_info["birth_date"] = q.text("Enter player's new birth date: ", validate=past_date_validator).ask()
-        else:
-            return Request.MANAGE_PLAYER, None
-        return Request.REGISTER_PLAYER_DATA, player_info
+
+        return valid_request_or_exit(check=bool(answer in player_info),
+                                     return_if_ok=(Request.REGISTER_PLAYER_DATA, player_info))

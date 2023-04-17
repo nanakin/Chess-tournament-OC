@@ -45,4 +45,10 @@ class Request(Enum):
     FIND_TOURNAMENT_BY_LIST_ALL = auto()
 
 
-RequestAnswer: TypeAlias = Request | tuple[Request, list[object]]
+RequestAnswer: TypeAlias = Request | tuple[Request, list[object]]  # TODO : add dict type (used by players) or Any ?
+
+
+def valid_request_or_exit(check, return_if_ok) -> RequestAnswer:
+    """Return a valid request for the controller (particularly useful with Ctrl-C)."""
+    return_if_not_ok = (Request.EXIT_LOCAL_MENU, None) if isinstance(return_if_ok, tuple) else Request.EXIT_LOCAL_MENU
+    return return_if_ok if check else return_if_not_ok

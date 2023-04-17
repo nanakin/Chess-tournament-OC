@@ -1,7 +1,7 @@
 """Define chess tournaments related user interface."""
 
 import questionary as q
-from ..requests import Request, RequestAnswer
+from ..requests import Request, RequestAnswer, valid_request_or_exit
 from ..validators import non_empty_alphabet_validator, date_validator
 from .common import (
     clear_screen_and_show_log,
@@ -27,7 +27,8 @@ class TournamentsMenus:
                 q.Choice(title="Back", value=Request.MAIN_MENU),
             ],
         )
-        return question.ask()
+        answer = question.ask()
+        return valid_request_or_exit(check=answer, return_if_ok=answer)
 
     @clear_screen_and_show_log
     def show_manage_unready_tournament_menu(self, tournament_info):
@@ -52,9 +53,7 @@ class TournamentsMenus:
             ],
         )
         answer = question.ask()
-        if not answer:
-            return Request.MANAGE_TOURNAMENT
-        return answer
+        return valid_request_or_exit(check=answer, return_if_ok=answer)
 
     @clear_screen_and_show_log
     def show_manage_tournament_menu(self, tournament_info):
@@ -102,7 +101,8 @@ class TournamentsMenus:
         )
 
         question = q.select("What do you want to do ?", choices=choices)
-        return question.ask()
+        answer = question.ask()
+        return valid_request_or_exit(check=answer, return_if_ok=answer)
 
     @clear_screen_and_show_log
     def keep_or_change_tournament(self, last_edited_tournament):
@@ -120,7 +120,8 @@ class TournamentsMenus:
                 q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT),
             ],
         )
-        return question.ask()
+        answer = question.ask()
+        return valid_request_or_exit(check=answer, return_if_ok=answer)
 
     @clear_screen_and_show_log
     def show_tournament_registration(self) -> RequestAnswer:
@@ -165,10 +166,8 @@ class TournamentsMenus:
             },
         ]
         raw_tournament_data = q.prompt(add_tournament_questions)
-        if not raw_tournament_data:  # ctrl-c
-            return Request.MANAGE_TOURNAMENT, None
-        else:
-            return Request.REGISTER_TOURNAMENT_DATA, raw_tournament_data
+        return valid_request_or_exit(check=raw_tournament_data,
+                                     return_if_ok=(Request.REGISTER_TOURNAMENT_DATA, raw_tournament_data))
 
     @clear_screen_and_show_log
     def how_to_choose_tournament(self, statistics) -> RequestAnswer:
@@ -198,7 +197,8 @@ class TournamentsMenus:
                 q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT),
             ],
         )
-        return question.ask()
+        answer = question.ask()
+        return valid_request_or_exit(check=answer, return_if_ok=answer)
 
     @clear_screen_and_show_log
     def choose_tournament_by_name(self, tournaments_info):
@@ -215,11 +215,8 @@ class TournamentsMenus:
             validate=lambda x: x in list(tournaments_meta.keys()),
         )
         answer = question.ask()
-        if answer is None:
-            return Request.MANAGE_TOURNAMENT, None
-        else:
-            selected_tournament = int(answer.partition("-")[0])
-            return Request.SELECTED_TOURNAMENT, selected_tournament
+        return valid_request_or_exit(check=answer,
+                                     return_if_ok=(Request.SELECTED_TOURNAMENT, int(answer.partition("-")[0])))
 
     @clear_screen_and_show_log
     def choose_tournament_by_list(self, tournaments_info):
@@ -229,7 +226,4 @@ class TournamentsMenus:
         choices.extend([q.Separator(), q.Choice("Back")])
         question = q.select("Select a tournament: ", choices=choices)
         answer = question.ask()
-        if answer is None or answer == "Back":
-            return Request.MANAGE_TOURNAMENT, None
-        else:
-            return Request.SELECTED_TOURNAMENT, answer
+        return valid_request_or_exit(check=answer, return_if_ok=(Request.SELECTED_TOURNAMENT, answer))

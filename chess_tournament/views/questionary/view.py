@@ -1,6 +1,6 @@
 """Define the questionary main view class."""
 
-from ..requests import Request, RequestAnswer
+from ..requests import Request, RequestAnswer, valid_request_or_exit
 from ..interface import IView
 from .players_menus import PlayerMenus
 from .matches_menus import MatchesMenus
@@ -37,14 +37,13 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
 
     def show_confirmation(self, to_confirm):
         """Display a yes/no question."""
-        return Request.CONFIRM, q.confirm(to_confirm).ask()
+        answer = q.confirm(to_confirm).ask()
+        return valid_request_or_exit(check=answer is not None, return_if_ok=(Request.CONFIRM, answer))
 
     def ask_saving_path(self):
         """Display an autocomplete path question."""
         answer = q.path("Where do you want to save the list ?").ask()
-        if not answer:
-            return Request.EXIT_LOCAL_MENU
-        return Request.SELECTED_PATH, answer
+        return valid_request_or_exit(check=answer, return_if_ok=(Request.SELECTED_PATH, answer))
 
     @clear_screen_and_show_log
     def show_main_menu(self) -> RequestAnswer:
@@ -59,7 +58,8 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
                 q.Choice(title="Exit", value=Request.EXIT_APP),
             ],
         )
-        return question.ask()
+        answer = question.ask()
+        return valid_request_or_exit(check=answer, return_if_ok=answer)
 
     @clear_screen_and_show_log
     def show_list_menu(self, total, data_name):
@@ -75,7 +75,8 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
                 q.Choice(title="Back", value=Request.EXIT_LOCAL_MENU),
             ],
         )
-        return question.ask()
+        answer = question.ask()
+        return valid_request_or_exit(check=answer, return_if_ok=answer)
 
     @clear_screen_and_show_log
     def print_list(self, data_name, info_list):
@@ -93,6 +94,4 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
             default=back_choice,
         )
         answer = question.ask()
-        if not answer:
-            return Request.EXIT_LOCAL_MENU
-        return answer
+        return valid_request_or_exit(check=answer, return_if_ok=answer)

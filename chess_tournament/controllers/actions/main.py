@@ -10,15 +10,14 @@ class MainMenuController(CommonController):
 
     def show_main_menu(self):
         """Show the main menu and redirect the user’s request to the main state manager system."""
-        action = self.view.show_main_menu()
-        if action == Request.EXIT_APP:
-            self.status = State.QUIT
-        elif action == Request.SAVE:
-            pass
-        elif action == Request.MANAGE_PLAYER:
-            self.status = State.MANAGE_PLAYER_MENU
-        elif action == Request.MANAGE_TOURNAMENT:
-            self.status = State.MANAGE_TOURNAMENTS_MENU
+        request_to_status = {
+            Request.MANAGE_PLAYER: State.MANAGE_PLAYER_MENU,
+            Request.MANAGE_TOURNAMENT: State.MANAGE_TOURNAMENTS_MENU}
+
+        request = self.view.show_main_menu()
+
+        if request in request_to_status:
+            self.status = request_to_status[request]
         else:
             self.status = State.QUIT
 

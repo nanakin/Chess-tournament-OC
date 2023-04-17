@@ -1,6 +1,6 @@
 """Define chess matches related user interface."""
 import questionary as q
-from ..requests import Request, RequestAnswer
+from ..requests import Request, RequestAnswer, valid_request_or_exit
 from .common import clear_screen_and_show_log, print_title
 
 
@@ -11,15 +11,9 @@ class MatchesMenus:
     def select_match(self, matches_info) -> RequestAnswer:
         """Display a select menu with the round’s matches list."""
         print_title("Match selection menu")
-        # print(matches_info)
         question = q.select("Which match ?", choices=matches_info)
-        #   q.Separator(),
-        #   q.Choice(title="Back", value=Request.MANAGE_TOURNAMENT)])
         answer = question.ask()
-        if answer:
-            return Request.SELECTED_MATCH, matches_info.index(answer)
-        else:
-            return Request.MANAGE_TOURNAMENT, None
+        return valid_request_or_exit(check=answer, return_if_ok=(Request.SELECTED_MATCH, matches_info.index(answer)))
 
     @clear_screen_and_show_log
     def enter_score(self, players) -> RequestAnswer:
@@ -34,7 +28,4 @@ class MatchesMenus:
             ],
         )
         answer = question.ask()
-        if answer:
-            return Request.ADD_MATCH_RESULT, answer
-        else:
-            return Request.MANAGE_TOURNAMENT, None
+        return valid_request_or_exit(check=answer, return_if_ok=(Request.ADD_MATCH_RESULT, answer))

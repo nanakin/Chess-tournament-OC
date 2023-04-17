@@ -1,7 +1,7 @@
 """Define chess participants related user interface."""
 
 import questionary as q
-from ..requests import Request, RequestAnswer
+from ..requests import Request, RequestAnswer, valid_request_or_exit
 from .common import clear_screen_and_show_log, print_title
 
 
@@ -26,6 +26,4 @@ class ParticipantsMenus:
             ],
         )
         answer = question.ask()
-        if not answer:
-            return Request.MANAGE_TOURNAMENT
-        return answer
+        return valid_request_or_exit(check=answer, return_if_ok=answer)

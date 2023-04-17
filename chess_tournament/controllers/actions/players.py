@@ -14,15 +14,15 @@ class PlayersController(CommonController):
 
     def show_manage_player_menu(self):
         """Show the main players menu and redirect the user’s request to the main state manager system."""
-        action = self.view.show_manage_player_menu()
-        if action == Request.MAIN_MENU:
-            self.status = State.MAIN_MENU
-        elif action == Request.ADD_PLAYER:
-            self.status = State.ADD_PLAYER_MENU
-        elif action == Request.EDIT_PLAYER:
-            self.status = State.EDIT_PLAYER_MENU
-        elif action == Request.LIST_PLAYERS:
-            self.status = State.LIST_PLAYERS_MENU
+        request_to_status = {
+            Request.MAIN_MENU: State.MAIN_MENU,
+            Request.ADD_PLAYER: State.ADD_PLAYER_MENU,
+            Request.EDIT_PLAYER: State.EDIT_PLAYER_MENU,
+            Request.LIST_PLAYERS: State.LIST_PLAYERS_MENU}
+
+        request = self.view.show_manage_player_menu()
+        if request in request_to_status:
+            self.status = request_to_status[request]
         else:
             self.status = State.MAIN_MENU
 
@@ -45,14 +45,8 @@ class PlayersController(CommonController):
                         player_to_log = self.model.edit_player_attributes(player_data)
                         self.view.log(True, f"Player: {player_to_log} >>> edited")
                         self.status = State.MANAGE_PLAYER_MENU
-                    else:
-                        self.status = State.MANAGE_PLAYER_MENU
-                else:
-                    self.status = State.MANAGE_PLAYER_MENU
-            else:
-                self.status = State.MANAGE_PLAYER_MENU
-        else:
-            self.status = State.MANAGE_PLAYER_MENU
+                        return
+        self.status = State.MANAGE_PLAYER_MENU
 
     def show_add_player_menu(self):
         """Show the player registration menu, register the player, then back to the previous state."""
