@@ -1,8 +1,6 @@
 """Define backup manager class(es) and function(s)."""
 
-import json
-import logging
-from json import JSONDecodeError
+from json import JSONDecodeError, dump, load
 from pathlib import Path
 
 from .chessdata import Player, Tournament
@@ -32,7 +30,7 @@ def save_to_json(data, path):
     """Write compatible JSON data to JSON file."""
     try:
         with open(path, "w") as json_file:
-            json.dump(data, json_file, indent=2)
+            dump(data, json_file, indent=2)
     except FileNotFoundError as err:
         return False, f"Unable to save to {path.absolute()} ({err.strerror})"
     else:
@@ -55,14 +53,11 @@ class BackupManager:
             for player in self.players.values():
                 players_encoded.append(player.encode())
             log_status, log_msg = save_to_json(path=(self.data_path / "players.json"), data=players_encoded)
-            logging.debug(f"{log_status=}: {log_msg}")
         if tournaments_file:
             tournaments_encoded = []
             for tournament in self.tournaments:
                 tournaments_encoded.append(tournament.encode())
-            # logging.debug(tournaments_encoded)
             log_status, log_msg = save_to_json(path=(self.data_path / "tournaments.json"), data=tournaments_encoded)
-            logging.debug(f"{log_status=}: {log_msg}")
 
     def load(self):
         """Load model’s data from JSON files."""
@@ -71,7 +66,7 @@ class BackupManager:
         def json_load_data(filename):
             """Load data from a given JSON file."""
             with open(filename, "r") as json_file:
-                encoded_data = json.load(json_file)
+                encoded_data = load(json_file)
             return encoded_data
 
         players_file = self.data_path / "players.json"
@@ -99,6 +94,5 @@ class BackupManager:
                 self.tournaments.append(tournament)
             status_tournaments_to_log = True, f"{len(encoded_tournaments)} tournaments(s) loaded" + \
                                               f" from {tournaments_file}"
-            logging.debug(f"{len(encoded_tournaments)} tournaments loaded")
 
         return status_players_to_log, status_tournaments_to_log

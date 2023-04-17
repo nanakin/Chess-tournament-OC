@@ -1,14 +1,9 @@
 """Define all the model methods required by the controller."""
 
-import datetime
-import logging
 from datetime import date
 
 from .chessdata import Match, Participant, Player, Tournament
 from .save_load_system import BackupManager, save_at_the_end
-
-logging.basicConfig(filename="log", level=logging.DEBUG)
-logging.debug(f"-------------------{str(datetime.datetime.now())}")
 
 
 class AlreadyUsedID(Exception):
@@ -21,11 +16,11 @@ class Model(BackupManager):
     This class abstract the internal data structure to the controller."""
 
     status_filter = {
-        "past": lambda tournament: tournament.end_date < datetime.date.today()
-        or (tournament.end_date == datetime.date.today() and tournament.is_ended),
-        "future": lambda tournament: tournament.begin_date > datetime.date.today()
-        or (tournament.begin_date == datetime.date.today() and not tournament.total_started_rounds),
-        "ongoing": lambda tournament: tournament.begin_date <= datetime.date.today()
+        "past": lambda tournament: tournament.end_date < date.today()
+        or (tournament.end_date == date.today() and tournament.is_ended),
+        "future": lambda tournament: tournament.begin_date > date.today()
+        or (tournament.begin_date == date.today() and not tournament.total_started_rounds),
+        "ongoing": lambda tournament: tournament.begin_date <= date.today()
         and tournament.is_started
         and not tournament.is_ended,
         "all": lambda tournament: True,

@@ -1,6 +1,5 @@
 """Define tournaments related data structures."""
 
-import logging
 import random
 from dataclasses import dataclass, field
 from datetime import date
@@ -158,9 +157,6 @@ class Tournament(Serializable):
     def set_next_round(self):
         """Do the matchmaking and register the round internally."""
         matches_list = self._generate_pairs()
-        logging.debug(f"Generated matches list for round {self.total_started_rounds + 1}:")
-        for match in matches_list:
-            logging.debug(f"{str(match.participants_pair[0])} vs {str(match.participants_pair[1])}")
         round = Round(name=f"Round {(len(self.rounds) + 1)}", matches=matches_list)
         self.rounds.append(round)
 
