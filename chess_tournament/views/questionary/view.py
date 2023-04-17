@@ -16,7 +16,7 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
     def __init__(self):
         """Initialize the view."""
         self.logged = []
-        q.print("------------------ ♔ Chess Tournament Manager ♔ --------------------")
+        q.print("------------------  Chess Tournament Manager  --------------------")
 
     def log(self, ok_status, to_print=None):
         """Add a log to the log queue."""
@@ -29,9 +29,9 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
         for log in self.logged:
             ok_status, to_print = log
             if ok_status:
-                q.print(f"✅: {to_print}")
+                q.print(f"[OK] {to_print}")
             else:
-                q.print(f"⚠️: {to_print}")
+                q.print(f"[WARNING]: {to_print}")
         q.print("")
         self.logged = []
 
