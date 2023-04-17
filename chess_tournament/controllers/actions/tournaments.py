@@ -56,7 +56,10 @@ class TournamentsController(CommonController):
         ):
             if action == Request.FIND_TOURNAMENT_BY_NAME:
                 tournaments_info = self.model.get_tournaments_str()
-                action, action_data = self.view.choose_tournament_by_name(tournaments_info)
+                if tournaments_info:
+                    action, action_data = self.view.choose_tournament_by_name(tournaments_info)
+                else:
+                    self.view.log(False, "Tournaments list is empty")
             else:
                 if action == Request.FIND_TOURNAMENT_BY_LIST_ONGOING:
                     tournaments_info = self.model.get_tournaments_str("ongoing")
@@ -66,7 +69,10 @@ class TournamentsController(CommonController):
                     tournaments_info = self.model.get_tournaments_str("past")
                 elif action == Request.FIND_TOURNAMENT_BY_LIST_ALL:
                     tournaments_info = self.model.get_tournaments_str("all")
-                action, action_data = self.view.choose_tournament_by_list(tournaments_info)
+                if tournaments_info:
+                    action, action_data = self.view.choose_tournament_by_list(tournaments_info)
+                else:
+                    self.view.log(False, "Tournaments list is empty")
 
             if action == Request.SELECTED_TOURNAMENT:
                 selected_tournament = action_data
