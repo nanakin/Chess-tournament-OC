@@ -1,9 +1,10 @@
 """Define the main Controller behaviour."""
 
 from chess_tournament.models.model import Model
+
+from .actions import (MainMenuController, MatchesController, ParticipantsController, PlayersController,
+                      TournamentsController)
 from .states import State
-from .actions import PlayersController, MatchesController, TournamentsController, \
-    ParticipantsController, MainMenuController
 
 
 class Controller(

@@ -1,8 +1,9 @@
 """Define tournament's participants related data structures."""
 
 from dataclasses import dataclass
-from .player import Player
+
 from ..serialization import Serializable
+from .player import Player
 
 
 @dataclass

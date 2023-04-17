@@ -1,6 +1,7 @@
 """Define chess participants related user interface."""
 
 import questionary as q
+
 from ..requests import Request, RequestAnswer, valid_request_or_exit
 from .common import clear_screen_and_show_log, print_title
 

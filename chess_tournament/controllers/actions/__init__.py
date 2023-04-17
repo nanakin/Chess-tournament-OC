@@ -1,5 +1,5 @@
-from .tournaments import TournamentsController
+from .main import MainMenuController
 from .matches import MatchesController
 from .participants import ParticipantsController
 from .players import PlayersController
-from .main import MainMenuController
+from .tournaments import TournamentsController

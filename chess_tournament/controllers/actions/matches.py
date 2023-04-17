@@ -1,9 +1,10 @@
 """Define matches related Controller’s behaviours."""
 
-from ..states import State
 from chess_tournament.views.requests import Request
-from .common import CommonController
+
 from ..helpers import ConjugatedWord
+from ..states import State
+from .common import CommonController
 
 
 class MatchesController(CommonController):

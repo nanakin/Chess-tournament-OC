@@ -3,8 +3,9 @@
 from dataclasses import dataclass
 from enum import Enum
 from typing import Tuple
-from .participant import Participant
+
 from ..serialization import Serializable
+from .participant import Participant
 
 
 @dataclass

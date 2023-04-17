@@ -1,11 +1,13 @@
 """Define common tools that can be used by other Controllers classes."""
 
-from chess_tournament.models.model import Model
-from chess_tournament.views.requests import Request
-from chess_tournament.views.interface import IView
-from ..states import State
-from ..helpers import ConjugatedWord, write_list_in_file
 from typing import Any
+
+from chess_tournament.models.model import Model
+from chess_tournament.views.interface import IView
+from chess_tournament.views.requests import Request
+
+from ..helpers import ConjugatedWord, write_list_in_file
+from ..states import State
 
 
 class CommonController:

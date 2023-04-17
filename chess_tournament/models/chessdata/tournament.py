@@ -1,15 +1,17 @@
 """Define tournaments related data structures."""
 
+import logging
+import random
 from dataclasses import dataclass, field
 from datetime import date
+from itertools import combinations
+
+from ortools.sat.python import cp_model
+
+from ..serialization import Serializable
 from .match import Match
 from .participant import Participant
 from .round import Round
-from ..serialization import Serializable
-import random
-from ortools.sat.python import cp_model
-from itertools import combinations
-import logging
 
 
 def solve_by_constraints(participants, remaining_matches_possibilities):

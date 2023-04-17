@@ -1,9 +1,10 @@
 """Define players related Controller’s behaviours."""
 
-from ..states import State
-from chess_tournament.views.requests import Request
 from chess_tournament.models.model import AlreadyUsedID
+from chess_tournament.views.requests import Request
+
 from ..helpers import ConjugatedWord
+from ..states import State
 from .common import CommonController
 
 

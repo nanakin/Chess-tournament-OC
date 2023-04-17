@@ -3,8 +3,9 @@
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Tuple
-from .match import Match
+
 from ..serialization import Serializable
+from .match import Match
 
 
 @dataclass

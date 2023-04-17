@@ -1,12 +1,9 @@
 """Define chess players related user interface."""
 
 import questionary as q
+
 from ..requests import Request, RequestAnswer, valid_request_or_exit
-from ..validators import (
-    non_empty_alphabet_validator,
-    past_date_validator,
-    national_identifier_validator,
-)
+from ..validators import national_identifier_validator, non_empty_alphabet_validator, past_date_validator
 from .common import clear_screen_and_show_log, print_title
 
 

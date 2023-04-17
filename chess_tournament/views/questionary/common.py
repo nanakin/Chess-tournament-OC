@@ -1,5 +1,6 @@
 """Define common functions used by the questionary menus classes."""
 import os
+
 import questionary as q
 
 DEFAULT_COLUMNS = 80  # used as reference to center text on the terminal

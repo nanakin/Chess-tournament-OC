@@ -1,13 +1,10 @@
 """Define chess tournaments related user interface."""
 
 import questionary as q
+
 from ..requests import Request, RequestAnswer, valid_request_or_exit
-from ..validators import non_empty_alphabet_validator, date_validator
-from .common import (
-    clear_screen_and_show_log,
-    print_title,
-    print_important_info,
-)
+from ..validators import date_validator, non_empty_alphabet_validator
+from .common import clear_screen_and_show_log, print_important_info, print_title
 
 
 class TournamentsMenus:

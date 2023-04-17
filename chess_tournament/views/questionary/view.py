@@ -1,13 +1,14 @@
 """Define the questionary main view class."""
 
-from ..requests import Request, RequestAnswer, valid_request_or_exit
-from ..interface import IView
-from .players_menus import PlayerMenus
-from .matches_menus import MatchesMenus
-from .tournaments_menus import TournamentsMenus
-from .participants_menus import ParticipantsMenus
-from .common import clear_screen_and_show_log, print_title, print_list_title
 import questionary as q
+
+from ..interface import IView
+from ..requests import Request, RequestAnswer, valid_request_or_exit
+from .common import clear_screen_and_show_log, print_list_title, print_title
+from .matches_menus import MatchesMenus
+from .participants_menus import ParticipantsMenus
+from .players_menus import PlayerMenus
+from .tournaments_menus import TournamentsMenus
 
 
 class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView):

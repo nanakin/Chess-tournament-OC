@@ -1,9 +1,10 @@
 """Define backup manager class(es) and function(s)."""
 
 import json
+import logging
 from json import JSONDecodeError
 from pathlib import Path
-import logging
+
 from .chessdata import Player, Tournament
 
 

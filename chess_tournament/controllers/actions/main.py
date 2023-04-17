@@ -1,7 +1,8 @@
 """Define not chess specialized Controller’s behaviours."""
 
-from ..states import State
 from chess_tournament.views.requests import Request
+
+from ..states import State
 from .common import CommonController
 
 

@@ -1,5 +1,6 @@
 """Define the interface for all the views classes, these methods will be used by the controller."""
 from abc import ABC
+
 from .requests import RequestAnswer
 
 
