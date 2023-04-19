@@ -20,7 +20,7 @@ class Controller(
     """Main Controller class (which inherits from specialized ones)."""
 
     def __init__(self, view: IView, data_path: Path) -> None:
-        """Initialize the controller with the given view and load from backup save."""
+        """Initialize the controller (with the given view) and load data from backup save."""
         # -- view --
         self.view = view
         # -- model --

@@ -5,6 +5,7 @@ from pathlib import Path
 
 CompleteLog = tuple[bool, str]
 
+
 @dataclass
 class ConjugatedWord:
     """Simplify the conjugation management in console and log printed messages."""

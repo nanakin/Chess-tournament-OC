@@ -54,5 +54,6 @@ class Round(Serializable):
         encoded_data["end_time"] = (
             datetime.fromisoformat(encoded_data["end_time"]) if encoded_data["end_time"] else None
         )
-        encoded_data["matches"] = tuple([Match.decode(encoded_match, participants_db) for encoded_match in encoded_data["matches"]])
+        encoded_data["matches"] = tuple([Match.decode(encoded_match, participants_db)
+                                         for encoded_match in encoded_data["matches"]])
         return cls(**encoded_data)
