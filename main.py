@@ -1,13 +1,13 @@
 """Define the chess manager entry point and main function."""
-import pathlib
 
 from chess_tournament.controllers.controller import Controller
-from chess_tournament.views.questionary.view import View
+from chess_tournament.views.questionary.view import View  # change to dynamic import if multiple views
+from chess_tournament.views.interface import IView
 import argparse
 from pathlib import Path
 
 
-def main(view_class, data_path):
+def main(view_class: type[IView], data_path: Path):
     """Main program function that initializes the view and the controller then call its main function loop."""
     view = view_class()
     chess_tournament_manager = Controller(view, data_path)

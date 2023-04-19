@@ -1,5 +1,5 @@
 """Define the questionary main view class."""
-
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
@@ -13,20 +13,20 @@ from .participants_menus import ParticipantsMenus
 from .players_menus import PlayerMenus
 from .tournaments_menus import TournamentsMenus
 
+Log = tuple[bool, str]
 
+
+@dataclass
 class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView):
     """Main questionary view class (which inherits from specialized ones)."""
 
-    def __init__(self):
-        """Initialize the view."""
-        self.logged = []
-        q.print("------------------  Chess Tournament Manager  --------------------")
+    logged: list[Log] = field(default_factory=list)
 
-    def log(self, ok_status: bool, to_print: Optional[str] = None):
+    def log(self, ok_status: bool, to_print: str) -> None:
         """Add a log to the log queue."""
         self.logged.append((ok_status, to_print))
 
-    def show_log(self):
+    def show_log(self) -> None:
         """Display logs and purge the queue."""
         if self.logged:
             q.print("-- status " + "-" * 70)
@@ -52,7 +52,7 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
     @clear_screen_and_show_log
     def show_main_menu(self) -> RequestAnswer:
         """Display the main select menu."""
-        print_title("Main menu")
+        print_title("Chess Tournament Manager - Main Menu")
         question = q.select(
             "What do you want to do ?",
             choices=[

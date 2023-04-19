@@ -26,7 +26,7 @@ def solve_by_constraints(participants: list[Participant],
     - to select exactly one match per player from all possible (remaining) combination of 2
     - to consider the global minimal score difference between players (calculated for each possibility)
     """
-    def weight(participants_pair: tuple[Participant, Participant], match_model_variable: cp_model.IntVar):
+    def weight(participants_pair: tuple[Participant, Participant], match_model_variable: cp_model.IntVar) -> int:
         """Privilege the smallest score gaps for matchmaking."""
         return match_model_variable * (abs(participants_pair[0].score - participants_pair[1].score) ** 2)
 
@@ -157,21 +157,21 @@ class Tournament(Serializable):
         self._update_remaining_matches_possibilities(pairs_list)  # to avoid duplicate encounters
         return tuple(Match(pair) for pair in pairs_list)
 
-    def _update_remaining_matches_possibilities(self, matches_list: list[tuple[Participant, Participant]]):
+    def _update_remaining_matches_possibilities(self, matches_list: list[tuple[Participant, Participant]]) -> None:
         """Remove current round matches from the not done/remaining matches possibilities."""
         self._remaining_matches_possibilities -= set(matches_list)
 
-    def _generate_all_matches_possibilities(self):
+    def _generate_all_matches_possibilities(self) -> None:
         """Generate all possible combination of 2 from a list of participants."""
         self._remaining_matches_possibilities = set(combinations(self.participants, 2))
 
-    def set_next_round(self):
+    def set_next_round(self) -> None:
         """Do the matchmaking and register the round internally."""
         matches_list = self._generate_pairs()
         round = Round(name=f"Round {(len(self.rounds) + 1)}", matches=matches_list)
         self.rounds.append(round)
 
-    def start_round(self):
+    def start_round(self) -> None:
         """Register the starting time of the current round."""
         self.current_round.start_round()
 

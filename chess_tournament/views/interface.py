@@ -11,11 +11,11 @@ class IView(ABC):
     # --- common methods ---
 
     @abstractmethod
-    def log(self, ok_status: bool, to_print: Optional[str] = None):
+    def log(self, ok_status: bool, to_print: str) -> None:
         """Add a log to the log queue."""
 
     @abstractmethod
-    def show_log(self):
+    def show_log(self) -> None:
         """Display logs and purge the queue."""
 
     @abstractmethod

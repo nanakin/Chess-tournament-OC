@@ -14,7 +14,7 @@ class Participant(Serializable):
     player: Player
     score: float = 0
 
-    def add_score(self, to_add: float):
+    def add_score(self, to_add: float) -> None:
         """Add up the participant score."""
         self.score += to_add
 

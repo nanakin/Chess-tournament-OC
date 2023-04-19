@@ -45,7 +45,6 @@ class Request(Enum):
     FIND_TOURNAMENT_BY_LIST_ALL = auto()
 
 
-#RequestAnswer = Request | tuple[Request, Any]
 RequestAnswer = tuple[Request, Any]
 
 

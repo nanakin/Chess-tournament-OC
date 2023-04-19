@@ -111,17 +111,18 @@ class TournamentsController(CommonController):
             return
         request, _ = self.view.show_manage_tournament_menu(tournament_info)
 
-        if request == Request.START_ROUND:
-            self.model.start_round(selected_tournament)
-            self.status = State.MANAGE_TOURNAMENT_MENU
-        elif request == Request.LIST_PARTICIPANTS:
-            self.status = State.LIST_PARTICIPANTS_MENU
-        elif request == Request.LIST_MATCHES:
-            self.status = State.LIST_MATCHES_MENU
-        elif request == Request.LIST_ROUNDS_SCORES:
-            self.status = State.LIST_ALL_ROUNDS_MENU
-        elif request == Request.REGISTER_MATCH_SCORE:
-            self.status = State.REGISTER_MATCH_SCORE_MENU
+        request_to_status = {
+            Request.START_ROUND: State.MANAGE_TOURNAMENT_MENU,
+            Request.LIST_PARTICIPANTS: State.LIST_PARTICIPANTS_MENU,
+            Request.LIST_MATCHES: State.LIST_MATCHES_MENU,
+            Request.LIST_ROUNDS_SCORES: State.LIST_ALL_ROUNDS_MENU,
+            Request.REGISTER_MATCH_SCORE: State.REGISTER_MATCH_SCORE_MENU
+        }
+
+        if request in request_to_status:
+            self.status = request_to_status[request]
+            if request == Request.START_ROUND:
+                self.model.start_round(selected_tournament)
         else:
             self.status = State.MANAGE_TOURNAMENTS_MENU
 

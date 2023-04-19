@@ -35,7 +35,7 @@ class Model(BackupManager):
         "all": lambda tournament: True,
     }
 
-    def __init__(self, data_path: Path):
+    def __init__(self, data_path: Path) -> None:
         super().__init__(data_path)
         self.players = {}
         self.tournaments = []
@@ -130,8 +130,9 @@ class Model(BackupManager):
         """Return the participants ID from a given tournament."""
         return (participant.player.identifier for participant in self.tournaments[tournament_t].participants)
 
-    def _get_winners(self, tournament: Tournament) -> list[str]:
+    def _get_winners(self, tournament_t:int) -> list[str]:
         """Return strings representation of tournaments winners."""
+        tournament = self.tournaments[tournament_t]
         ordered_participants = sorted(tournament.participants)
         bests = []
         for i in range(len(ordered_participants)):
@@ -268,5 +269,5 @@ class Model(BackupManager):
             "total_matches": len(tournament.current_round.matches) if tournament.total_started_rounds > 0 else 0,
             "total_finished_rounds": tournament.total_finished_rounds,
             "total_participants": len(tournament.participants),
-            "winners": self._get_winners(tournament) if tournament.is_ended else None
+            "winners": self._get_winners(tournament_t) if tournament.is_ended else None
         }

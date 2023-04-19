@@ -6,7 +6,8 @@ from typing import Any, Callable
 
 from .chessdata import Player, Tournament
 
-Log = str
+LogMessage = str
+CompleteLog = tuple[bool, LogMessage]
 
 
 def save_at_the_end(players_file: bool = False, tournaments_file: bool = False) -> Callable[[Callable], Callable]:
@@ -29,7 +30,7 @@ def _make_dirs(directory: Path):
         directory.mkdir(exist_ok=True, parents=True)
 
 
-def save_to_json(data: Any, path: Path) -> tuple[bool, Log]:
+def save_to_json(data: Any, path: Path) -> CompleteLog:
     """Write compatible JSON data to JSON file."""
     try:
         with open(path, "w") as json_file:
@@ -46,11 +47,11 @@ class BackupManager:
     players: dict[str, Player]
     tournaments: list[Tournament]
 
-    def __init__(self, path: Path):
+    def __init__(self, path: Path) -> None:
         self.data_path = path
         _make_dirs(self.data_path)
 
-    def save(self, players_file: bool = False, tournaments_file: bool = False):
+    def save(self, players_file: bool = False, tournaments_file: bool = False) -> None:
         """Encode model’s data then write them to JSON file(s).
 
         This function is called by the save_at_the_end decorator used on modifying data Model’s methods."""
@@ -65,11 +66,11 @@ class BackupManager:
                 tournaments_encoded.append(tournament.encode())
             log_status, log_msg = save_to_json(path=(self.data_path / "tournaments.json"), data=tournaments_encoded)
 
-    def load(self) -> tuple[Log, Log]:
+    def load(self) -> tuple[CompleteLog, CompleteLog]:
         """Load model’s data from JSON files."""
         # TODO: review the function structure
 
-        def json_load_data(filename: Path) -> tuple[tuple[bool, Log], tuple[bool, Log]]:
+        def json_load_data(filename: Path) -> Any:
             """Load data from a given JSON file."""
             with open(filename, "r") as json_file:
                 encoded_data = load(json_file)

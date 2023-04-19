@@ -50,7 +50,7 @@ class Match(Serializable):
         else:
             return cls.Points.DRAW, cls.Points.DRAW
 
-    def register_score(self, participants_status: tuple[Points, Points]):
+    def register_score(self, participants_status: tuple[Points, Points]) -> None:
         """Register the score in the match attribute and update participant total tournament score."""
         self.participants_scores = participants_status
         for participant, score in zip(self.participants_pair, self.participants_scores):

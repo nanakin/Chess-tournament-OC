@@ -14,12 +14,12 @@ class Round(Serializable):
     """Tournament's round data."""
 
     name: str
-    matches: tuple[Match]
+    matches: tuple[Match, ...]
     start_time: datetime | None = None
     end_time: datetime | None = None
 
     @property
-    def is_ended(self):
+    def is_ended(self) -> bool:
         """Return True if the round has an end time defined, False otherwise."""
         return self.end_time is not None
 
@@ -28,11 +28,11 @@ class Round(Serializable):
         """Return True if the round has a start time defined, False otherwise."""
         return self.start_time is not None
 
-    def start_round(self, start_time: datetime = datetime.now()):
+    def start_round(self, start_time: datetime = datetime.now()) -> None:
         """Register the starting time of the round."""
         self.start_time = start_time
 
-    def end_round(self, end_time: datetime = datetime.now()):
+    def end_round(self, end_time: datetime = datetime.now()) -> None:
         """Register the ending time of the round."""
         self.end_time = end_time
 
