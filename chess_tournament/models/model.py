@@ -165,7 +165,7 @@ class Model(BackupManager):
         return str(round.matches[match_m])
 
     @save_at_the_end(tournaments_file=True)
-    def _get_round_matches(self, tournament_t: int) -> tuple[Match, ...]:
+    def get_round_matches(self, tournament_t: int) -> tuple[Match, ...]:
         """Return matches of the given round."""
         round_r = self.tournaments[tournament_t].current_round_index
         if round_r == len(self.tournaments[tournament_t].rounds):
@@ -193,7 +193,7 @@ class Model(BackupManager):
 
     def start_tournament(self, tournament_t: int) -> tuple[Log, int]:
         """Start the given tournament (and generate the first round matches)."""
-        matches = self._get_round_matches(tournament_t)
+        matches = self.get_round_matches(tournament_t)
         return str(self.tournaments[tournament_t]), len(matches)
 
     def get_matches_str(self, tournament_t: int, round_r: Optional[int] = None) -> list[str]:

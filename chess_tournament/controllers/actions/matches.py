@@ -41,7 +41,7 @@ class MatchesController(CommonController):
             return request, request_data
 
         selected_tournament = self.context
-        matches = self.model._get_round_matches(selected_tournament)
+        matches = self.model.get_round_matches(selected_tournament)
         request, request_data = self.view.select_match(get_matches_info(matches))
         if request == Request.SELECTED_MATCH:
             selected_match = [match for match in matches if match.participants_scores is None][request_data]

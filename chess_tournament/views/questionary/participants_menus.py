@@ -14,8 +14,8 @@ class ParticipantsMenus:
         """Display a select menu to manage participants (add/delete/list participants and back)."""
         print_title("Participants menu")
         q.print(
-            f"There {'is' if total_participants < 2 else 'are'} {total_participants}",
-            f"participant{'s' if total_participants > 1 else ''}\n",
+            f"There {'is' if total_participants < 2 else 'are'} {total_participants} "
+            f"participant{'s' if total_participants > 1 else ''} \r",
         )
         question = q.select(
             "What do you want to do ?",

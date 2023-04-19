@@ -56,7 +56,7 @@ class Tournament(Serializable, MatchMaking):
 
     @property
     def is_started(self) -> bool:
-        """Return True if a least one round has been generated, False otherwise."""
+        """Return True if at least one round has been generated, False otherwise."""
         return self.total_started_rounds > 0
 
     @property
