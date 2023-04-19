@@ -68,7 +68,6 @@ class BackupManager:
 
     def load(self) -> tuple[CompleteLog, CompleteLog]:
         """Load model’s data from JSON files."""
-        # TODO: review the function structure
 
         def json_load_data(filename: Path) -> Any:
             """Load data from a given JSON file."""
@@ -76,30 +75,42 @@ class BackupManager:
                 encoded_data = load(json_file)
             return encoded_data
 
-        players_file = self.data_path / "players.json"
-        tournaments_file = self.data_path / "tournaments.json"
-        try:
-            encoded_players = json_load_data(players_file)
-        except FileNotFoundError as err:
-            status_players_to_log = False, f"No data loaded from {players_file} ({err.strerror})"
-        except JSONDecodeError as err:
-            status_players_to_log = False, f"Corrupted JSON {players_file} file ({err.msg})"
-        else:
-            for encoded_player in encoded_players:
-                player = Player.decode(encoded_player)
-                self.players[player.identifier] = player
-            status_players_to_log = True, f"{len(encoded_players)} player(s) loaded from {players_file}"
-        try:
-            encoded_tournaments = json_load_data(tournaments_file)
-        except FileNotFoundError as err:
-            status_tournaments_to_log = False, f"No data loaded from {tournaments_file} ({err.strerror})"
-        except JSONDecodeError as err:
-            status_tournaments_to_log = False, f"Corrupted JSON {tournaments_file} file ({err.msg})"
-        else:
-            for encoded_tournament in encoded_tournaments:
-                tournament = Tournament.decode(encoded_tournament, self.players)
-                self.tournaments.append(tournament)
-            status_tournaments_to_log = True, f"{len(encoded_tournaments)} tournaments(s) loaded" + \
-                                              f" from {tournaments_file}"
+        def load_players() -> CompleteLog:
+            players_file = self.data_path / "players.json"
+            try:
+                encoded_players = json_load_data(players_file)
+            except FileNotFoundError as err:
+                status_players_to_log = False, f"No data loaded from {players_file} ({err.strerror})"
+            except JSONDecodeError as err:
+                status_players_to_log = False, f"Corrupted JSON {players_file} file ({err.msg})"
+            else:
+                for encoded_player in encoded_players:
+                    player = Player.decode(encoded_player)
+                    self.players[player.identifier] = player
+                status_players_to_log = True, f"{len(encoded_players)} player(s) loaded from {players_file}"
+            finally:
+                return status_players_to_log
 
+        def load_tournaments() -> CompleteLog:
+            tournaments_file = self.data_path / "tournaments.json"
+            try:
+                encoded_tournaments = json_load_data(tournaments_file)
+            except FileNotFoundError as err:
+                status_tournaments_to_log = False, f"No data loaded from {tournaments_file} ({err.strerror})"
+            except JSONDecodeError as err:
+                status_tournaments_to_log = False, f"Corrupted JSON {tournaments_file} file ({err.msg})"
+            else:
+                for encoded_tournament in encoded_tournaments:
+                    tournament = Tournament.decode(encoded_tournament, self.players)
+                    self.tournaments.append(tournament)
+                status_tournaments_to_log = True, f"{len(encoded_tournaments)} tournaments(s) loaded" + \
+                                                  f" from {tournaments_file}"
+            finally:
+                return status_tournaments_to_log
+
+        status_players_to_log = load_players()
+        if status_players_to_log[0] is False:
+            status_tournaments_to_log = False, "Unable to load tournaments without players."
+        else:
+            status_tournaments_to_log = load_tournaments()
         return status_players_to_log, status_tournaments_to_log

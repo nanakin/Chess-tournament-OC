@@ -70,7 +70,8 @@ class MatchMaking:
         """Remove current round matches from the not done/remaining matches possibilities."""
         self._remaining_matches_possibilities -= set(matches_list)
 
-    def reconstruct_remaining_possibilities_from_past_matches(self, participants: list[Participant], rounds: list[Round]) -> None:
+    def reconstruct_remaining_possibilities_from_past_matches(self, participants: list[Participant],
+                                                              rounds: list[Round]) -> None:
         self._generate_all_matches_possibilities(participants)
         past_pairs = [match.participants_pair
                       for round in rounds
