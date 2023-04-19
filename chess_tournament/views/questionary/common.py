@@ -1,18 +1,19 @@
 """Define common functions used by the questionary menus classes."""
 import os
+from typing import Any, Callable
 
 import questionary as q
 
 DEFAULT_COLUMNS = 80  # used as reference to center text on the terminal
 
 
-def clear_screen_and_show_log(function):
+def clear_screen_and_show_log(function: Callable) -> Callable:
     """Decorator that clear screen, display logs and then execute the given function."""
 
     def clear():
         os.system("cls" if os.name == "nt" else "clear")
 
-    def wrapper(self, *args, **kwargs):
+    def wrapper(self, *args, **kwargs) -> Any:
         clear()
         self.show_log()
         return function(self, *args, **kwargs)
@@ -20,19 +21,19 @@ def clear_screen_and_show_log(function):
     return wrapper
 
 
-def print_title(title):
+def print_title(title: str):
     """Print a centered title."""
     title = f" {title} "
     q.print(title.center(DEFAULT_COLUMNS, "="), style="bold")
 
 
-def print_list_title(title):
+def print_list_title(title: str):
     """Print a centered list title."""
     title = f" {title} "
     q.print(title.center(DEFAULT_COLUMNS, "+"), style="bold")
 
 
-def print_important_info(info):
+def print_important_info(info: str):
     """Print important information."""
     info = f">>> {info} <<<"
     q.print(info)

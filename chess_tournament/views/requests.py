@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from typing import TypeAlias
+from typing import Any
 
 
 class Request(Enum):
@@ -45,7 +45,7 @@ class Request(Enum):
     FIND_TOURNAMENT_BY_LIST_ALL = auto()
 
 
-RequestAnswer: TypeAlias = Request | tuple[Request, list[object]]  # TODO : add dict type (used by players) or Any ?
+RequestAnswer = Request | tuple[Request, Any]
 
 
 def valid_request_or_exit(check, return_if_ok) -> RequestAnswer:

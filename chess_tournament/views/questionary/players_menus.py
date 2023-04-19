@@ -1,6 +1,7 @@
 """Define chess players related user interface."""
 
 import questionary as q
+from typing import Any
 
 from ..requests import Request, RequestAnswer, valid_request_or_exit
 from ..validators import national_identifier_validator, non_empty_alphabet_validator, past_date_validator
@@ -28,7 +29,7 @@ class PlayerMenus:
         return valid_request_or_exit(check=answer, return_if_ok=answer)
 
     @clear_screen_and_show_log
-    def show_player_selection(self, players_id):
+    def show_player_selection(self, players_id: list[str]) -> RequestAnswer:
         """Display an autocomplete question for players ID."""
         print_title("Player selection menu")
         question = q.autocomplete(
@@ -78,7 +79,7 @@ class PlayerMenus:
                                      return_if_ok=(Request.REGISTER_PLAYER_DATA, raw_player_data))
 
     @clear_screen_and_show_log
-    def show_edit_player_menu(self, player_info):
+    def show_edit_player_menu(self, player_info: dict[str, Any]) -> RequestAnswer:
         """Display a menu to select the attribute to change then an input question (with user entry validation)."""
         print_title("Player edition menu")
         what_to_edit = q.select(

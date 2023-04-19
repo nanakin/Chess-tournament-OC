@@ -1,6 +1,7 @@
 """Define chess tournaments related user interface."""
 
 import questionary as q
+from typing import Any
 
 from ..requests import Request, RequestAnswer, valid_request_or_exit
 from ..validators import date_validator, non_empty_alphabet_validator
@@ -11,7 +12,7 @@ class TournamentsMenus:
     """Tournaments related View’s mixin class."""
 
     @clear_screen_and_show_log
-    def show_manage_tournaments_menu(self):
+    def show_manage_tournaments_menu(self) -> RequestAnswer:
         """Display a select menu to add/manage/list tournaments and back."""
         print_title("Tournaments menu")
         question = q.select(
@@ -28,7 +29,7 @@ class TournamentsMenus:
         return valid_request_or_exit(check=answer, return_if_ok=answer)
 
     @clear_screen_and_show_log
-    def show_manage_unready_tournament_menu(self, tournament_info):
+    def show_manage_unready_tournament_menu(self, tournament_info: dict[str, Any]) -> RequestAnswer:
         """Display a select menu to manage participants or start the selected tournament."""
         print_title("Unready tournament menu")
         print_important_info(f"{tournament_info['str']}")
@@ -53,7 +54,7 @@ class TournamentsMenus:
         return valid_request_or_exit(check=answer, return_if_ok=answer)
 
     @clear_screen_and_show_log
-    def show_manage_tournament_menu(self, tournament_info):
+    def show_manage_tournament_menu(self, tournament_info: dict[str, Any]) -> RequestAnswer:
         """Display a select menu to manage rounds and scores of the selected tournament."""
         print_title("Tournament menu")
         print_important_info(f"{tournament_info['str']}")
@@ -102,7 +103,7 @@ class TournamentsMenus:
         return valid_request_or_exit(check=answer, return_if_ok=answer)
 
     @clear_screen_and_show_log
-    def keep_or_change_tournament(self, last_edited_tournament):
+    def keep_or_change_tournament(self, last_edited_tournament: str) -> RequestAnswer:
         """Display a select menu to choose between keep editing the last selected tournament or change."""
         print_title("Tournament selection menu")
         question = q.select(
@@ -167,7 +168,7 @@ class TournamentsMenus:
                                      return_if_ok=(Request.REGISTER_TOURNAMENT_DATA, raw_tournament_data))
 
     @clear_screen_and_show_log
-    def how_to_choose_tournament(self, statistics) -> RequestAnswer:
+    def how_to_choose_tournament(self, statistics: dict[str, int]) -> RequestAnswer:
         """Display a select menu to choose the filter and the method to find an existing tournament."""
         print_title("Tournament selection method menu")
         question = q.select(
@@ -198,7 +199,7 @@ class TournamentsMenus:
         return valid_request_or_exit(check=answer, return_if_ok=answer)
 
     @clear_screen_and_show_log
-    def choose_tournament_by_name(self, tournaments_info):
+    def choose_tournament_by_name(self, tournaments_info: list[tuple[int, str, str]]) -> RequestAnswer:
         """Display an autocomplete question for the tournament name."""
         print_title("Tournament selection menu")
         tournaments_meta = {
@@ -216,7 +217,7 @@ class TournamentsMenus:
                                      return_if_ok=(Request.SELECTED_TOURNAMENT, int(answer.partition("-")[0])))
 
     @clear_screen_and_show_log
-    def choose_tournament_by_list(self, tournaments_info):
+    def choose_tournament_by_list(self, tournaments_info: list[tuple[int, str, str]]) -> RequestAnswer:
         """Display a select menu with a list of tournaments."""
         print_title("Tournament selection menu")
         choices = [q.Choice(title=tournament_name, value=t_index) for t_index, tournament_name, _ in tournaments_info]

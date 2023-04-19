@@ -10,7 +10,7 @@ class ParticipantsMenus:
     """Participants related View’s mixin class."""
 
     @clear_screen_and_show_log
-    def show_manage_participants_menu(self, total_participants) -> RequestAnswer:
+    def show_manage_participants_menu(self, total_participants: int) -> RequestAnswer:
         """Display a select menu to manage participants (add/delete/list participants and back)."""
         print_title("Participants menu")
         print(f"There {'is' if total_participants < 2 else 'are'} {total_participants}",

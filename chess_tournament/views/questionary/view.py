@@ -1,4 +1,5 @@
 """Define the questionary main view class."""
+from typing import Optional
 
 import questionary as q
 
@@ -19,7 +20,7 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
         self.logged = []
         q.print("------------------  Chess Tournament Manager  --------------------")
 
-    def log(self, ok_status, to_print=None):
+    def log(self, ok_status: bool, to_print: Optional[str] = None):
         """Add a log to the log queue."""
         self.logged.append((ok_status, to_print))
 
@@ -36,12 +37,12 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
         q.print("")
         self.logged = []
 
-    def show_confirmation(self, to_confirm):
+    def show_confirmation(self, to_confirm: str) -> RequestAnswer:
         """Display a yes/no question."""
         answer = q.confirm(to_confirm).ask()
         return valid_request_or_exit(check=answer is not None, return_if_ok=(Request.CONFIRM, answer))
 
-    def ask_saving_path(self):
+    def ask_saving_path(self) -> RequestAnswer:
         """Display an autocomplete path question."""
         answer = q.path("Where do you want to save the list ?").ask()
         return valid_request_or_exit(check=answer, return_if_ok=(Request.SELECTED_PATH, answer))
@@ -63,7 +64,7 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
         return valid_request_or_exit(check=answer, return_if_ok=answer)
 
     @clear_screen_and_show_log
-    def show_list_menu(self, total, data_name):
+    def show_list_menu(self, total: int, data_name: str) -> RequestAnswer:
         """Display a select menu : print or export."""
         print_title(f"{data_name.capitalize()} list menu")
         q.print(f">> Total {total} {data_name}")
@@ -80,7 +81,7 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
         return valid_request_or_exit(check=answer, return_if_ok=answer)
 
     @clear_screen_and_show_log
-    def print_list(self, data_name, info_list):
+    def print_list(self, data_name: str, info_list: list[str]) -> RequestAnswer:
         """Display the given list then suggest to export it."""
         print_list_title(f"{data_name.capitalize()} list")
         for info in info_list:
