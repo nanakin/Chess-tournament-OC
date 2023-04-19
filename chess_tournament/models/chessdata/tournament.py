@@ -1,6 +1,5 @@
 """Define tournaments related data structures."""
 
-import random
 from dataclasses import dataclass, field
 from datetime import date
 from typing import Any, Self

@@ -68,8 +68,10 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
     @clear_screen_and_show_log
     def show_list_menu(self, total: int, data_name: str) -> RequestAnswer:
         """Display a select menu : print or export."""
+
         print_title(f"{data_name.capitalize()} list menu")
-        q.print(f">> Total {total} {data_name}")
+        q.print(f">> Total {total} {data_name}\n")
+
         question = q.select(
             "What do you want to do ?",
             choices=[
@@ -85,9 +87,12 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
     @clear_screen_and_show_log
     def print_list(self, data_name: str, info_list: list[str]) -> RequestAnswer:
         """Display the given list then suggest to export it."""
+
         print_list_title(f"{data_name.capitalize()} list")
         for info in info_list:
             q.print(info)
+        q.print("")
+
         back_choice = q.Choice(title="Back", value=Request.EXIT_LOCAL_MENU)
         question = q.select(
             "",

@@ -25,15 +25,18 @@ def print_title(title: str) -> None:
     """Print a centered title."""
     title = f" {title} "
     q.print(title.center(DEFAULT_COLUMNS, "="), style="bold")
+    q.print("")
 
 
 def print_list_title(title: str) -> None:
     """Print a centered list title."""
     title = f" {title} "
     q.print(title.center(DEFAULT_COLUMNS, "+"), style="bold")
+    q.print("")
 
 
 def print_important_info(info: str) -> None:
     """Print important information."""
-    info = f">>> {info} <<<"
+    info = f"---> {info}"
     q.print(info)
+    q.print("")

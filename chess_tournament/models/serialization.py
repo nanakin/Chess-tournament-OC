@@ -1,7 +1,7 @@
 """Define the interface for the Serializable class that aims to be used on backupable chess data classes."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Self, Optional
+from typing import Any, Self
 
 
 class Serializable(ABC):

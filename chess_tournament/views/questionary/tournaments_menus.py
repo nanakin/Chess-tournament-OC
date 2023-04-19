@@ -85,6 +85,7 @@ class TournamentsMenus:
                     f"({tournament_info['total_participants']} participants):")
             for position, participant in enumerate(tournament_info["winners"]):
                 q.print(f"{position + 1}: {participant}")
+            q.print("")
 
         choices.extend(
             [

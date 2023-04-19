@@ -59,12 +59,12 @@ class BackupManager:
             players_encoded = []
             for player in self.players.values():
                 players_encoded.append(player.encode())
-            log_status, log_msg = save_to_json(path=(self.data_path / "players.json"), data=players_encoded)
+            save_to_json(path=(self.data_path / "players.json"), data=players_encoded)
         if tournaments_file:
             tournaments_encoded = []
             for tournament in self.tournaments:
                 tournaments_encoded.append(tournament.encode())
-            log_status, log_msg = save_to_json(path=(self.data_path / "tournaments.json"), data=tournaments_encoded)
+            save_to_json(path=(self.data_path / "tournaments.json"), data=tournaments_encoded)
 
     def load(self) -> tuple[CompleteLog, CompleteLog]:
         """Load model’s data from JSON files."""
