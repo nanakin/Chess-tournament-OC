@@ -1,7 +1,8 @@
 """Define chess tournaments related user interface."""
 
-import questionary as q
 from typing import Any
+
+import questionary as q
 
 from ..requests import Request, RequestAnswer, valid_request_or_exit
 from ..validators import date_validator, non_empty_alphabet_validator
@@ -61,8 +62,9 @@ class TournamentsMenus:
         choices = []
         if tournament_info["total_finished_rounds"] < tournament_info["total_rounds"]:
             print_important_info(
-                f"{tournament_info['current_round_name']} ({tournament_info['total_started_rounds']}" +
-                f"/{tournament_info['total_rounds']})")
+                f"{tournament_info['current_round_name']} ({tournament_info['total_started_rounds']}"
+                + f"/{tournament_info['total_rounds']})"
+            )
             if not tournament_info["is_current_round_started"]:
                 choice_register_or_start_round = q.Choice(title="Start the round", value=Request.START_ROUND)
             else:
@@ -81,8 +83,10 @@ class TournamentsMenus:
             )
         else:
             print_important_info("Tournament Ended")
-            q.print(f"Top {len(tournament_info['winners'])} players " +
-                    f"({tournament_info['total_participants']} participants):")
+            q.print(
+                f"Top {len(tournament_info['winners'])} players "
+                + f"({tournament_info['total_participants']} participants):"
+            )
             for position, participant in enumerate(tournament_info["winners"]):
                 q.print(f"{position + 1}: {participant}")
             q.print("")
@@ -165,8 +169,9 @@ class TournamentsMenus:
             },
         ]
         raw_tournament_data = q.prompt(add_tournament_questions)
-        return valid_request_or_exit(check=raw_tournament_data,
-                                     return_if_ok=(Request.REGISTER_TOURNAMENT_DATA, raw_tournament_data))
+        return valid_request_or_exit(
+            check=raw_tournament_data, return_if_ok=(Request.REGISTER_TOURNAMENT_DATA, raw_tournament_data)
+        )
 
     @clear_screen_and_show_log
     def how_to_choose_tournament(self, statistics: dict[str, int]) -> RequestAnswer:
@@ -214,8 +219,9 @@ class TournamentsMenus:
             validate=lambda x: x in list(tournaments_meta.keys()),
         )
         answer = question.ask()
-        return valid_request_or_exit(check=answer,
-                                     return_if_ok=(Request.SELECTED_TOURNAMENT, int(answer.partition("-")[0])))
+        return valid_request_or_exit(
+            check=answer, return_if_ok=(Request.SELECTED_TOURNAMENT, int(answer.partition("-")[0]))
+        )
 
     @clear_screen_and_show_log
     def choose_tournament_by_list(self, tournaments_info: list[tuple[int, str, str]]) -> RequestAnswer:
@@ -225,4 +231,6 @@ class TournamentsMenus:
         choices.extend([q.Separator(), q.Choice("Back")])
         question = q.select("Select a tournament: ", choices=choices)
         answer = question.ask()
-        return valid_request_or_exit(check=bool(answer is not None), return_if_ok=(Request.SELECTED_TOURNAMENT, answer))
+        return valid_request_or_exit(
+            check=bool(answer is not None), return_if_ok=(Request.SELECTED_TOURNAMENT, answer)
+        )

@@ -13,7 +13,8 @@ class MainMenuController(CommonController):
         """Show the main menu and redirect the user’s request to the main state manager system."""
         request_to_status = {
             Request.MANAGE_PLAYER: State.MANAGE_PLAYER_MENU,
-            Request.MANAGE_TOURNAMENT: State.MANAGE_TOURNAMENTS_MENU}
+            Request.MANAGE_TOURNAMENT: State.MANAGE_TOURNAMENTS_MENU,
+        }
 
         request, _ = self.view.show_main_menu()
 
@@ -21,4 +22,3 @@ class MainMenuController(CommonController):
             self.status = request_to_status[request]
         else:
             self.status = State.QUIT
-

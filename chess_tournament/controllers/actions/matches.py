@@ -1,7 +1,7 @@
 """Define matches related Controller’s behaviours."""
 
-from chess_tournament.views.requests import Request, RequestAnswer
 from chess_tournament.models.chessdata import Match
+from chess_tournament.views.requests import Request, RequestAnswer
 
 from ..helpers import ConjugatedWord
 from ..states import State

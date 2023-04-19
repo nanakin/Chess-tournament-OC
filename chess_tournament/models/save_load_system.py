@@ -103,8 +103,10 @@ class BackupManager:
                 for encoded_tournament in encoded_tournaments:
                     tournament = Tournament.decode(encoded_tournament, self.players)
                     self.tournaments.append(tournament)
-                status_tournaments_to_log = True, f"{len(encoded_tournaments)} tournaments(s) loaded" + \
-                                                  f" from {tournaments_file}"
+                status_tournaments_to_log = (
+                    True,
+                    f"{len(encoded_tournaments)} tournaments(s) loaded" + f" from {tournaments_file}",
+                )
             finally:
                 return status_tournaments_to_log
 

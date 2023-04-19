@@ -6,10 +6,10 @@ from typing import Any, Self
 
 from ..serialization import Serializable
 from .match import Match
-from .participant import Participant
-from .round import Round
-from .player import Player
 from .matchmaking import MatchMaking
+from .participant import Participant
+from .player import Player
+from .round import Round
 
 
 @dataclass
@@ -34,7 +34,7 @@ class Tournament(Serializable, MatchMaking):
 
     def __str__(self) -> str:
         """Return the string representation of the tournament instance."""
-        return f'{self.name} in {self.location} ({str(self.begin_date)} > {str(self.end_date)})'
+        return f"{self.name} in {self.location} ({str(self.begin_date)} > {str(self.end_date)})"
 
     def __lt__(self, other: Self) -> bool:
         """Order tournaments by starting date."""
@@ -100,8 +100,9 @@ class Tournament(Serializable, MatchMaking):
         encoded_data["participants"] = [
             Participant.decode(encoded_participant, players_db) for encoded_participant in encoded_data["participants"]
         ]
-        encoded_data["rounds"] = [Round.decode(encoded_round, encoded_data["participants"])
-                                  for encoded_round in encoded_data["rounds"]]
+        encoded_data["rounds"] = [
+            Round.decode(encoded_round, encoded_data["participants"]) for encoded_round in encoded_data["rounds"]
+        ]
         tournament = cls(**encoded_data)
         tournament.reconstruct_remaining_possibilities_from_past_matches(tournament.participants, tournament.rounds)
         return tournament

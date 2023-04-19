@@ -116,7 +116,7 @@ class TournamentsController(CommonController):
             Request.LIST_PARTICIPANTS: State.LIST_PARTICIPANTS_MENU,
             Request.LIST_MATCHES: State.LIST_MATCHES_MENU,
             Request.LIST_ROUNDS_SCORES: State.LIST_ALL_ROUNDS_MENU,
-            Request.REGISTER_MATCH_SCORE: State.REGISTER_MATCH_SCORE_MENU
+            Request.REGISTER_MATCH_SCORE: State.REGISTER_MATCH_SCORE_MENU,
         }
 
         if request in request_to_status:

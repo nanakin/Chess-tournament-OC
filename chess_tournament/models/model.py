@@ -2,8 +2,8 @@
 
 from collections.abc import KeysView
 from datetime import date
-from typing import Callable, Any, Iterator, Optional
 from pathlib import Path
+from typing import Any, Callable, Iterator, Optional
 
 from .chessdata import Match, Participant, Player, Tournament
 from .save_load_system import BackupManager, save_at_the_end
@@ -130,7 +130,7 @@ class Model(BackupManager):
         """Return the participants ID from a given tournament."""
         return (participant.player.identifier for participant in self.tournaments[tournament_t].participants)
 
-    def _get_winners(self, tournament_t:int) -> list[str]:
+    def _get_winners(self, tournament_t: int) -> list[str]:
         """Return strings representation of tournaments winners."""
         tournament = self.tournaments[tournament_t]
         ordered_participants = sorted(tournament.participants)
@@ -139,8 +139,10 @@ class Model(BackupManager):
             bests.append(str(ordered_participants[i]))
             if i >= 2:
                 # in case of tie, continue listing winners with the same score
-                if (len(ordered_participants) > i + 1 and
-                        ordered_participants[i].score == ordered_participants[i + 1].score):
+                if (
+                    len(ordered_participants) > i + 1
+                    and ordered_participants[i].score == ordered_participants[i + 1].score
+                ):
                     continue
                 break
         return bests
@@ -214,8 +216,10 @@ class Model(BackupManager):
             if isinstance(tournament_data["end_date"], str):
                 tournament_data["end_date"] = date.fromisoformat(tournament_data["end_date"])
             if tournament_data["end_date"] < tournament_data["begin_date"]:
-                raise InconsistentDates(f"{tournament_data['name']} ending date ({tournament_data['end_date']})" +
-                                        f" is anterior to starting date ({tournament_data['begin_date']})")
+                raise InconsistentDates(
+                    f"{tournament_data['name']} ending date ({tournament_data['end_date']})"
+                    + f" is anterior to starting date ({tournament_data['begin_date']})"
+                )
             tournament = Tournament(**tournament_data)
             self.tournaments.append(tournament)
         return str(tournament)
@@ -259,8 +263,7 @@ class Model(BackupManager):
             "begin_date": str(tournament.begin_date),
             "end_date": str(tournament.end_date),
             "total_rounds": tournament.total_rounds,
-            "is_current_round_started": tournament.current_round.is_started
-            if tournament.is_started else False,
+            "is_current_round_started": tournament.current_round.is_started if tournament.is_started else False,
             "current_round_name": tournament.current_round.name if tournament.is_started else None,
             "total_started_rounds": tournament.total_started_rounds,
             "total_finished_matches": sum(1 for match in tournament.current_round.matches if match.is_ended)
@@ -269,5 +272,5 @@ class Model(BackupManager):
             "total_matches": len(tournament.current_round.matches) if tournament.total_started_rounds > 0 else 0,
             "total_finished_rounds": tournament.total_finished_rounds,
             "total_participants": len(tournament.participants),
-            "winners": self._get_winners(tournament_t) if tournament.is_ended else None
+            "winners": self._get_winners(tournament_t) if tournament.is_ended else None,
         }

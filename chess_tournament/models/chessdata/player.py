@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from datetime import date
-from typing import Any, Self, Optional
+from typing import Any, Optional, Self
 
 from ..serialization import Serializable
 

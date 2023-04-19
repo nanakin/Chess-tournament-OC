@@ -1,7 +1,8 @@
 """Define chess players related user interface."""
 
-import questionary as q
 from typing import Any, Iterable
+
+import questionary as q
 
 from ..requests import Request, RequestAnswer, valid_request_or_exit
 from ..validators import national_identifier_validator, non_empty_alphabet_validator, past_date_validator
@@ -75,8 +76,9 @@ class PlayerMenus:
             },
         ]
         raw_player_data = q.prompt(add_player_questions)
-        return valid_request_or_exit(check=raw_player_data,
-                                     return_if_ok=(Request.REGISTER_PLAYER_DATA, raw_player_data))
+        return valid_request_or_exit(
+            check=raw_player_data, return_if_ok=(Request.REGISTER_PLAYER_DATA, raw_player_data)
+        )
 
     @clear_screen_and_show_log
     def show_edit_player_menu(self, player_info: dict[str, Any]) -> RequestAnswer:
@@ -103,5 +105,6 @@ class PlayerMenus:
         elif answer == "birth_date":
             player_info["birth_date"] = q.text("Enter player's new birth date: ", validate=past_date_validator).ask()
 
-        return valid_request_or_exit(check=bool(answer in player_info),
-                                     return_if_ok=(Request.REGISTER_PLAYER_DATA, player_info))
+        return valid_request_or_exit(
+            check=bool(answer in player_info), return_if_ok=(Request.REGISTER_PLAYER_DATA, player_info)
+        )

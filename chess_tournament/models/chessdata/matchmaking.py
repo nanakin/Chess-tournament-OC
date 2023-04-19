@@ -1,13 +1,14 @@
-from itertools import combinations
 import random
+from itertools import combinations
 
 from ortools.sat.python import cp_model
-from ..chessdata import Participant, Round, Match
+
+from ..chessdata import Match, Participant, Round
 
 
-def solve_by_constraints(participants: list[Participant],
-                         remaining_matches_possibilities: set[tuple[Participant, Participant]]
-                         ) -> list[tuple[Participant, Participant]] | None:
+def solve_by_constraints(
+    participants: list[Participant], remaining_matches_possibilities: set[tuple[Participant, Participant]]
+) -> list[tuple[Participant, Participant]] | None:
     """Return a list of participants pairs generated using constraints solver.
 
     in formal methods, a SAT solver aims to solve the boolean satisfiability (SAT) problem
@@ -16,6 +17,7 @@ def solve_by_constraints(participants: list[Participant],
     - to select exactly one match per player from all possible (remaining) combination of 2
     - to consider the global minimal score difference between players (calculated for each possibility)
     """
+
     def weight(participants_pair: tuple[Participant, Participant], match_model_variable: cp_model.IntVar) -> int:
         """Privilege the smallest score gaps for matchmaking."""
         return match_model_variable * (abs(participants_pair[0].score - participants_pair[1].score) ** 2)
@@ -64,18 +66,17 @@ class MatchMaking:
     """Do the matchmaking by generating list of participant pairs (matches)."""
 
     def __init__(self):
-        _remaining_matches_possibilities = set()
+        self._remaining_matches_possibilities = set()
 
     def _update_remaining_matches_possibilities(self, matches_list: list[tuple[Participant, Participant]]) -> None:
         """Remove current round matches from the not done/remaining matches possibilities."""
         self._remaining_matches_possibilities -= set(matches_list)
 
-    def reconstruct_remaining_possibilities_from_past_matches(self, participants: list[Participant],
-                                                              rounds: list[Round]) -> None:
+    def reconstruct_remaining_possibilities_from_past_matches(
+        self, participants: list[Participant], rounds: list[Round]
+    ) -> None:
         self._generate_all_matches_possibilities(participants)
-        past_pairs = [match.participants_pair
-                      for round in rounds
-                      for match in round.matches]
+        past_pairs = [match.participants_pair for round in rounds for match in round.matches]
         self._update_remaining_matches_possibilities(past_pairs)
 
     def _generate_all_matches_possibilities(self, participants: list[Participant]) -> None:

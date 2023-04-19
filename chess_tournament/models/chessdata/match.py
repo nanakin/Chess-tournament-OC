@@ -27,7 +27,9 @@ class Match(Serializable):
         player_1, player_2 = (self.participants_pair[0].player, self.participants_pair[1].player)
         score_player_1, score_player_2 = (
             (self.participants_scores[0].name, self.participants_scores[1].name)
-            if self.participants_scores is not None else ("", ""))
+            if self.participants_scores is not None
+            else ("", "")
+        )
         return f"{player_1} {score_player_1}".ljust(39) + "vs" + f"{player_2} {score_player_2}".rjust(39)
 
     @property
@@ -55,8 +57,9 @@ class Match(Serializable):
         """Transform the instance of the object into JSON compatible format."""
         return {
             "participants_pair": [participant.player.identifier for participant in self.participants_pair],
-            "participants_scores": [score.name for score in self.participants_scores
-                                    ] if self.participants_scores is not None else [],
+            "participants_scores": [score.name for score in self.participants_scores]
+            if self.participants_scores is not None
+            else [],
         }
 
     @classmethod
@@ -76,8 +79,10 @@ class Match(Serializable):
             else None
         )
         encoded_data["participants_pair"] = tuple(
-            [participants_db[get_participant_index_from_player_id(encoded_participant)]
-             for encoded_participant in encoded_data["participants_pair"]]
+            [
+                participants_db[get_participant_index_from_player_id(encoded_participant)]
+                for encoded_participant in encoded_data["participants_pair"]
+            ]
         )
 
         return cls(**encoded_data)

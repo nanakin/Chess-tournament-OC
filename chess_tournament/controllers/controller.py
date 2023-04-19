@@ -5,8 +5,13 @@ from pathlib import Path
 from chess_tournament.models.model import Model
 from chess_tournament.views.interface import IView
 
-from .actions import (MainMenuController, MatchesController, ParticipantsController, PlayersController,
-                      TournamentsController)
+from .actions import (
+    MainMenuController,
+    MatchesController,
+    ParticipantsController,
+    PlayersController,
+    TournamentsController,
+)
 from .states import State
 
 

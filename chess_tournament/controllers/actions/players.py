@@ -19,7 +19,8 @@ class PlayersController(CommonController):
             Request.MAIN_MENU: State.MAIN_MENU,
             Request.ADD_PLAYER: State.ADD_PLAYER_MENU,
             Request.EDIT_PLAYER: State.EDIT_PLAYER_MENU,
-            Request.LIST_PLAYERS: State.LIST_PLAYERS_MENU}
+            Request.LIST_PLAYERS: State.LIST_PLAYERS_MENU,
+        }
 
         request, _ = self.view.show_manage_player_menu()
         if request in request_to_status:

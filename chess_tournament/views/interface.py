@@ -1,6 +1,6 @@
 """Define the interface for all the views classes, these methods will be used by the controller."""
 from abc import ABC, abstractmethod
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable
 
 from .requests import RequestAnswer
 
