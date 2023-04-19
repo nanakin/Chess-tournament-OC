@@ -18,18 +18,18 @@ class CommonController:
     view: IView
     context: Any
 
-    def report(self, total, data_info, conjugated_name: ConjugatedWord, back_state):
+    def report(self, total: int, data_info: list, conjugated_name: ConjugatedWord, back_state: State) -> None:
         """Show the given list, deal with print and export requests, then back to the previous state."""
-        action = self.view.show_list_menu(total, conjugated_name.conjugated_with_number(total))
-        if action not in (Request.PRINT, Request.EXPORT):
+        request, _ = self.view.show_list_menu(total, conjugated_name.conjugated_with_number(total))
+        if request not in (Request.PRINT, Request.EXPORT):
             self.status = back_state
             return
-        if action == Request.PRINT:
-            action = self.view.print_list(data_name=conjugated_name.plural, info_list=data_info)
-        if action == Request.EXPORT:
-            action, action_data = self.view.ask_saving_path()
-            if action == Request.SELECTED_PATH:
-                filename = action_data
+        if request == Request.PRINT:
+            request, _ = self.view.print_list(data_name=conjugated_name.plural, info_list=data_info)
+        if request == Request.EXPORT:
+            request, request_data = self.view.ask_saving_path()
+            if request == Request.SELECTED_PATH:
+                filename = request_data
                 status_ok, absolute_path = write_list_in_file(data_info, filename, conjugated_name.plural)
                 if status_ok:
                     self.view.log(True, f"List correctly saved in {absolute_path}.")

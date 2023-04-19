@@ -1,6 +1,6 @@
 """Define the interface for all the views classes, these methods will be used by the controller."""
 from abc import ABC, abstractmethod
-from typing import Any, Optional
+from typing import Any, Iterable, Optional
 
 from .requests import RequestAnswer
 
@@ -63,7 +63,7 @@ class IView(ABC):
         """Display a menu to add/edit/list players."""
 
     @abstractmethod
-    def show_player_selection(self, players_id: list[str]) -> RequestAnswer:
+    def show_player_selection(self, players_id: Iterable[str]) -> RequestAnswer:
         """Display a menu to select a player ID."""
 
     @abstractmethod

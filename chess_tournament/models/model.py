@@ -162,14 +162,14 @@ class Model(BackupManager):
         return str(round.matches[match_m])
 
     @save_at_the_end(tournaments_file=True)
-    def _get_round_matches(self, tournament_t: int) -> tuple[Match]:
+    def _get_round_matches(self, tournament_t: int) -> tuple[Match, ...]:
         """Return matches of the given round."""
         round_r = self.tournaments[tournament_t].current_round_index
         if round_r == len(self.tournaments[tournament_t].rounds):
             self.tournaments[tournament_t].set_next_round()
         return self.tournaments[tournament_t].get_round_matches(round_r)
 
-    def get_total_matches(self, tournament_t: int) -> int | None:
+    def get_total_matches(self, tournament_t: int) -> int:
         """Return the total number of matches from a given tournament’s round."""
         round_r = self.tournaments[tournament_t].current_round_index
         return len(self.tournaments[tournament_t].get_round_matches(round_r))

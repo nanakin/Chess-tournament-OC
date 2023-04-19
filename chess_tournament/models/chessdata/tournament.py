@@ -175,7 +175,7 @@ class Tournament(Serializable):
         """Register the starting time of the current round."""
         self.current_round.start_round()
 
-    def get_round_matches(self, round_r) -> tuple[Match]:
+    def get_round_matches(self, round_r) -> tuple[Match, ...]:
         """Return matches of the given round index."""
         if not self.rounds or round_r >= len(self.rounds):
             return tuple()

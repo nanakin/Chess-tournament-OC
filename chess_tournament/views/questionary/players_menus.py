@@ -1,7 +1,7 @@
 """Define chess players related user interface."""
 
 import questionary as q
-from typing import Any
+from typing import Any, Iterable
 
 from ..requests import Request, RequestAnswer, valid_request_or_exit
 from ..validators import national_identifier_validator, non_empty_alphabet_validator, past_date_validator
@@ -29,12 +29,12 @@ class PlayerMenus:
         return valid_request_or_exit(check=answer, return_if_ok=answer)
 
     @clear_screen_and_show_log
-    def show_player_selection(self, players_id: list[str]) -> RequestAnswer:
+    def show_player_selection(self, players_id: Iterable[str]) -> RequestAnswer:
         """Display an autocomplete question for players ID."""
         print_title("Player selection menu")
         question = q.autocomplete(
             "Enter the player ID :",
-            choices=players_id,
+            choices=list(players_id),
             validate=lambda x: x in players_id,
         )
         answer = question.ask()

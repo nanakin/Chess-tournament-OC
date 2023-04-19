@@ -1,6 +1,7 @@
 """Define matches related Controller’s behaviours."""
 
-from chess_tournament.views.requests import Request
+from chess_tournament.views.requests import Request, RequestAnswer
+from chess_tournament.models.chessdata import Match
 
 from ..helpers import ConjugatedWord
 from ..states import State
@@ -12,10 +13,10 @@ class MatchesController(CommonController):
 
     conjugated_match = ConjugatedWord(singular="match", plural="matches")
 
-    def show_register_match_score_menu(self):
+    def show_register_match_score_menu(self) -> None:
         """Show the score registration menu, register the score, then back to the tournament menu."""
 
-        def get_matches_info(matches):
+        def get_matches_info(matches: tuple[Match, ...]) -> list[str]:
             """Return string representation of not started matches."""
             return [
                 f"{str(match.participants_pair[0].player)} vs {str(match.participants_pair[1].player)}"
@@ -23,13 +24,13 @@ class MatchesController(CommonController):
                 if match.participants_scores is None
             ]
 
-        def add_match_result(first_player_result, selected_tournament, selected_match):
+        def add_match_result(first_player_result, selected_tournament: int, selected_match: Match) -> None:
             """Register the score."""
             match_m = matches.index(selected_match)
             scores_to_log = self.model.register_score(selected_tournament, match_m, first_player_result)
             self.view.log(True, f"Scores: {scores_to_log}\n>>> registered")
 
-        def select_match(selected_match):
+        def select_match(selected_match: Match) -> RequestAnswer:
             """Select a match."""
             request, request_data = self.view.enter_score(
                 (
@@ -49,7 +50,7 @@ class MatchesController(CommonController):
                 add_match_result(request_data, selected_tournament, selected_match)
         self.status = State.MANAGE_TOURNAMENT_MENU
 
-    def show_list_matches_menu(self):
+    def show_list_matches_menu(self) -> None:
         """Show the matches report list of the current round (of the current tournament)."""
         selected_tournament = self.context
         self.report(
@@ -59,7 +60,7 @@ class MatchesController(CommonController):
             back_state=State.MANAGE_TOURNAMENT_MENU,
         )
 
-    def show_list_all_rounds_menu(self):
+    def show_list_all_rounds_menu(self) -> None:
         """Show the matches report list of all generated rounds (of the current tournament)."""
         selected_tournament = self.context
         self.report(

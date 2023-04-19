@@ -45,10 +45,13 @@ class Request(Enum):
     FIND_TOURNAMENT_BY_LIST_ALL = auto()
 
 
-RequestAnswer = Request | tuple[Request, Any]
+#RequestAnswer = Request | tuple[Request, Any]
+RequestAnswer = tuple[Request, Any]
 
 
-def valid_request_or_exit(check, return_if_ok) -> RequestAnswer:
+def valid_request_or_exit(check: Any, return_if_ok: Request | RequestAnswer) -> RequestAnswer:
     """Return a valid request for the controller (particularly useful with Ctrl-C)."""
-    return_if_not_ok = (Request.EXIT_LOCAL_MENU, None) if isinstance(return_if_ok, tuple) else Request.EXIT_LOCAL_MENU
+    return_if_not_ok = (Request.EXIT_LOCAL_MENU, None)
+    if not isinstance(return_if_ok, tuple):
+        return_if_ok = (return_if_ok, None)
     return return_if_ok if check else return_if_not_ok

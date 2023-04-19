@@ -1,4 +1,6 @@
 """Define the questionary main view class."""
+
+from pathlib import Path
 from typing import Optional
 
 import questionary as q
@@ -45,7 +47,7 @@ class View(PlayerMenus, MatchesMenus, TournamentsMenus, ParticipantsMenus, IView
     def ask_saving_path(self) -> RequestAnswer:
         """Display an autocomplete path question."""
         answer = q.path("Where do you want to save the list ?").ask()
-        return valid_request_or_exit(check=answer, return_if_ok=(Request.SELECTED_PATH, answer))
+        return valid_request_or_exit(check=answer, return_if_ok=(Request.SELECTED_PATH, Path(answer)))
 
     @clear_screen_and_show_log
     def show_main_menu(self) -> RequestAnswer:

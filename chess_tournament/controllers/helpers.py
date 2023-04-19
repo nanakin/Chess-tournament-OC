@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 
+CompleteLog = tuple[bool, str]
 
 @dataclass
 class ConjugatedWord:
@@ -11,13 +12,13 @@ class ConjugatedWord:
     singular: str
     plural: str
 
-    def conjugated_with_number(self, number):
+    def conjugated_with_number(self, number: int) -> str:
         return self.plural if number > 1 else self.singular
 
 
-def write_list_in_file(data_list, export_path, data_type):
+def write_list_in_file(data_list: list, export_path: Path, data_type: str) -> CompleteLog:
     """Save the given data list in the given path."""
-    path = Path(export_path).expanduser()
+    path = export_path.expanduser()
     if path.is_dir():
         path = path / f"export_{data_type}.txt"
     try:
@@ -25,6 +26,6 @@ def write_list_in_file(data_list, export_path, data_type):
             for line in data_list:
                 f.write(f"{line}\n")
     except FileNotFoundError:
-        return False, path.absolute()
+        return False, str(path.absolute())
     else:
-        return True, path.absolute()
+        return True, str(path.absolute())
