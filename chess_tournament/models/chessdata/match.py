@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Tuple
+from typing import Any, Self
 
 from ..serialization import Serializable
 from .participant import Participant
@@ -19,10 +19,10 @@ class Match(Serializable):
         LOSE = 0.0
         DRAW = 0.5
 
-    participants_pair: Tuple[Participant, Participant]
-    participants_scores: Tuple[Points, Points] | None = None
+    participants_pair: tuple[Participant, Participant]
+    participants_scores: tuple[Points, Points] | None = None
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return string representation of a match instance."""
         player_1, player_2 = (
             self.participants_pair[0].player,
@@ -36,12 +36,12 @@ class Match(Serializable):
         return f"{player_1} {score_player_1}".ljust(39) + "vs" + f"{player_2} {score_player_2}".rjust(39)
 
     @property
-    def is_ended(self):
+    def is_ended(self) -> bool:
         """Return True if a match was done (i.e. a score registered), False otherwise."""
         return self.participants_scores is not None
 
     @classmethod
-    def get_pairs_score_from_first(cls, first_result):
+    def get_pairs_score_from_first(cls, first_result: Points) -> tuple[Points, Points]:
         """Complete a pair score from one result (i.e. if one win, the other lose)."""
         if first_result == cls.Points.WIN:
             return cls.Points.WIN, cls.Points.LOSE
@@ -50,28 +50,30 @@ class Match(Serializable):
         else:
             return cls.Points.DRAW, cls.Points.DRAW
 
-    def register_score(self, participants_status: Tuple[Points, Points]):
+    def register_score(self, participants_status: tuple[Points, Points]):
         """Register the score in the match attribute and update participant total tournament score."""
         self.participants_scores = participants_status
         for participant, score in zip(self.participants_pair, self.participants_scores):
             participant.add_score(score.value)
 
-    def encode(self):
+    def encode(self) -> dict[str, Any]:
         """Transform the instance of the object into JSON compatible format."""
         return {
             "participants_pair": [participant.player.identifier for participant in self.participants_pair],
-            "participants_scores": [score.name for score in self.participants_scores] if self.is_ended else [],
+            "participants_scores": [score.name for score in self.participants_scores
+                                    ] if self.participants_scores is not None else [],
         }
 
     @classmethod
-    def decode(cls, encoded_data, participants_db):
+    def decode(cls, encoded_data: dict[str, Any], participants_db: list[Participant]) -> Self:
         """Instantiate a new object from data in JSON format."""
 
-        def get_participant_index_from_player_id(player_id):
+        def get_participant_index_from_player_id(player_id: str) -> int:
             """Return the participant index from its player ID."""
             for p_index, participant in enumerate(participants_db):
                 if participant.player.identifier == player_id:
                     return p_index
+            return -1
 
         encoded_data["participants_scores"] = (
             tuple([cls.Points[encoded_score] for encoded_score in encoded_data["participants_scores"]])

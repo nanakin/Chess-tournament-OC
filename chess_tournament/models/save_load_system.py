@@ -2,15 +2,18 @@
 
 from json import JSONDecodeError, dump, load
 from pathlib import Path
+from typing import Any, Callable
 
 from .chessdata import Player, Tournament
 
+Log = str
 
-def save_at_the_end(players_file=False, tournaments_file=False):
+
+def save_at_the_end(players_file: bool = False, tournaments_file: bool = False) -> Callable[[Callable], Callable]:
     """Decorator that saves data to JSON file(s) once the function ended."""
 
-    def save_at_the_end_decorator(function):
-        def wrapper(self, *args, **kwargs):
+    def save_at_the_end_decorator(function: Callable) -> Callable:
+        def wrapper(self, *args, **kwargs) -> Any:
             return_values = function(self, *args, **kwargs)
             self.save(players_file, tournaments_file)
             return return_values
@@ -20,13 +23,13 @@ def save_at_the_end(players_file=False, tournaments_file=False):
     return save_at_the_end_decorator
 
 
-def make_dirs(directory):
+def _make_dirs(directory: Path):
     """Create directories (recursive) for the given paths."""
     if not directory.exists():
         directory.mkdir(exist_ok=True, parents=True)
 
 
-def save_to_json(data, path):
+def save_to_json(data: Any, path: Path) -> tuple[bool, Log]:
     """Write compatible JSON data to JSON file."""
     try:
         with open(path, "w") as json_file:
@@ -40,11 +43,14 @@ def save_to_json(data, path):
 class BackupManager:
     """Save and load system."""
 
-    def __init__(self, path):
-        self.data_path = Path(path)
-        make_dirs(self.data_path)
+    players: dict[str, Player]
+    tournaments: list[Tournament]
 
-    def save(self, players_file=False, tournaments_file=False):
+    def __init__(self, path: Path):
+        self.data_path = path
+        _make_dirs(self.data_path)
+
+    def save(self, players_file: bool = False, tournaments_file: bool = False):
         """Encode model’s data then write them to JSON file(s).
 
         This function is called by the save_at_the_end decorator used on modifying data Model’s methods."""
@@ -59,11 +65,11 @@ class BackupManager:
                 tournaments_encoded.append(tournament.encode())
             log_status, log_msg = save_to_json(path=(self.data_path / "tournaments.json"), data=tournaments_encoded)
 
-    def load(self):
+    def load(self) -> tuple[Log, Log]:
         """Load model’s data from JSON files."""
         # TODO: review the function structure
 
-        def json_load_data(filename):
+        def json_load_data(filename: Path) -> tuple[tuple[bool, Log], tuple[bool, Log]]:
             """Load data from a given JSON file."""
             with open(filename, "r") as json_file:
                 encoded_data = load(json_file)

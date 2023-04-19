@@ -2,10 +2,11 @@
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Tuple
+from typing import Self, Any
 
 from ..serialization import Serializable
 from .match import Match
+from .participant import Participant
 
 
 @dataclass
@@ -13,7 +14,7 @@ class Round(Serializable):
     """Tournament's round data."""
 
     name: str
-    matches: Tuple[Match]
+    matches: tuple[Match]
     start_time: datetime | None = None
     end_time: datetime | None = None
 
@@ -23,7 +24,7 @@ class Round(Serializable):
         return self.end_time is not None
 
     @property
-    def is_started(self):
+    def is_started(self) -> bool:
         """Return True if the round has a start time defined, False otherwise."""
         return self.start_time is not None
 
@@ -35,7 +36,7 @@ class Round(Serializable):
         """Register the ending time of the round."""
         self.end_time = end_time
 
-    def encode(self):
+    def encode(self) -> dict[str, object]:
         """Transform the instance of the object into JSON compatible format."""
         return {
             "name": self.name,
@@ -45,7 +46,7 @@ class Round(Serializable):
         }
 
     @classmethod
-    def decode(cls, encoded_data, participants_db):
+    def decode(cls, encoded_data: dict[str, Any], participants_db: list[Participant]) -> Self:
         """Instantiate a new object from data in JSON format."""
         encoded_data["start_time"] = (
             datetime.fromisoformat(encoded_data["start_time"]) if encoded_data["start_time"] else None
