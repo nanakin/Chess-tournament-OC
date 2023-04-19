@@ -181,6 +181,13 @@ class Tournament(Serializable):
             return tuple()
         return self.rounds[round_r].matches
 
+    def _reconstruct_remaining_possibilities_from_past_matches(self) -> None:
+        self._generate_all_matches_possibilities()
+        past_pairs = [match.participants_pair
+                      for round in self.rounds
+                      for match in round.matches]
+        self._update_remaining_matches_possibilities(past_pairs)
+
     def encode(self) -> dict[str, Any]:
         """Transform the instance of the object into JSON compatible format."""
         return {
@@ -203,4 +210,6 @@ class Tournament(Serializable):
         ]
         encoded_data["rounds"] = [Round.decode(encoded_round, encoded_data["participants"])
                                   for encoded_round in encoded_data["rounds"]]
-        return cls(**encoded_data)
+        tournament = cls(**encoded_data)
+        tournament._reconstruct_remaining_possibilities_from_past_matches()
+        return tournament
