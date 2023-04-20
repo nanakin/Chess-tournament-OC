@@ -14,7 +14,7 @@ class ParticipantsController(CommonController):
 
     def show_manage_participants_menu(self) -> None:
         """Show the main participants menu and redirect the user’s request to the main state manager system."""
-        total_participants = len(list(self.model.get_participants_id(self.context)))  # to-do : change method
+        total_participants = len(list(self.model.get_participants_id(self.context)))
         request, _ = self.view.show_manage_participants_menu(total_participants)
         if request == Request.ADD_PARTICIPANT:
             self.status = State.ADD_PARTICIPANT_MENU

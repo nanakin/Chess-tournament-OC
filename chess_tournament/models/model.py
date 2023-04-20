@@ -48,7 +48,7 @@ class Model(BackupManager):
         # + cleaning user input and checking ID duplicates.
         for player_data in players_data:
             if player_data["identifier"].upper() not in self.players:
-                # formatting (to move to Player init method ?)
+                # formatting
                 player_data["last_name"] = player_data["last_name"].upper()
                 player_data["first_name"] = player_data["first_name"].capitalize()
                 player_data["identifier"] = player_data["identifier"].upper()
@@ -58,6 +58,7 @@ class Model(BackupManager):
                 self.players[player_data["identifier"]] = Player(**player_data)
             else:
                 raise AlreadyUsedID(player_data["identifier"])
+        # Log only the last one (players are added 1 by 1 from the interface)
         return str(self.players[player_data["identifier"]])
 
     @save_at_the_end(players_file=True)
@@ -100,6 +101,7 @@ class Model(BackupManager):
         for player_id in participants_data:
             participant = Participant(self.players[player_id])
             tournament.participants.append(participant)
+        # Log only the last one (participants are added 1 by 1 from the interface)
         return str(participant.player), str(tournament)
 
     @save_at_the_end(tournaments_file=True)
@@ -112,6 +114,7 @@ class Model(BackupManager):
                 if participant.player.identifier == player_id:
                     del tournament.participants[p_index]
                     break
+        # Log only the last one (participants are deleted 1 by 1 from the interface)
         return participant_to_log, str(tournament)
 
     def get_total_participants(self, tournament_t: int) -> int:
@@ -222,7 +225,7 @@ class Model(BackupManager):
                 )
             tournament = Tournament(**tournament_data)
             self.tournaments.append(tournament)
-        return str(tournament)
+        return str(tournament)  # Log only the last one (tournaments are added 1 by 1 from the interface)
 
     @save_at_the_end(tournaments_file=True)
     def start_round(self, tournament_t: int):

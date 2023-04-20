@@ -1,3 +1,5 @@
+"""Define matchmaking related data structures."""
+
 import random
 from itertools import combinations
 

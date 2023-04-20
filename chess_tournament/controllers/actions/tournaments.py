@@ -50,7 +50,6 @@ class TournamentsController(CommonController):
 
     def show_select_tournament_menu(self) -> None:
         """Show methods to choose, then list tournament to select from, register selection in the context."""
-        # improvement : use round info to know if a tournament really ended
         statistics = self.model.get_tournaments_states_statistics()
         request, _ = self.view.how_to_choose_tournament(statistics)
         if request in (

@@ -34,7 +34,6 @@ class PlayersController(CommonController):
         request, request_data = self.view.show_player_selection(players_id)
         if request == Request.SELECTED_PLAYER:
             selected_id = request_data
-            # maybe move message to the view
             message_to_confirm = f"You are about to edit:\n{self.model.get_player_str(selected_id)}\nDo you confirm?"
             request, request_data = self.view.show_confirmation(message_to_confirm)
             if request == Request.CONFIRM:
