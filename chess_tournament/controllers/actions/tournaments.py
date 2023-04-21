@@ -105,7 +105,7 @@ class TournamentsController(CommonController):
         """The selected tournament started, display the normal tournament menu, then deal with the user’s request."""
         selected_tournament = self.context
         tournament_info = self.model.get_tournament_info(selected_tournament)
-        if not self.model.tournaments[selected_tournament].rounds:
+        if not self.model.get_total_all_matches(selected_tournament):
             self.status = State.MANAGE_UNREADY_TOURNAMENT_MENU
             return
         request, _ = self.view.show_manage_tournament_menu(tournament_info)
