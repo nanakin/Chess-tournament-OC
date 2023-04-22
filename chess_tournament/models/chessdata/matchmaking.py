@@ -67,9 +67,6 @@ def solve_by_constraints(
 class MatchMaking:
     """Do the matchmaking by generating list of participant pairs (matches)."""
 
-    def __init__(self) -> None:
-        self._remaining_matches_possibilities: set[tuple[Participant, Participant]] = set()
-
     def _update_remaining_matches_possibilities(self, matches_list: list[tuple[Participant, Participant]]) -> None:
         """Remove current round matches from the not done/remaining matches possibilities."""
         self._remaining_matches_possibilities -= set(matches_list)
@@ -112,6 +109,7 @@ class MatchMaking:
         """Do the matchmaking by generating list of participant pairs (matches)."""
 
         if total_started_rounds == 0:
+            self._generate_all_matches_possibilities(participants)
             pairs_list = self._generate_pairs_random(participants)  # first round is generated randomly
         else:
             # after the first round, matchmaking is realized by a solver

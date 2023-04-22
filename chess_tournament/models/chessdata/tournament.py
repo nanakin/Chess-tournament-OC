@@ -1,8 +1,7 @@
 """Define tournaments related data structures."""
 
-from dataclasses import dataclass, field
 from datetime import date
-from typing import Any, Self
+from typing import Any, Optional, Self
 
 from ..serialization import Serializable
 from .match import Match
@@ -12,17 +11,28 @@ from .player import Player
 from .round import Round
 
 
-@dataclass
 class Tournament(Serializable, MatchMaking):
     """Tournament data."""
 
-    name: str
-    location: str
-    begin_date: date
-    end_date: date
-    participants: list[Participant] = field(default_factory=list)
-    total_rounds: int = 4
-    rounds: list[Round] = field(default_factory=list)
+    def __init__(
+        self,
+        name: str,
+        location: str,
+        begin_date: date,
+        end_date: date,
+        total_rounds: int = 4,
+        participants: Optional[list[Participant]] = None,
+        rounds: Optional[list[Round]] = None,
+    ):
+        super(MatchMaking, self).__init__()
+        self._remaining_matches_possibilities: set[tuple[Participant, Participant]] = set()
+        self.name = name
+        self.location = location
+        self.begin_date = begin_date
+        self.end_date = end_date
+        self.total_rounds = total_rounds
+        self.participants = participants if participants is not None else []
+        self.rounds = rounds if rounds is not None else []
 
     @property
     def total_finished_rounds(self) -> int:
